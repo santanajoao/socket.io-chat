@@ -1,11 +1,12 @@
 import { Global, Module } from '@nestjs/common';
 import { PrismaDataSource } from './datasources/prisma.datasource';
+import { BcryptHashService } from './hashing/bcrypt-hash.service';
 
 @Global()
 @Module({
   imports: [],
-  providers: [PrismaDataSource],
+  providers: [PrismaDataSource, BcryptHashService],
   controllers: [],
-  exports: [PrismaDataSource],
+  exports: [PrismaDataSource, BcryptHashService],
 })
 export class SharedModule {}
