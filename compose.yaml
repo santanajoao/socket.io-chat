@@ -9,6 +9,7 @@ services:
       - ./backend/.env
     environment:
       - API_PORT=${API_PORT}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
   frontend:
     build: ./frontend
     ports:
