@@ -4,7 +4,9 @@ import {
   CreateUserRepositoryDto,
   CreatedUserDto,
 } from '../dtos/create-user-dto';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class UserPrismaRepository implements UserRepository {
   constructor(private readonly prismaDataSource: PrismaDataSource) {}
 
