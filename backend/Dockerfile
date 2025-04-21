@@ -1,6 +1,8 @@
-FROM node:20.19-alpine3.21
+FROM node:20.19-slim
 
 WORKDIR /home/node/app
+
+RUN apt-get update && apt-get install -y openssl
 
 RUN npm i -g pnpm
 
@@ -9,5 +11,7 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
 COPY . .
+
+RUN pnpm prisma generate
 
 ENTRYPOINT [ "pnpm", "run", "start:dev" ]
