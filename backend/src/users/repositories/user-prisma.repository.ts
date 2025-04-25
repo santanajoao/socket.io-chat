@@ -5,6 +5,7 @@ import {
   CreatedUserDto,
 } from '../dtos/create-user-dto';
 import { Injectable } from '@nestjs/common';
+import { FindByEmailDto } from '../dtos/find-by-email-dto';
 
 @Injectable()
 export class UserPrismaRepository implements UserRepository {
@@ -38,5 +39,21 @@ export class UserPrismaRepository implements UserRepository {
     });
 
     return createdUser;
+  }
+
+  async findByEmail(email: string): Promise<FindByEmailDto | null> {
+    const user = await this.prismaDataSource.user.findUnique({
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        passwordHash: true,
+      },
+      where: {
+        email,
+      },
+    });
+
+    return user;
   }
 }
