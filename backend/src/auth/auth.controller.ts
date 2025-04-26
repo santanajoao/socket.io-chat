@@ -5,11 +5,13 @@ import { LoginDto } from './dtos/login-dto';
 import { Response as ExpressResponse } from 'express';
 import { COOKIE_DEFAULT_CONFIG } from './constants/cookies';
 import { TOKEN_MAX_AGE_MS } from './constants/jwt';
+import { Public } from './decorators/public-route.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('register')
   async register(@Body() body: RegisterDto) {
     const result = await this.authService.register(body);
@@ -17,6 +19,7 @@ export class AuthController {
     return result.data;
   }
 
+  @Public()
   @Post('login')
   async login(
     @Body() body: LoginDto,
