@@ -16,11 +16,11 @@ export class SocketIoJwtAdapter extends IoAdapter {
   }
 
   jwtMiddleware = (socket: Socket, next: NextFunction) => {
-    const cookieHeader = socket.handshake.headers.cookie ?? '';
-    const cookies = cookie.parse(cookieHeader);
-
-    const jwtToken = cookies[JWT_COOKIE_KEY];
     try {
+      const cookieHeader = socket.handshake.headers.cookie ?? '';
+      const cookies = cookie.parse(cookieHeader);
+
+      const jwtToken = cookies[JWT_COOKIE_KEY];
       this.jwtValidator.validate(jwtToken);
     } catch (error) {
       return next(error);
