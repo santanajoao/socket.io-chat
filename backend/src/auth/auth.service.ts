@@ -61,7 +61,9 @@ export class AuthService {
       username: user.username,
     };
 
-    const jwtToken = this.jsonWebTokenService.sign(userWithoutPassword);
+    const jwtToken = this.jsonWebTokenService.sign(userWithoutPassword, {
+      subject: user.id,
+    });
 
     return {
       data: userWithoutPassword,

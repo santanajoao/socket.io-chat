@@ -18,7 +18,10 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() body: LoginDto, @Response() res: ExpressResponse) {
+  async login(
+    @Body() body: LoginDto,
+    @Response({ passthrough: true }) res: ExpressResponse,
+  ) {
     const result = await this.authService.login(body);
 
     res.cookie('accessToken', result.metadata.jwtToken, {
