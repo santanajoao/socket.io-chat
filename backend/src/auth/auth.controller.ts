@@ -3,15 +3,13 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register-dto';
 import { LoginDto } from './dtos/login-dto';
 import { Response as ExpressResponse } from 'express';
-import { COOKIE_DEFAULT_CONFIG } from './constants/cookies';
+import { COOKIE_DEFAULT_CONFIG, JWT_COOKIE_KEY } from './constants/cookies';
 import { TOKEN_MAX_AGE_MS } from './constants/jwt';
-import { Public } from './decorators/public-route.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Public()
   @Post('register')
   async register(@Body() body: RegisterDto) {
     const result = await this.authService.register(body);
@@ -19,7 +17,6 @@ export class AuthController {
     return result.data;
   }
 
-  @Public()
   @Post('login')
   async login(
     @Body() body: LoginDto,
@@ -27,7 +24,7 @@ export class AuthController {
   ) {
     const result = await this.authService.login(body);
 
-    res.cookie('accessToken', result.metadata.jwtToken, {
+    res.cookie(JWT_COOKIE_KEY, result.metadata.jwtToken, {
       ...COOKIE_DEFAULT_CONFIG,
       maxAge: TOKEN_MAX_AGE_MS,
     });

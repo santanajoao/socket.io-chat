@@ -7,3 +7,5 @@ export const COOKIE_DEFAULT_CONFIG = {
   sameSite: 'strict',
   path: '/',
 } as const;
+
+export const JWT_COOKIE_KEY = 'accessToken';
