@@ -8,6 +8,13 @@ import { useForm } from "react-hook-form";
 import { loginSchema } from "../schemas/loginSchema";
 import { LoginFields } from "../types/login";
 import Link from "next/link";
+import { login } from "../api/backend";
+import { useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/modules/shared/components/ui/alert";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useLoading } from "@/modules/shared/hooks/useLoading";
+import { useRouter } from "next/navigation";
+import { ApiErrorResponse } from "@/modules/shared/types/backend";
 
 export function LoginPage() {
   const form = useForm<LoginFields>({
@@ -18,20 +25,42 @@ export function LoginPage() {
     },
   });
 
-  function onSubmit(data: LoginFields) {
-    console.log(data)
+  const router = useRouter();
+
+  const [apiError, setApiError] = useState<ApiErrorResponse | null>(null);
+  const [isLoading, handleLoading] = useLoading();
+
+  async function onSubmit(data: LoginFields) {
+    return handleLoading(async () => {
+      setApiError(null);
+
+      const response = await login(data);
+      if (response.error) {
+        return setApiError(response.error);
+      }
+
+      router.push('/');
+    });
   }
 
   return (
-    <div className="h-dvh w-full flex items-center justify-center">
+    <div className="h-dvh w-full flex items-center justify-center p-4">
       <main className="max-w-sm w-full">
         <div className="text-center">
           <span className="text-2xl font-bold">TeamCollab</span>
           <h1>Log in to continue</h1>
         </div>
 
+        {apiError && (
+          <Alert variant="destructive" className="mt-8">
+            <AlertCircle />
+            <AlertTitle>{apiError.statusText}</AlertTitle>
+            <AlertDescription>{apiError.message}</AlertDescription>
+          </Alert>
+        )}
+
         <Form {...form}>
-          <form className="mt-8 space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+          <form className="mt-4 space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
               name="email"
@@ -60,7 +89,10 @@ export function LoginPage() {
               )}
             />
 
-            <Button size="lg" className="w-full">Enter</Button>
+            <Button size="lg" className="w-full">
+              {isLoading && <Loader2 className="animate-spin" />}
+              Enter
+            </Button>
           </form>
 
           <p className="text-sm text-center mt-3">
