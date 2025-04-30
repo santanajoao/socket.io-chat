@@ -14,7 +14,9 @@ export class AuthController {
   async register(@Body() body: RegisterDto) {
     const result = await this.authService.register(body);
 
-    return result.data;
+    return {
+      data: result.data,
+    };
   }
 
   @Post('login')
@@ -29,6 +31,8 @@ export class AuthController {
       maxAge: TOKEN_MAX_AGE_MS,
     });
 
-    return result.data;
+    return {
+      data: result.data,
+    };
   }
 }
