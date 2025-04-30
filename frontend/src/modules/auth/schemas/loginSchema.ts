@@ -1,6 +1,7 @@
 import { z } from "zod";
+import { emailSchema, passwordSchema } from "./shared";
 
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  email: emailSchema,
+  password: passwordSchema,
 });
