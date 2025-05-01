@@ -7,6 +7,7 @@ import { HttpGlobalExceptionFilter } from './shared/exception-filters/global';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.useWebSocketAdapter(new SocketIoJwtAdapter(app));
   app.useGlobalFilters(new HttpGlobalExceptionFilter());
 
   app.enableCors({
@@ -15,7 +16,6 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
-  app.useWebSocketAdapter(new SocketIoJwtAdapter(app));
 
   await app.listen(process.env.API_PORT!);
 }
