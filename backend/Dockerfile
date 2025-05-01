@@ -14,4 +14,6 @@ COPY . .
 
 RUN pnpm prisma generate
 
+USER node
+
 ENTRYPOINT [ "pnpm", "run", "start:dev" ]
