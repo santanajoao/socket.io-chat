@@ -20,5 +20,60 @@ model User {
   username String
   passwordHash String @map("password_hash")
 
+  chats ChatUser[]
+
+  ownedGroups GroupChat[]
+
   @@map("users")
+}
+
+enum ChatType {
+  DIRECT
+  GROUP
+}
+
+model Chat {
+  id String @id @default(uuid())
+  type ChatType
+
+  chatUsers ChatUser[]
+  groupChat GroupChat?
+}
+
+enum GroupType {
+  GLOBAL
+  PRIVATE
+}
+
+model GroupChat {
+  id String @id @default(uuid())
+  title String
+  chatId String @unique() @map("chat_id")
+  groupType GroupType
+
+  createdAt DateTime @default(now()) @map("created_at")
+  creatorUserId String? @map("creator_user_id")
+
+  chat Chat @relation(fields: [chatId], references: [id])
+  creatorUser User? @relation(fields: [creatorUserId], references: [id])
+}
+
+model ChatUser {
+  id String @id @default(uuid())
+  chatId String @map("chat_id")
+  userId String @map("user_id")
+  joinDatetime DateTime @default(now()) @map("join_datetime")
+
+  chat Chat @relation(fields: [chatId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([chatId, userId])
+}
+
+model Message {
+  id String @id @default(uuid())
+  text String
+  chatId String @map("chat_id")
+  userId String @map("user_id")
+  sendDatetime DateTime @default(now()) @map("send_datetime")
 }
