@@ -6,7 +6,7 @@ import { Input } from "@/modules/shared/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { login, register } from "../api/backend";
+import { register } from "../api/backend";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/modules/shared/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
@@ -15,6 +15,8 @@ import { useRouter } from "next/navigation";
 import { ApiErrorResponse } from "@/modules/shared/types/backend";
 import { registerSchema } from "../schemas/registerSchema";
 import { RegisterFields } from "../types/register";
+import { PageContainer } from "@/modules/shared/components/containers/PageContainer";
+import { ROUTES } from "@/modules/shared/constants/routes";
 
 export function RegisterPage() {
   const form = useForm<RegisterFields>({
@@ -46,7 +48,7 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="h-dvh w-full flex items-center justify-center p-4">
+    <PageContainer>
       <main className="max-w-sm w-full">
         <div className="text-center">
           <span className="text-2xl font-bold">TeamCollab</span>
@@ -127,10 +129,10 @@ export function RegisterPage() {
 
           <p className="text-sm text-center mt-3">
             <span>Already have an account? </span>
-            <Link href="/login" className="font-medium">Login</Link>
+            <Link href={ROUTES.SIGNIN} className="font-medium">Login</Link>
           </p>
         </Form>
       </main>
-    </div>
+    </PageContainer>
   );
 }

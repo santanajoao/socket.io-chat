@@ -15,6 +15,8 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { useRouter } from "next/navigation";
 import { ApiErrorResponse } from "@/modules/shared/types/backend";
+import { PageContainer } from "@/modules/shared/components/containers/PageContainer";
+import { ROUTES } from "@/modules/shared/constants/routes";
 
 export function LoginPage() {
   const form = useForm<LoginFields>({
@@ -44,7 +46,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="h-dvh w-full flex items-center justify-center p-4">
+    <PageContainer>
       <main className="max-w-sm w-full">
         <div className="text-center">
           <span className="text-2xl font-bold">TeamCollab</span>
@@ -97,10 +99,10 @@ export function LoginPage() {
 
           <p className="text-sm text-center mt-3">
             <span>Don't have an account? </span>
-            <Link href="/register" className="font-medium">Create one</Link>
+            <Link href={ROUTES.SIGNUP} className="font-medium">Create one</Link>
           </p>
         </Form>
       </main>
-    </div>
+    </PageContainer>
   );
 }
