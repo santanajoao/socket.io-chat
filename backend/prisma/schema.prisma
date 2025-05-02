@@ -23,6 +23,7 @@ model User {
   chats ChatUser[]
   messages Message[]
   ownedGroups GroupChat[]
+  messageReads MessageRead[]
 
   @@map("users")
 }
@@ -36,8 +37,10 @@ model Chat {
   id String @id @default(uuid())
   type ChatType
 
+  createdAt DateTime @default(now()) @map("created_at")
+
   chatUsers ChatUser[]
-  groupChat GroupChat?
+  group GroupChat?
   messages Message[]
 
   @@map("chats")
@@ -52,41 +55,50 @@ model GroupChat {
   id String @id @default(uuid())
   title String
   chatId String @unique() @map("chat_id")
-  groupType GroupType
+  groupType GroupType @map("group_type")
 
-  createdAt DateTime @default(now()) @map("created_at")
-  creatorUserId String? @map("creator_user_id")
+  createdByUserId String? @map("created_by_user_id")
 
   chat Chat @relation(fields: [chatId], references: [id])
-  creatorUser User? @relation(fields: [creatorUserId], references: [id])
+  createdByUser User? @relation(fields: [createdByUserId], references: [id])
 
-   @@map("group_chats")
+  @@map("group_chats")
 }
 
 model ChatUser {
-  id String @id @default(uuid())
   chatId String @map("chat_id")
   userId String @map("user_id")
-  joinDatetime DateTime @default(now()) @map("join_datetime")
+  joinedAt DateTime @default(now()) @map("join_at")
 
   chat Chat @relation(fields: [chatId], references: [id])
   user User @relation(fields: [userId], references: [id])
 
-  @@unique([chatId, userId])
+  @@id([chatId, userId])
   @@map("chat_users")
 }
 
 model Message {
   id String @id @default(uuid())
-  text String
+  content String
   chatId String @map("chat_id")
   userId String @map("user_id")
-  sendDatetime DateTime @default(now()) @map("send_datetime")
-
-  isRead Boolean @default(false)
+  sentAt DateTime @default(now()) @map("sent_at")
 
   chat Chat @relation(fields: [chatId], references: [id])
   user User @relation(fields: [userId], references: [id])
+  messageReads MessageRead[]
 
   @@map("messages")
+}
+
+model MessageRead {
+  messageId String @map("message_id")
+  userId String @map("user_id")
+  readAt DateTime @map("read_at")
+
+  message Message @relation(fields: [messageId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([messageId, userId])
+  @@map("message_reads")
 }

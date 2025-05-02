@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ChatPrismaRepository } from './repositories/chat-prisma.repository';
 import { GetUserPaginatedChatListServiceParams } from './dtos/get-user-paginated-chat-list';
 import { GetAllUserChatIdsParams } from './dtos/get-all-user-chat-ids';
+import { ChatType } from 'generated/prisma';
 
 @Injectable()
 export class ChatsService {
@@ -23,15 +24,34 @@ export class ChatsService {
     });
 
     const requestedChats = result.chats.slice(0, limit);
-    const hasMore = result.chats.length === limit + 1;
+    const formattedChats = requestedChats.map(
+      ({ messages, _count, chatUsers, ...chat }) => {
+        const lastMessage = messages[0];
 
+        const targetChatUser = chatUsers.find(
+          (chatUser) => chatUser.user.id !== userId,
+        );
+
+        const targetUser =
+          chat.type === ChatType.DIRECT ? targetChatUser?.user : undefined;
+
+        return {
+          ...chat,
+          unreadMessagesCount: _count.messages,
+          lastMessage: lastMessage,
+          targetUser,
+        };
+      },
+    );
+
+    const hasMore = result.chats.length === limit + 1;
     const lastChat = result.chats.at(-1);
     const nextCursor = hasMore ? lastChat?.id : undefined;
 
     return {
       data: {
         ...result,
-        chats: requestedChats,
+        chats: formattedChats,
         next: nextCursor,
       },
     };

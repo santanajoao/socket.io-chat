@@ -1,3 +1,5 @@
+import { ChatType, GroupType } from 'generated/prisma';
+
 export class GetUserPaginatedChatListRepositoryParams {
   userId: string;
   cursor?: string;
@@ -10,12 +12,35 @@ export class GetUserPaginatedChatListServiceParams {
   pageSize: number;
 }
 
-class Chat {
+class ChatData {
   id: string;
-  type: string;
+  type: ChatType;
+  chatUsers: {
+    user: {
+      id: string;
+      username: string;
+    };
+  }[];
+  group: {
+    id: string;
+    title: string;
+    groupType: GroupType;
+  } | null;
+  messages: {
+    id: string;
+    content: string;
+    sentAt: Date;
+    user: {
+      id: string;
+      username: string;
+    };
+  }[];
+  _count: {
+    messages: number;
+  };
 }
 
 export class GetUserPaginatedChatListResponse {
-  chats: Chat[];
+  chats: ChatData[];
   total: number;
 }

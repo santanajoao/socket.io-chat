@@ -15,7 +15,7 @@ export class ChatPrismaQueryBuilder {
           },
         },
         {
-          groupChat: {
+          group: {
             groupType: GroupType.GLOBAL,
           },
         },

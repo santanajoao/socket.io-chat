@@ -43,15 +43,43 @@ export class ChatPrismaRepository implements ChatRepository {
         select: {
           id: true,
           type: true,
-
-          groupChat: {
+          messages: {
+            select: {
+              id: true,
+              content: true,
+              sentAt: true,
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                },
+              },
+            },
+            orderBy: {
+              sentAt: 'desc',
+            },
+            take: 1,
+          },
+          _count: {
+            select: {
+              messages: {
+                where: {
+                  messageReads: {
+                    none: {
+                      userId,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          group: {
             select: {
               id: true,
               groupType: true,
               title: true,
             },
           },
-
           chatUsers: {
             select: {
               user: {
@@ -64,23 +92,16 @@ export class ChatPrismaRepository implements ChatRepository {
             take: 2,
           },
         },
-
         where: {
           ...this.chatPrismaQueryBuilder.userChatsWhere({ userId }),
         },
-
         orderBy: {
           id: 'asc',
         },
-
-        cursor: ['', undefined].includes(cursor)
-          ? undefined
-          : {
-              id: cursor,
-            },
-
+        cursor: cursor !== undefined ? { id: cursor } : undefined,
         take: limit,
       }),
+
       this.prismaDataSource.chat.count({
         where: {
           ...this.chatPrismaQueryBuilder.userChatsWhere({ userId }),
