@@ -1,24 +1,13 @@
 import { Global, Module } from '@nestjs/common';
 import { PrismaDataSource } from './datasources/prisma.datasource';
 import { BcryptHashService } from './hashing/bcrypt-hash.service';
-import { JsonWebTokenService } from './jwt/jsonwebtoken.service';
-import { JwtValidator } from './jwt/jwt.validator';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Global()
 @Module({
-  imports: [],
-  providers: [
-    PrismaDataSource,
-    BcryptHashService,
-    JsonWebTokenService,
-    JwtValidator,
-  ],
+  imports: [AuthModule],
+  providers: [PrismaDataSource, BcryptHashService],
   controllers: [],
-  exports: [
-    PrismaDataSource,
-    BcryptHashService,
-    JsonWebTokenService,
-    JwtValidator,
-  ],
+  exports: [PrismaDataSource, BcryptHashService, AuthModule],
 })
 export class SharedModule {}

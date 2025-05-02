@@ -4,7 +4,7 @@ import {
   JwtPayload,
   JwtServiceInterface,
   VerifyResponse,
-} from './jwt-service.interface';
+} from './interfaces/jwt-service.interface';
 import * as jsonwebtoken from 'jsonwebtoken';
 import { JWT_DEFAULT_CONFIG } from 'src/auth/constants/jwt';
 
@@ -13,7 +13,7 @@ export class JsonWebTokenService implements JwtServiceInterface {
   sign<T extends JwtPayload>(payload: T, config?: JwtConfig): string {
     const token = jsonwebtoken.sign(payload, process.env.JWT_SECRET!, {
       ...JWT_DEFAULT_CONFIG,
-      subject: config?.subject,
+      ...config,
     });
 
     return token;

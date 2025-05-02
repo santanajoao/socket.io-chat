@@ -21,7 +21,7 @@ model User {
   passwordHash String @map("password_hash")
 
   chats ChatUser[]
-
+  messages Message[]
   ownedGroups GroupChat[]
 
   @@map("users")
@@ -38,6 +38,9 @@ model Chat {
 
   chatUsers ChatUser[]
   groupChat GroupChat?
+  messages Message[]
+
+  @@map("chats")
 }
 
 enum GroupType {
@@ -56,6 +59,8 @@ model GroupChat {
 
   chat Chat @relation(fields: [chatId], references: [id])
   creatorUser User? @relation(fields: [creatorUserId], references: [id])
+
+   @@map("group_chats")
 }
 
 model ChatUser {
@@ -68,6 +73,7 @@ model ChatUser {
   user User @relation(fields: [userId], references: [id])
 
   @@unique([chatId, userId])
+  @@map("chat_users")
 }
 
 model Message {
@@ -76,4 +82,11 @@ model Message {
   chatId String @map("chat_id")
   userId String @map("user_id")
   sendDatetime DateTime @default(now()) @map("send_datetime")
+
+  isRead Boolean @default(false)
+
+  chat Chat @relation(fields: [chatId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("messages")
 }

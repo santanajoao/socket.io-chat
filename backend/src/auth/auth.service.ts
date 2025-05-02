@@ -7,7 +7,7 @@ import { RegisterDto } from './dtos/register-dto';
 import { UserPrismaRepository } from 'src/users/repositories/user-prisma.repository';
 import { BcryptHashService } from 'src/shared/hashing/bcrypt-hash.service';
 import { LoginDto } from './dtos/login-dto';
-import { JsonWebTokenService } from 'src/shared/jwt/jsonwebtoken.service';
+import { JsonWebTokenService } from './jsonwebtoken.service';
 
 @Injectable()
 export class AuthService {

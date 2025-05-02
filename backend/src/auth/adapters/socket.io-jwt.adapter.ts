@@ -3,8 +3,8 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 import { Server, ServerOptions } from 'socket.io';
 import * as cookie from 'cookie';
 import { JWT_COOKIE_KEY } from '../constants/cookies';
-import { JwtValidator } from '../../shared/jwt/jwt.validator';
-import { AuthenticatedSocketRequest } from 'src/shared/jwt/jwt.interfaces';
+import { JwtValidator } from '../jwt.validator';
+import { AuthenticatedSocketRequest } from '../interfaces/jwt.interfaces';
 
 @Injectable()
 export class SocketIoJwtAdapter extends IoAdapter {
@@ -25,7 +25,6 @@ export class SocketIoJwtAdapter extends IoAdapter {
 
       const jwtToken = cookies[JWT_COOKIE_KEY];
       const data = this.jwtValidator.validate(jwtToken);
-
       req.user = data;
 
       return callback(null, true);

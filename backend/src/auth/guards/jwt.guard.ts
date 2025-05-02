@@ -1,9 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { AuthenticatedExpressRequest } from './jwt.interfaces';
-import { IS_PUBLIC_KEY } from '../../auth/constants/decorators';
+import { AuthenticatedExpressRequest } from '../interfaces/jwt.interfaces';
+import { IS_PUBLIC_KEY } from '../constants/decorators';
 import { Reflector } from '@nestjs/core';
-import { JWT_COOKIE_KEY } from '../../auth/constants/cookies';
-import { JwtValidator } from './jwt.validator';
+import { JWT_COOKIE_KEY } from '../constants/cookies';
+import { JwtValidator } from '../jwt.validator';
 
 @Injectable()
 export class JwtGuard implements CanActivate {

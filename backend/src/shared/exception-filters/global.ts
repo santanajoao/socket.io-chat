@@ -7,9 +7,11 @@ import {
 import { Response as ExpressResponse } from 'express';
 import { STATUS_CODES } from 'node:http';
 
-@Catch()
+@Catch(Error)
 export class HttpGlobalExceptionFilter implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost) {
+    console.error(exception);
+
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<ExpressResponse>();
 
