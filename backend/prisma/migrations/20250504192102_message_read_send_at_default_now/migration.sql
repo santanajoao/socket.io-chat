@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "message_reads" ALTER COLUMN "read_at" SET DEFAULT CURRENT_TIMESTAMP;

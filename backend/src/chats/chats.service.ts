@@ -3,10 +3,16 @@ import { ChatPrismaRepository } from './repositories/chat-prisma.repository';
 import { GetUserPaginatedChatListServiceParams } from './dtos/get-user-paginated-chat-list';
 import { GetAllUserChatIdsParams } from './dtos/get-all-user-chat-ids';
 import { ChatType } from 'generated/prisma';
+import { MessagePrismaRepository } from 'src/messages/repositories/message-prisma.repository';
+import { MessageReadPrismaRepository } from 'src/message-reads/repositories/message-read-prisma.repository';
 
 @Injectable()
 export class ChatsService {
-  constructor(private readonly chatPrismaRepository: ChatPrismaRepository) {}
+  constructor(
+    private readonly chatPrismaRepository: ChatPrismaRepository,
+    private readonly messagePrismaRepository: MessagePrismaRepository,
+    private readonly messageReadPrismaRepository: MessageReadPrismaRepository,
+  ) {}
 
   async getAllUserChatIds({ userId }: GetAllUserChatIdsParams) {
     return this.chatPrismaRepository.getAllUserChatIds({ userId });
@@ -15,15 +21,15 @@ export class ChatsService {
   async getUserPaginatedChatList({
     userId,
     cursor,
-    pageSize: limit,
+    pageSize,
   }: GetUserPaginatedChatListServiceParams) {
     const result = await this.chatPrismaRepository.getUserPaginatedChatList({
       userId,
       cursor,
-      limit: limit + 1,
+      limit: pageSize + 1,
     });
 
-    const requestedChats = result.chats.slice(0, limit);
+    const requestedChats = result.chats.slice(0, pageSize);
     const formattedChats = requestedChats.map(
       ({ messages, _count, chatUsers, ...chat }) => {
         const lastMessage = messages[0];
@@ -44,7 +50,7 @@ export class ChatsService {
       },
     );
 
-    const hasMore = result.chats.length === limit + 1;
+    const hasMore = result.chats.length === pageSize + 1;
     const lastChat = result.chats.at(-1);
     const nextCursor = hasMore ? lastChat?.id : undefined;
 
@@ -53,6 +59,33 @@ export class ChatsService {
         ...result,
         chats: formattedChats,
         next: nextCursor,
+      },
+    };
+  }
+
+  async markMessagesAsRead({
+    chatId,
+    userId,
+  }: {
+    chatId: string;
+    userId: string;
+  }) {
+    const chatMessagesToRead =
+      await this.messagePrismaRepository.getUnreadMessageIdsByChat({
+        chatId,
+        userId,
+      });
+
+    const messageReadsToCreate = chatMessagesToRead.map((message) => ({
+      messageId: message.id,
+      userId,
+    }));
+
+    await this.messageReadPrismaRepository.create(messageReadsToCreate);
+
+    return {
+      data: {
+        message: 'Success',
       },
     };
   }

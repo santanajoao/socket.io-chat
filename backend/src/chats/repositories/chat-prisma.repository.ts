@@ -64,6 +64,11 @@ export class ChatPrismaRepository implements ChatRepository {
             select: {
               messages: {
                 where: {
+                  userId: {
+                    not: {
+                      equals: userId,
+                    },
+                  },
                   messageReads: {
                     none: {
                       userId,
