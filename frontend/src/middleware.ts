@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { PUBLIC_ROUTE_LIST, ROUTES } from './modules/shared/constants/routes';
- 
+
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const jwtToken = request.cookies.get('accessToken');
@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
   if (isPublicRoute && jwtToken) {
     return NextResponse.redirect(new URL(ROUTES.CHATS, request.url));
   }
-
+  
   if (!isPublicRoute && !jwtToken) {
     return NextResponse.redirect(new URL(ROUTES.SIGNIN, request.url));
   }

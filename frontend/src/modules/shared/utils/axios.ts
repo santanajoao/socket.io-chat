@@ -10,6 +10,8 @@ export async function treatAxiosRequest<T>(callback: () => Promise<AxiosResponse
     const defaultErrorResponse: BackendErrorResponse = {
       error: {
         message: 'Sorry, something went wrong! Try again or reload the page.',
+        status: 500,
+        statusText: 'Internal Server Error',
       },
     };
 

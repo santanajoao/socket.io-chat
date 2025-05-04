@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import { loginSchema } from "../schemas/loginSchema";
 import { LoginFields } from "../types/login";
 import Link from "next/link";
-import { login } from "../api/backend";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/modules/shared/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
@@ -17,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { ApiErrorResponse } from "@/modules/shared/types/backend";
 import { PageContainer } from "@/modules/shared/components/containers/PageContainer";
 import { ROUTES } from "@/modules/shared/constants/routes";
+import { useAuthContext } from "../contexts/authContext";
 
 export function LoginPage() {
   const form = useForm<LoginFields>({
@@ -28,21 +28,16 @@ export function LoginPage() {
   });
 
   const router = useRouter();
+  const authContext = useAuthContext();
 
   const [apiError, setApiError] = useState<ApiErrorResponse | null>(null);
-  const [isLoading, handleLoading] = useLoading();
 
   async function onSubmit(data: LoginFields) {
-    return handleLoading(async () => {
-      setApiError(null);
-
-      const response = await login(data);
-      if (response.error) {
-        return setApiError(response.error);
-      }
-
-      router.push('/');
-    });
+    const response = await authContext.login(data);
+    if (response.error) {
+      return setApiError(response.error);
+    }
+    return router.push('/');
   }
 
   return (
@@ -92,7 +87,7 @@ export function LoginPage() {
             />
 
             <Button size="lg" className="w-full">
-              {isLoading && <Loader2 className="animate-spin" />}
+              {authContext.isLoading && <Loader2 className="animate-spin" />}
               Enter
             </Button>
           </form>
