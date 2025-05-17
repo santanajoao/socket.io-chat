@@ -7,6 +7,8 @@ import { Textarea } from "@/modules/shared/components/ui/textarea";
 import { DateFormatter } from "@/modules/shared/utils/formatters/dates";
 import { useChatMessagesState } from "../states/useChatMessagesState";
 import { FormEvent } from "react";
+import { ChatMessage } from "../types/chatMessages";
+import debounce from 'lodash.debounce';
 
 export function ChatMessages() {
   const {
@@ -17,6 +19,7 @@ export function ChatMessages() {
     selectedChatMessages,
     messageSubmitIsDisabled,
     handleSendMessage,
+    loggedUser,
   } = useChatMessagesState();
 
   function handleMessageSubmit(event: FormEvent<HTMLFormElement>) {
@@ -29,20 +32,29 @@ export function ChatMessages() {
     setMessageContent(event.target.value);
   }
 
+  function renderMessageUsername(message: ChatMessage) {
+    return loggedUser?.id === message.user.id ? 'You' : message.user.username;
+  }
+
   return (
     <div className="max-w-2/3 p-2 border flex flex-col flex-1 gap-2">
       {selectedChatId && (
         <>
-          <div className="flex-1 flex flex-col gap-2 overflow-y-scroll overflow-x-hidden">
+          <div className="flex-1 flex flex-col gap-2 overflow-y-scroll overflow-x-hidden pr-2">
             {messagesAreLoading ? (
               <div>Loading messages...</div>
             ) : (
               selectedChatMessages.map((message) => (
                 <div
-                  className={cn("flex flex-col text-sm bg-accent py-1 px-2 rounded-md min-w-3xs w-fit max-w-xs break-words whitespace-pre-wrap")}
+                  className={cn(
+                    "flex flex-col text-sm bg-accent py-1 px-2 rounded-md min-w-3xs w-fit max-w-xs break-words whitespace-pre-wrap",
+                    { "self-end": loggedUser?.id === message.user.id },
+                  )}
                   key={message.id}
                 >
-                  <div className="font-medium">{message.user.username}</div>
+                  <div className="font-medium">
+                    {renderMessageUsername(message)}
+                  </div>
                   <div>{message.content}</div>
                   <div className="text-xs  text-end">
                     {DateFormatter.formatBrazilianDateTime(message.sentAt)}

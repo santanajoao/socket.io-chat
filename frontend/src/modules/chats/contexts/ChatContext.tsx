@@ -1,9 +1,11 @@
 'use client';
 
-import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useState } from "react";
+import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useEffect, useState } from "react";
 import { ChatMessage } from "../types/chatMessages";
 import { useLoading, UseLoadingHandle } from "@/modules/shared/hooks/useLoading";
 import { UserChat } from "@/modules/users/types/user-chats";
+import { chatSocket } from "../socket/backend";
+import { UserInvite } from "@/modules/invites/types/user-invites";
 
 type MessagesMap = Record<string, ChatMessage[]>
 type SelectedChaId = string | null;
@@ -22,6 +24,9 @@ type ContextValues = {
   setChats: Dispatch<SetStateAction<UserChat[]>>;
 
   selectedChatMessages: ChatMessage[];
+
+  invites: UserInvite[];
+  setInvites: Dispatch<SetStateAction<UserInvite[]>>;
 };
 
 export const ChatContext = createContext<ContextValues | null>(null);
@@ -32,11 +37,21 @@ export function ChatProvider({ children }: ChatProviderProps) {
   const [messages, setMessages] = useState<MessagesMap>({});
   const [messagesAreLoading, handleMessagesLoading] = useLoading();
 
+  const [invites, setInvites] = useState<UserInvite[]>([]);
+
   const [chats, setChats] = useState<UserChat[]>([]);
 
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
   const selectedChatMessages = selectedChatId ? messages[selectedChatId] ?? [] : [];
+
+  useEffect(() => {
+    chatSocket.connect();
+
+    return () => {
+      chatSocket.disconnect();
+    }
+  }, []);
 
   const values: ContextValues = {
     selectedChatId,
@@ -48,6 +63,8 @@ export function ChatProvider({ children }: ChatProviderProps) {
     setChats,
     chats,
     selectedChatMessages,
+    invites,
+    setInvites,
   };
 
   return (

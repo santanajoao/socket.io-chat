@@ -1,17 +1,10 @@
-'use client';
-
 import { PageContainer } from "@/modules/shared/components/containers/PageContainer";
 import { ChatList } from "../components/ChatList";
 import { ChatMessages } from "../components/ChatMessages";
+import { ChatProvider } from "../contexts/ChatContext";
 
 // loading skeletton nos chats
 // loading skelleton nas mensagens
-
-// caso já estiver com o chat aberto, cada mensagem que chegar tem que ser marcada como lida
-
-// auth context
-// se eu mandei a mensagem renderizar no lado certo
-// se eu mandei a mensagem mostrar "eu" ao invés do username
 
 // scroll deve iniciar em baixo
 // ao receber mensagem o scroll deve ir para baixo
@@ -22,12 +15,14 @@ import { ChatMessages } from "../components/ChatMessages";
 
 export function ChatsPage() {
   return (
-    <PageContainer>
-      <div className="flex flex-1 w-full gap-0.5 overflow-hidden">
-        <ChatList />
+    <ChatProvider>
+      <PageContainer>
+        <div className="flex flex-1 w-full gap-0.5 overflow-hidden">
+          <ChatList />
 
-        <ChatMessages />
-      </div>
-    </PageContainer>
+          <ChatMessages />
+        </div>
+      </PageContainer>
+    </ChatProvider>
   );
 }

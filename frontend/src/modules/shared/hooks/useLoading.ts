@@ -2,8 +2,8 @@ import { useState } from "react";
 
 export type UseLoadingHandle = <T>(callback: () => Promise<T>) => Promise<T>;
 
-export function useLoading() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+export function useLoading(initialValue: boolean = false) {
+  const [isLoading, setIsLoading] = useState<boolean>(initialValue);
 
   const handleLoading: UseLoadingHandle = async (callback) => {
     setIsLoading(true);

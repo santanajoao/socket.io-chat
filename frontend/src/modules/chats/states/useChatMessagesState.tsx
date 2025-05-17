@@ -1,12 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useChatContext } from "../contexts/ChatContext";
 import { chatSocket } from "../socket/backend";
 import { ChatMessage } from "../types/chatMessages";
+import { useAuthContext } from "@/modules/auth/contexts/authContext";
+import { backendUserApi } from "@/modules/users/apis/backend";
+import debounce from "lodash.debounce";
 
 export function useChatMessagesState() {
   const { selectedChatId, messagesAreLoading, setMessages, setChats, selectedChatMessages } = useChatContext();
+
+  const authContext = useAuthContext();
 
   const [messageContent, setMessageContent] = useState<string>('');
 
@@ -54,16 +59,32 @@ export function useChatMessagesState() {
     });
   }, [selectedChatId]);
 
+  const handleMarkAsRead = useCallback(async (chatId: string, message: ChatMessage) => {
+    const chatIsOpen = chatId === selectedChatId;
+    const messageIsNotMine = message.user.id !== authContext.user?.id;
+    const shouldMarkAsRead = chatIsOpen && messageIsNotMine;
+    if (shouldMarkAsRead) {
+      await backendUserApi.markChatMessagesAsRead(chatId);
+    }
+  }, [selectedChatId, authContext.user]);
+
+  const debouncedMarkAsRead = useMemo(() => {
+    return debounce(handleMarkAsRead, 700);
+  }, [handleMarkAsRead]);
+
   useEffect(() => {
     function handleMessageReceive({ chatId, message }: { chatId: string, message: ChatMessage }) {
       updateChatLastMessage(chatId, message);
       addNewMessage(chatId, message);
+      debouncedMarkAsRead(chatId, message);
     }
 
     chatSocket.on('message:receive', handleMessageReceive);
 
     return () => {
       chatSocket.off('message:receive', handleMessageReceive);
+
+      debouncedMarkAsRead.flush();
     }
   }, [updateChatLastMessage, addNewMessage]);
 
@@ -75,5 +96,6 @@ export function useChatMessagesState() {
     messageSubmitIsDisabled,
     setMessageContent,
     handleSendMessage,
+    loggedUser: authContext.user,
   };
 }

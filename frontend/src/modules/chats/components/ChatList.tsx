@@ -6,12 +6,17 @@ import { cn } from "@/modules/shared/lib/utils";
 import { Badge } from "@/modules/shared/components/ui/badge";
 import { DateFormatter } from "@/modules/shared/utils/formatters/dates";
 import { useChatListStates } from "../states/useChatListStates";
+import { BellIcon, CirclePlusIcon } from "lucide-react";
+import { StartNewChatModal } from "./StartNewChatModal";
+import { useEffect } from "react";
+import { chatSocket } from "../socket/backend";
+import { InvitesPopover } from "./InvitesPopover";
 
 export function ChatList() {
-  const { chatsAreLoading, chats, selectedChatId, selectChat } = useChatListStates();
+  const { chatsAreLoading, chats, selectedChatId, selectChat, loggedUser } = useChatListStates();
 
   function formatChatName(chat: UserChat) {
-    return chat.group.title || chat.targetUser.username;
+    return chat.group?.title || chat.targetUser?.username;
   }
 
   function formatChatInitial(chat: UserChat) {
@@ -32,6 +37,30 @@ export function ChatList() {
 
   return (
     <div className="max-w-1/3 p-2 flex-1 flex flex-col gap-1 border">
+      <div className="flex gap-2 justify-between items-center mb-3 border px-4 py-2">
+        <div className="flex items-center gap-2">
+          <Badge className="rounded-full font-semibold text-sm size-10 shrink-0">
+            {loggedUser?.username[0].toUpperCase()}
+          </Badge>
+
+          <span className="font-medium">{loggedUser?.username}</span>
+        </div>
+
+        <div className="flex items-center gap-[inherit]">
+          <InvitesPopover asChild>
+            <Button variant="outline" size="icon-sm">
+              <BellIcon />
+            </Button>
+          </InvitesPopover>
+
+          <StartNewChatModal trigger asChild>
+            <Button variant="outline" size="icon-sm">
+              <CirclePlusIcon />
+            </Button>
+          </StartNewChatModal>
+        </div>
+      </div>
+
       {chatsAreLoading ? (
         <div>Loading...</div>
       ) : (
@@ -44,7 +73,7 @@ export function ChatList() {
                 onClick={() => selectChat(chat.id)}
                 aria-label={`Open chat ${formatChatName(chat)}`}
               >
-                <Badge className="rounded-full font-medium w-10 h-10 shrink-0">
+                <Badge variant="outline" className="rounded-full font-medium size-10 shrink-0">
                   {formatChatInitial(chat)}
                 </Badge>
 

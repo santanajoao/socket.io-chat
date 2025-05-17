@@ -15,7 +15,12 @@ async function register(data: RegisterFields) {
   return treatAxiosRequest<RegisterResponse>(() => authClient.post('/register', data));
 }
 
+async function getUser() {
+  return treatAxiosRequest<LoginResponse>(() => authClient.get('/user'));
+}
+
 export const backendAuthApi = {
   login,
   register,
+  getUser,
 };

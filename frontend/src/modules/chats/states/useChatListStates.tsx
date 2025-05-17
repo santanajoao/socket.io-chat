@@ -6,6 +6,7 @@ import { backendUserApi } from "@/modules/users/apis/backend";
 import { backendChatApi } from "../apis/backend";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { useChatContext } from "../contexts/ChatContext";
+import { useAuthContext } from "@/modules/auth/contexts/authContext";
 
 export function useChatListStates() {
   const {
@@ -16,8 +17,9 @@ export function useChatListStates() {
     setSelectedChatId,
     chats,
     setChats,
-    selectedChatMessages,
   } = useChatContext();
+
+  const authContext = useAuthContext();
 
   const [chatsAreLoading, handleChatLoading] = useLoading();
 
@@ -46,7 +48,7 @@ export function useChatListStates() {
             unreadMessagesCount: 0,
           };
         }
-        
+
         return chat;
       });
     })
@@ -65,7 +67,7 @@ export function useChatListStates() {
     }
 
     const messagesNotFetched = !messages[chatId];
-    if (messagesNotFetched)  {
+    if (messagesNotFetched) {
       fetchChatMessages(chatId);
     };
   }
@@ -84,22 +86,17 @@ export function useChatListStates() {
 
   async function initialize() {
     await fetchUserChats();
-
-    chatSocket.connect();
   }
 
   useEffect(() => {
     initialize();
-
-    return () => {
-      chatSocket.disconnect();
-    }
-  }, []);
+  }, [])
 
   return {
     chatsAreLoading,
     chats,
     selectedChatId,
-    selectChat
+    selectChat,
+    loggedUser: authContext.user,
   }
 }

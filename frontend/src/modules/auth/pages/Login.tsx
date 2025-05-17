@@ -19,7 +19,7 @@ import { ROUTES } from "@/modules/shared/constants/routes";
 import { useAuthContext } from "../contexts/authContext";
 
 export function LoginPage() {
-  const form = useForm<LoginFields>({
+  const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
@@ -31,13 +31,16 @@ export function LoginPage() {
   const authContext = useAuthContext();
 
   const [apiError, setApiError] = useState<ApiErrorResponse | null>(null);
+  const [isLoading, handleLoading] = useLoading();
 
   async function onSubmit(data: LoginFields) {
-    const response = await authContext.login(data);
-    if (response.error) {
-      return setApiError(response.error);
-    }
-    return router.push('/');
+    return handleLoading(async () => {
+      const response = await authContext.login(data);
+      if (response.error) {
+        return setApiError(response.error);
+      }
+      return router.push('/');
+    })
   }
 
   return (
@@ -87,7 +90,7 @@ export function LoginPage() {
             />
 
             <Button size="lg" className="w-full">
-              {authContext.isLoading && <Loader2 className="animate-spin" />}
+              {isLoading && <Loader2 className="animate-spin" />}
               Enter
             </Button>
           </form>
