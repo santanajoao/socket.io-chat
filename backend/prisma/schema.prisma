@@ -25,6 +25,9 @@ model User {
   ownedGroups GroupChat[]
   messageReads MessageRead[]
 
+  createdInvites ChatInvite[] @relation(name: "senderUser")
+  receivedInvites ChatInvite[] @relation(name: "receiverUser")
+  
   @@map("users")
 }
 
@@ -42,6 +45,7 @@ model Chat {
   chatUsers ChatUser[]
   group GroupChat?
   messages Message[]
+  chatInvites ChatInvite[]
 
   @@map("chats")
 }
@@ -101,4 +105,22 @@ model MessageRead {
 
   @@id([messageId, userId])
   @@map("message_reads")
+}
+
+model ChatInvite {
+  id String @id @default(uuid())
+  senderUserId String @map("sender_user_id")
+  receiverUserId String @map("receiver_user_id")
+  chatId String @map("chat_id")
+  accepted Boolean?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  acceptedAt DateTime?
+
+  senderUser User @relation(fields: [senderUserId], references: [id], name: "senderUser")
+  receiverUser User @relation(fields: [receiverUserId], references: [id], name: "receiverUser")
+
+  chat Chat @relation(fields: [chatId], references: [id])
+
+  @@map("chat_invites")
 }

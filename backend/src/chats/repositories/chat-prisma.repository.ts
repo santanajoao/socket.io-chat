@@ -10,13 +10,25 @@ import {
   GetUserPaginatedChatListResponse,
 } from '../dtos/get-user-paginated-chat-list';
 import { ChatPrismaQueryBuilder } from './chat-prisma.query-builder';
+import {
+  CreateChatRepositoryParams,
+  CreateChatRepositoryResponse,
+} from '../dtos/create-chat';
+import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
+import { GetDirectChatByUserIdsParams } from '../interfaces/get-chat-by-type-and-users';
+import { ChatType } from 'generated/prisma';
 
 @Injectable()
-export class ChatPrismaRepository implements ChatRepository {
+export class ChatPrismaRepository
+  extends PrismaRepository
+  implements ChatRepository
+{
   constructor(
-    private readonly prismaDataSource: PrismaDataSource,
+    prismaDataSource: PrismaDataSource,
     private readonly chatPrismaQueryBuilder: ChatPrismaQueryBuilder,
-  ) {}
+  ) {
+    super(prismaDataSource);
+  }
 
   async getAllUserChatIds({
     userId,
@@ -115,5 +127,42 @@ export class ChatPrismaRepository implements ChatRepository {
     ]);
 
     return { chats, total };
+  }
+
+  async createChat(
+    param: CreateChatRepositoryParams,
+  ): Promise<CreateChatRepositoryResponse> {
+    const data = await this.prismaDataSource.chat.create({
+      select: {
+        id: true,
+      },
+      data: {
+        type: param.type,
+      },
+    });
+
+    return data;
+  }
+
+  async getDirectChatByUserIds(
+    params: GetDirectChatByUserIdsParams,
+  ): Promise<unknown> {
+    const data = await this.prismaDataSource.chat.findFirst({
+      select: {
+        id: true,
+      },
+      where: {
+        type: ChatType.DIRECT,
+        chatUsers: {
+          every: {
+            userId: {
+              in: [params.firstUserId, params.secondUserId],
+            },
+          },
+        },
+      },
+    });
+
+    return data;
   }
 }

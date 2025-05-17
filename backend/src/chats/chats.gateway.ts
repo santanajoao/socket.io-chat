@@ -10,11 +10,18 @@ import { AuthenticatedSocket } from 'src/auth/interfaces/jwt.interfaces';
 import { ChatsService } from './chats.service';
 import { MessagesService } from 'src/messages/messages.service';
 import { Namespace } from 'socket.io';
+import { OnEvent } from '@nestjs/event-emitter';
+import { CHAT_NAMESPACE } from './constants/namespaces';
+import { CHAT_EVENTS } from './constants/events';
+import { OnDirectChatCreationBody } from './dtos/create-chat';
+import { OnInviteResponseBody } from 'src/invites/dto/respond-invite';
 
-@WebSocketGateway({ namespace: '/chats', cors: FRONTEND_CORS })
+// criar tipos para payloads
+
+@WebSocketGateway({ namespace: CHAT_NAMESPACE, cors: FRONTEND_CORS })
 export class ChatsGateway {
   @WebSocketServer()
-  server: Namespace;
+  namespace: Namespace;
 
   constructor(
     private readonly chatsService: ChatsService,
@@ -23,6 +30,8 @@ export class ChatsGateway {
 
   async handleConnection(socket: AuthenticatedSocket) {
     const userId = socket.request.user.id;
+    await socket.join(userId);
+
     const chats = await this.chatsService.getAllUserChatIds({ userId });
     if (chats.length > 0) {
       const chatIdList = chats.map((chat) => chat.id);
@@ -41,9 +50,21 @@ export class ChatsGateway {
       content: payload.content,
     });
 
-    this.server.to(payload.chatId).emit('message:receive', {
+    this.namespace.to(payload.chatId).emit('message:receive', {
       chatId: payload.chatId,
       message: result.data,
     });
+  }
+
+  @OnEvent(CHAT_EVENTS.CREATED_DIRECT_CHAT)
+  onDirectChatCreation(body: OnDirectChatCreationBody) {
+    this.namespace.to(body.receiverUser.id).emit('chat:invite', body.invite);
+  }
+
+  @OnEvent(CHAT_EVENTS.INVITE_RESPONSE)
+  onInviteResponse(body: OnInviteResponseBody) {
+    this.namespace
+      .to(body.senderUserId)
+      .emit(CHAT_EVENTS.INVITE_RESPONSE, body);
   }
 }

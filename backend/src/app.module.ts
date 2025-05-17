@@ -6,7 +6,8 @@ import { ChatsModule } from './chats/chats.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './auth/guards/jwt.guard';
 import { MessagesModule } from './messages/messages.module';
-import { MessageReadsModule } from './message-reads/message-reads.module';
+import { InvitesModule } from './invites/invites.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { MessageReadsModule } from './message-reads/message-reads.module';
     SharedModule,
     ChatsModule,
     MessagesModule,
-    MessageReadsModule,
+    InvitesModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [],
   providers: [

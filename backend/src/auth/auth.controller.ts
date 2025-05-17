@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Response } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, Response } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register-dto';
 import { LoginDto } from './dtos/login-dto';
@@ -6,6 +6,7 @@ import { Response as ExpressResponse } from 'express';
 import { COOKIE_DEFAULT_CONFIG, JWT_COOKIE_KEY } from './constants/cookies';
 import { TOKEN_MAX_AGE_MS } from './constants/jwt';
 import { PublicRoute } from './decorators/public-route.decorator';
+import { AuthenticatedExpressRequest } from './interfaces/jwt.interfaces';
 
 @Controller('auth')
 export class AuthController {
@@ -36,6 +37,17 @@ export class AuthController {
 
     return {
       data: result.data,
+    };
+  }
+
+  @Get('user')
+  async getLoggedUser(@Request() req: AuthenticatedExpressRequest) {
+    const response = await this.authService.getLoggedUser({
+      userId: req.user.id,
+    });
+
+    return {
+      data: response.data,
     };
   }
 }

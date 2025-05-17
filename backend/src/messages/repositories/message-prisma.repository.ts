@@ -4,17 +4,18 @@ import {
   GetChatMessagesRepositoryParams,
   GetChatMessagesResponse,
 } from '../dtos/get-chat-messages';
-import { PrismaDataSource } from 'src/shared/datasources/prisma.datasource';
 import { CreateMessageRepositoryParams } from '../dtos/create-message';
 import {
   GetUnreadMessagesByChatParams,
   UnreadMessage,
 } from '../dtos/get-unread-messages-by-chat';
+import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
 
 @Injectable()
-export class MessagePrismaRepository implements MessageRepository {
-  constructor(private readonly prismaDataSource: PrismaDataSource) {}
-
+export class MessagePrismaRepository
+  extends PrismaRepository
+  implements MessageRepository
+{
   async getMessagesByChat(
     params: GetChatMessagesRepositoryParams,
   ): Promise<GetChatMessagesResponse> {

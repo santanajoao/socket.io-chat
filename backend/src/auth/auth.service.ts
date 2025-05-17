@@ -8,6 +8,7 @@ import { UserPrismaRepository } from 'src/users/repositories/user-prisma.reposit
 import { BcryptHashService } from 'src/shared/hashing/bcrypt-hash.service';
 import { LoginDto } from './dtos/login-dto';
 import { JsonWebTokenService } from './jsonwebtoken.service';
+import { FindByIdParams } from 'src/users/dtos/find-by-id-dto';
 
 @Injectable()
 export class AuthService {
@@ -70,6 +71,14 @@ export class AuthService {
       metadata: {
         jwtToken,
       },
+    };
+  }
+
+  async getLoggedUser({ userId }: FindByIdParams) {
+    const user = await this.userPrismaRepository.findById(userId);
+
+    return {
+      data: user,
     };
   }
 }

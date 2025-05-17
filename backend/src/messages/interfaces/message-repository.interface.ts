@@ -1,3 +1,4 @@
+import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
 import { CreateMessageRepositoryParams } from '../dtos/create-message';
 import {
   ChatMessage,
@@ -9,7 +10,7 @@ import {
   UnreadMessage,
 } from '../dtos/get-unread-messages-by-chat';
 
-export interface MessageRepository {
+export interface MessageRepository extends PrismaRepository {
   getMessagesByChat(
     params: GetChatMessagesRepositoryParams,
   ): Promise<GetChatMessagesResponse>;

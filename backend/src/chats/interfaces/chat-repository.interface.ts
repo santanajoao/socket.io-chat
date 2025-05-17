@@ -1,3 +1,8 @@
+import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
+import {
+  CreateChatRepositoryParams,
+  CreateChatRepositoryResponse,
+} from '../dtos/create-chat';
 import {
   GetAllUserChatIdsParams,
   GetAllUserChatIdsResponse,
@@ -6,8 +11,9 @@ import {
   GetUserPaginatedChatListRepositoryParams,
   GetUserPaginatedChatListResponse,
 } from '../dtos/get-user-paginated-chat-list';
+import { GetDirectChatByUserIdsParams } from './get-chat-by-type-and-users';
 
-export interface ChatRepository {
+export interface ChatRepository extends PrismaRepository {
   getAllUserChatIds({
     userId,
   }: GetAllUserChatIdsParams): Promise<GetAllUserChatIdsResponse>;
@@ -15,4 +21,10 @@ export interface ChatRepository {
   getUserPaginatedChatList(
     params: GetUserPaginatedChatListRepositoryParams,
   ): Promise<GetUserPaginatedChatListResponse>;
+  createChat(
+    param: CreateChatRepositoryParams,
+  ): Promise<CreateChatRepositoryResponse>;
+  getDirectChatByUserIds(
+    params: GetDirectChatByUserIdsParams,
+  ): Promise<unknown>;
 }
