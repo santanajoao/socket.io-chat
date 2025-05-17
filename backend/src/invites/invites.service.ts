@@ -46,18 +46,20 @@ export class InvitesService {
     const nowDate = new Date();
 
     await this.prismaTransaction.transaction(async () => {
-      await this.chatUsersRepository.addUsersToChat({
-        data: [
-          {
-            chatId: invite.chatId,
-            userId: data.userId,
-          },
-          {
-            chatId: invite.chatId,
-            userId: invite.senderUserId,
-          },
-        ],
-      });
+      if (data.accept) {
+        await this.chatUsersRepository.addUsersToChat({
+          data: [
+            {
+              chatId: invite.chatId,
+              userId: data.userId,
+            },
+            {
+              chatId: invite.chatId,
+              userId: invite.senderUserId,
+            },
+          ],
+        });
+      }
 
       await this.inviteRepository.updateInvite(data.inviteId, {
         accepted: data.accept,
