@@ -1,8 +1,14 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ChatPrismaRepository } from './repositories/chat-prisma.repository';
-import { GetUserPaginatedChatListServiceParams } from './dtos/get-user-paginated-chat-list';
+import {
+  FormattedChatData,
+  GetUserPaginatedChatListServiceParams,
+} from './dtos/get-user-paginated-chat-list';
 import { GetAllUserChatIdsParams } from './dtos/get-all-user-chat-ids';
-import { ChatType } from 'generated/prisma';
 import { MessagePrismaRepository } from 'src/messages/repositories/message-prisma.repository';
 import { MessageReadPrismaRepository } from 'src/messages/repositories/message-read-prisma.repository';
 import { CreateChatServiceParams } from './dtos/create-chat';
@@ -12,6 +18,11 @@ import { InvitePrismaRepository } from 'src/invites/repositories/invite-prisma.r
 import { PrismaTransaction } from 'src/shared/repositories/prisma-transaction';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CHAT_EVENTS } from './constants/events';
+import { CreateGroupChatServiceParams } from './dtos/create-group-chat';
+import { CHAT_TYPE } from './models/chat.model';
+import { GroupChatPrismaRepository } from './repositories/group-chat-prisma.repository';
+import { GROUP_TYPE } from './models/group-chat.model';
+import { AuthorizeJoinChatServiceParams } from './dtos/join-chat';
 
 @Injectable()
 export class ChatsService {
@@ -22,6 +33,7 @@ export class ChatsService {
     private readonly userRepository: UserPrismaRepository,
     private readonly chatUsersRepository: ChatUsersPrismaRepository,
     private readonly inviteRepository: InvitePrismaRepository,
+    private readonly groupChatRepository: GroupChatPrismaRepository,
     private readonly prismaTransaction: PrismaTransaction,
     private readonly eventEmitter: EventEmitter2,
   ) {}
@@ -51,7 +63,7 @@ export class ChatsService {
         );
 
         const targetUser =
-          chat.type === ChatType.DIRECT ? targetChatUser?.user : undefined;
+          chat.type === CHAT_TYPE.DIRECT ? targetChatUser?.user : undefined;
 
         return {
           ...chat,
@@ -130,10 +142,9 @@ export class ChatsService {
       );
     }
 
-    // adicionar usuários ao chat apenas quando o outro aceitar o convite
     const { invite } = await this.prismaTransaction.transaction(async () => {
       const chat = await this.chatRepository.createChat({
-        type: ChatType.DIRECT,
+        type: CHAT_TYPE.DIRECT,
       });
 
       const invite = await this.inviteRepository.create({
@@ -153,6 +164,66 @@ export class ChatsService {
     return {
       data: {
         invite,
+      },
+    };
+  }
+
+  async createGroupChat(params: CreateGroupChatServiceParams) {
+    // envolver em uma transação
+    const { chat, groupChat } = await this.prismaTransaction.transaction(
+      async () => {
+        const chat = await this.chatRepository.createChat({
+          type: CHAT_TYPE.GROUP,
+        });
+
+        const groupChat = await this.groupChatRepository.createGroupChat({
+          title: params.name,
+          chatId: chat.id,
+          createdByUserId: params.userId,
+          groupType: GROUP_TYPE.PRIVATE,
+        });
+
+        await this.chatUsersRepository.addUsersToChat({
+          data: [
+            {
+              chatId: chat.id,
+              userId: params.userId,
+            },
+          ],
+        });
+
+        return { chat, groupChat };
+      },
+    );
+
+    const onCreateGroupChatBody: FormattedChatData = {
+      ...chat,
+      group: groupChat,
+      type: CHAT_TYPE.GROUP,
+      unreadMessagesCount: 0,
+      lastMessage: null,
+    };
+
+    return {
+      data: onCreateGroupChatBody,
+    };
+  }
+
+  async authorizeJoinChat(data: AuthorizeJoinChatServiceParams) {
+    const chatUser = await this.chatUsersRepository.findByUserAndChat(
+      data.userId,
+      data.chatId,
+    );
+
+    if (!chatUser) {
+      throw new UnauthorizedException(
+        'You are not authorized to join this chat',
+      );
+    }
+
+    return {
+      data: {
+        authorized: true,
       },
     };
   }

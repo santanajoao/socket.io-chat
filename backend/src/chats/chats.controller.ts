@@ -12,6 +12,7 @@ import { MessagesService } from 'src/messages/messages.service';
 import { CreateDirectChatBody } from './dtos/create-chat';
 import { ChatsService } from './chats.service';
 import { AuthenticatedExpressRequest } from 'src/auth/interfaces/jwt.interfaces';
+import { CreateGroupChatBody } from './dtos/create-group-chat';
 
 @Controller('chats')
 export class ChatsController {
@@ -49,6 +50,21 @@ export class ChatsController {
 
     return {
       data: result.data.invite,
+    };
+  }
+
+  @Post('group')
+  async createGroupChat(
+    @Request() req: AuthenticatedExpressRequest,
+    @Body() body: CreateGroupChatBody,
+  ) {
+    const result = await this.chatService.createGroupChat({
+      ...body,
+      userId: req.user.id,
+    });
+
+    return {
+      data: result.data,
     };
   }
 }

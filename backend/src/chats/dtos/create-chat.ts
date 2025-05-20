@@ -1,13 +1,11 @@
-import { ChatType } from 'generated/prisma';
 import { CreateInviteRepositoryResponse } from 'src/invites/dto/create-invite';
+import { ChatModel, ChatType } from '../models/chat.model';
 
 export class CreateChatRepositoryParams {
   type: ChatType;
 }
 
-export class CreateChatRepositoryResponse {
-  id: string;
-}
+export class CreateChatRepositoryResponse extends ChatModel {}
 
 export class CreateChatServiceParams {
   senderId: string;

@@ -6,6 +6,7 @@ import {
   GetAllUserChatIdsResponse,
 } from '../dtos/get-all-user-chat-ids';
 import {
+  ChatData,
   GetUserPaginatedChatListRepositoryParams,
   GetUserPaginatedChatListResponse,
 } from '../dtos/get-user-paginated-chat-list';
@@ -16,7 +17,8 @@ import {
 } from '../dtos/create-chat';
 import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
 import { GetDirectChatByUserIdsParams } from '../interfaces/get-chat-by-type-and-users';
-import { ChatType } from 'generated/prisma';
+import { CHAT_TYPE } from '../models/chat.model';
+import { GetUserChatByIdParams } from '../dtos/get-user-chat';
 
 @Injectable()
 export class ChatPrismaRepository
@@ -52,63 +54,9 @@ export class ChatPrismaRepository
   }: GetUserPaginatedChatListRepositoryParams): Promise<GetUserPaginatedChatListResponse> {
     const [chats, total] = await Promise.all([
       this.prismaDataSource.chat.findMany({
-        select: {
-          id: true,
-          type: true,
-          messages: {
-            select: {
-              id: true,
-              content: true,
-              sentAt: true,
-              user: {
-                select: {
-                  id: true,
-                  username: true,
-                },
-              },
-            },
-            orderBy: {
-              sentAt: 'desc',
-            },
-            take: 1,
-          },
-          _count: {
-            select: {
-              messages: {
-                where: {
-                  userId: {
-                    not: {
-                      equals: userId,
-                    },
-                  },
-                  messageReads: {
-                    none: {
-                      userId,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          group: {
-            select: {
-              id: true,
-              groupType: true,
-              title: true,
-            },
-          },
-          chatUsers: {
-            select: {
-              user: {
-                select: {
-                  id: true,
-                  username: true,
-                },
-              },
-            },
-            take: 2,
-          },
-        },
+        select: this.chatPrismaQueryBuilder.userChatsSelect({
+          userId,
+        }),
         where: {
           ...this.chatPrismaQueryBuilder.userChatsWhere({ userId }),
         },
@@ -133,9 +81,6 @@ export class ChatPrismaRepository
     param: CreateChatRepositoryParams,
   ): Promise<CreateChatRepositoryResponse> {
     const data = await this.prismaDataSource.chat.create({
-      select: {
-        id: true,
-      },
       data: {
         type: param.type,
       },
@@ -152,7 +97,7 @@ export class ChatPrismaRepository
         id: true,
       },
       where: {
-        type: ChatType.DIRECT,
+        type: CHAT_TYPE.DIRECT,
         chatUsers: {
           every: {
             userId: {
@@ -160,6 +105,21 @@ export class ChatPrismaRepository
             },
           },
         },
+      },
+    });
+
+    return data;
+  }
+
+  async getUserChatById(
+    params: GetUserChatByIdParams,
+  ): Promise<ChatData | null> {
+    const data = await this.prismaDataSource.chat.findUnique({
+      select: this.chatPrismaQueryBuilder.userChatsSelect({
+        userId: params.userId,
+      }),
+      where: {
+        id: params.chatId,
       },
     });
 

@@ -8,6 +8,8 @@ import { MessagesModule } from 'src/messages/messages.module';
 import { InvitesModule } from 'src/invites/invites.module';
 import { UsersModule } from 'src/users/users.module';
 import { ChatUsersPrismaRepository } from './repositories/chat-users-prisma.repository';
+import { ChatFormatter } from './formatters/chat.formatter';
+import { GroupChatPrismaRepository } from './repositories/group-chat-prisma.repository';
 
 @Module({
   imports: [
@@ -21,8 +23,16 @@ import { ChatUsersPrismaRepository } from './repositories/chat-users-prisma.repo
     ChatPrismaRepository,
     ChatPrismaQueryBuilder,
     ChatUsersPrismaRepository,
+    ChatFormatter,
+    GroupChatPrismaRepository,
   ],
-  exports: [ChatPrismaRepository, ChatsService, ChatUsersPrismaRepository],
+  exports: [
+    ChatPrismaRepository,
+    ChatsService,
+    ChatUsersPrismaRepository,
+    ChatFormatter,
+    GroupChatPrismaRepository,
+  ],
   controllers: [ChatsController],
 })
 export class ChatsModule {}

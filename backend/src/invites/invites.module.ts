@@ -8,6 +8,6 @@ import { ChatsModule } from 'src/chats/chats.module';
   imports: [forwardRef(() => ChatsModule)],
   controllers: [InvitesController],
   providers: [InvitePrismaRepository, InvitesService],
-  exports: [InvitePrismaRepository],
+  exports: [InvitePrismaRepository, InvitesService],
 })
 export class InvitesModule {}

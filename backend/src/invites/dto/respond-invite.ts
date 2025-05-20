@@ -1,15 +1,21 @@
+import { FormattedChatData } from 'src/chats/dtos/get-user-paginated-chat-list';
+
 export class RespondInviteRequestBody {
   accept: boolean;
+  inviteId: string;
 }
 
 export class RespondInviteServiceParams extends RespondInviteRequestBody {
   userId: string;
-  inviteId: string;
 }
 
 export class OnInviteResponseBody {
-  inviteId: string;
-  accepted: boolean;
-  senderUserId: string;
-  acceptedAt: Date;
+  invite: {
+    id: string;
+    accepted: boolean;
+    senderUserId: string;
+    receiverUserId: string;
+    acceptedAt: Date;
+  };
+  chat: FormattedChatData;
 }

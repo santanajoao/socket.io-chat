@@ -4,6 +4,8 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// TODO: corrigir on delete das tabelas
+
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -63,8 +65,8 @@ model GroupChat {
 
   createdByUserId String? @map("created_by_user_id")
 
-  chat Chat @relation(fields: [chatId], references: [id])
-  createdByUser User? @relation(fields: [createdByUserId], references: [id])
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  createdByUser User? @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
 
   @@map("group_chats")
 }
@@ -74,8 +76,8 @@ model ChatUser {
   userId String @map("user_id")
   joinedAt DateTime @default(now()) @map("join_at")
 
-  chat Chat @relation(fields: [chatId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([chatId, userId])
   @@map("chat_users")
@@ -88,8 +90,8 @@ model Message {
   userId String @map("user_id")
   sentAt DateTime @default(now()) @map("sent_at")
 
-  chat Chat @relation(fields: [chatId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   messageReads MessageRead[]
 
   @@map("messages")
@@ -100,8 +102,8 @@ model MessageRead {
   userId String @map("user_id")
   readAt DateTime @map("read_at") @default(now())
 
-  message Message @relation(fields: [messageId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([messageId, userId])
   @@map("message_reads")
@@ -117,10 +119,10 @@ model ChatInvite {
   createdAt DateTime @default(now()) @map("created_at")
   acceptedAt DateTime?
 
-  senderUser User @relation(fields: [senderUserId], references: [id], name: "senderUser")
-  receiverUser User @relation(fields: [receiverUserId], references: [id], name: "receiverUser")
+  senderUser User @relation(fields: [senderUserId], references: [id], name: "senderUser", onDelete: Cascade)
+  receiverUser User @relation(fields: [receiverUserId], references: [id], name: "receiverUser", onDelete: Cascade)
 
-  chat Chat @relation(fields: [chatId], references: [id])
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
   @@map("chat_invites")
 }

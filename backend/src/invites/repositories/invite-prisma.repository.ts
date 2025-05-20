@@ -5,7 +5,7 @@ import {
   CreateInviteRepositoryResponse,
 } from '../dto/create-invite';
 import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
-import { ChatInvite } from 'generated/prisma';
+import { ChatInvite } from '../models/chat-invite.model';
 
 @Injectable()
 export class InvitePrismaRepository
@@ -117,7 +117,6 @@ export class InvitePrismaRepository
     inviteId: string,
     data: Partial<ChatInvite>,
   ): Promise<void> {
-    console.log(data);
     await this.prismaDataSource.chatInvite.update({
       where: {
         id: inviteId,
