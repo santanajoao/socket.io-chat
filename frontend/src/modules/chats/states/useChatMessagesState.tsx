@@ -28,10 +28,11 @@ export function useChatMessagesState() {
 
   const addNewMessage = useCallback((chatId: string, message: ChatMessage) => {
     setMessages((prev) => {
-      const prevMessages = prev[chatId] ?? [];
-      if (prevMessages.length === 0) return prev;
+      const prevMessages = prev[chatId];
+      const treatedPrevMessages = prevMessages ?? []
+      if (!prevMessages) return prev;
 
-      const newMessages = [...prevMessages, message];
+      const newMessages = [...treatedPrevMessages, message];
       return {
         ...prev,
         [chatId]: newMessages,

@@ -8,8 +8,6 @@ import { DateFormatter } from "@/modules/shared/utils/formatters/dates";
 import { useChatListStates } from "../states/useChatListStates";
 import { BellIcon, CirclePlusIcon } from "lucide-react";
 import { StartNewChatModal } from "./StartNewChatModal";
-import { useEffect } from "react";
-import { chatSocket } from "../socket/backend";
 import { InvitesPopover } from "./InvitesPopover";
 
 export function ChatList() {

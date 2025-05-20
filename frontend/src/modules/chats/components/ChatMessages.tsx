@@ -8,7 +8,8 @@ import { DateFormatter } from "@/modules/shared/utils/formatters/dates";
 import { useChatMessagesState } from "../states/useChatMessagesState";
 import { FormEvent } from "react";
 import { ChatMessage } from "../types/chatMessages";
-import debounce from 'lodash.debounce';
+
+// ler mensagem seria melhor com websocket?
 
 export function ChatMessages() {
   const {
@@ -40,7 +41,7 @@ export function ChatMessages() {
     <div className="max-w-2/3 p-2 border flex flex-col flex-1 gap-2">
       {selectedChatId && (
         <>
-          <div className="flex-1 flex flex-col gap-2 overflow-y-scroll overflow-x-hidden pr-2">
+          <div className="flex-1 flex flex-col gap-2 overflow-y-auto overflow-x-hidden pr-2">
             {messagesAreLoading ? (
               <div>Loading messages...</div>
             ) : (

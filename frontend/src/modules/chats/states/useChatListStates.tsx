@@ -90,6 +90,16 @@ export function useChatListStates() {
 
   useEffect(() => {
     initialize();
+
+    function onChatCreated(data: any) {
+      setChats((prev) => [data, ...prev]);
+    }
+
+    chatSocket.on('chat:created', onChatCreated);
+
+    return () => {
+      chatSocket.off('chat:created', onChatCreated);
+    }
   }, [])
 
   return {

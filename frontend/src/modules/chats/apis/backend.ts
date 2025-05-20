@@ -1,7 +1,8 @@
 import { backendApi } from "@/modules/shared/apis/backend";
 import { treatAxiosRequest } from "@/modules/shared/utils/axios";
 import { GetChatMessagesParams, GetChatMessagesResponse } from "../types/chatMessages";
-import { CreateDirectChatApiBody, CreateDirectChatApiResponse } from "../types/startNewDirectChat";
+import { InviteToDirectChatApiBody, InviteToDirectChatApiResponse } from "../types/startNewDirectChat";
+import { CreateGroupChatApiBody, CreateGroupChatApiResponse } from "../types/startNewGroupChat";
 
 export const backendChatClient = backendApi.create({
   baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/chats`,
@@ -16,11 +17,16 @@ async function getMessages({ chatId, pageSize, cursor }: GetChatMessagesParams) 
   }));
 }
 
-async function createDirectChat(data: CreateDirectChatApiBody) {
-  return treatAxiosRequest<CreateDirectChatApiResponse>(() => backendChatClient.post('/direct', data));
+async function inviteToDirectChat(data: InviteToDirectChatApiBody) {
+  return treatAxiosRequest<InviteToDirectChatApiResponse>(() => backendChatClient.post('/direct', data));
+}
+
+async function createGroupChat(data: CreateGroupChatApiBody) {
+  return treatAxiosRequest<CreateGroupChatApiResponse>(() => backendChatClient.post('/group', data));
 }
 
 export const backendChatApi = {
   getMessages,
-  createDirectChat,
+  inviteToDirectChat,
+  createGroupChat,
 };

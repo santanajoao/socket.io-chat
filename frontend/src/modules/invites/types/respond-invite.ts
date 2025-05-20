@@ -4,7 +4,7 @@ export type RespondInviteParams = {
 };
 
 export type OnInviteResponseBody = {
-  inviteId: string;
+  id: string;
   senderUserId: string;
   accepted: boolean;
   acceptedAt: string;

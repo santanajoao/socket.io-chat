@@ -9,8 +9,6 @@ import { ChatProvider } from "../contexts/ChatContext";
 // scroll deve iniciar em baixo
 // ao receber mensagem o scroll deve ir para baixo
 
-// header de usuário e ações em cima do chat list
-
 // lidar com timezones
 
 export function ChatsPage() {

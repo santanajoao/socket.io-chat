@@ -4,7 +4,7 @@ import { Input } from "@/modules/shared/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { newDirectChatSchema } from "../schemas/newDirectChatSchema";
-import { CreateDirectChatFormFields } from "../types/startNewDirectChat";
+import { InviteToDirectChatFormFields } from "../types/startNewDirectChat";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { backendChatApi } from "../apis/backend";
 import { useChatContext } from "../contexts/ChatContext";
@@ -29,9 +29,9 @@ export function StartNewDirectChatForm({ onClose }: Props) {
   const [isLoading, handleLoading] = useLoading();
   const [error, setError] = useState<ApiErrorResponse | null>(null);
 
-  function onSubmit(data: CreateDirectChatFormFields) {
+  function onSubmit(data: InviteToDirectChatFormFields) {
     return handleLoading(async () => {
-      const result = await backendChatApi.createDirectChat(data);
+      const result = await backendChatApi.inviteToDirectChat(data);
       if (result.error) {
         return setError(result.error);
       }
