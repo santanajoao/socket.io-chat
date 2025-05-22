@@ -8,8 +8,6 @@ import { CheckIcon, XIcon } from "lucide-react";
 import { ComponentProps } from "react";
 import { useInvitesPopoverStates } from "../states/useInvitesPopoverStates";
 
-// TODO: pequisar como separar eventos, etc
-
 type Props = ComponentProps<typeof PopoverTrigger>;
 
 export function InvitesPopover({ children, ...props }: Props) {

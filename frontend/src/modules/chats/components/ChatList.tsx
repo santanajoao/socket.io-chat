@@ -14,7 +14,12 @@ export function ChatList() {
   const { chatsAreLoading, chats, selectedChatId, selectChat, loggedUser } = useChatListStates();
 
   function formatChatName(chat: UserChat) {
-    return chat.group?.title || chat.targetUser?.username;
+    if (chat.group) {
+      return chat.group.title;
+    }
+
+    const targetUser = chat.users?.find((user) => user.id !== loggedUser?.id);
+    return targetUser?.username ?? 'Unknown user';
   }
 
   function formatChatInitial(chat: UserChat) {

@@ -19,8 +19,6 @@ type Props = {
   onClose: () => void;
 }
 
-// TODO: fazer essa funcionalidade
-
 export function StartNewGroupForm({ onClose }: Props) {
   const form = useForm({
     resolver: zodResolver(newGroupChatSchema),

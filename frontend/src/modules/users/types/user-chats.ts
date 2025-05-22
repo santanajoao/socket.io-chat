@@ -21,10 +21,10 @@ export type UserChat = {
       username: string;
     }
   }
-  targetUser: {
+  users?: {
     id: string;
     username: string;
-  }
+  }[]
 }
 
 export type GetUserChatsResponse = {
