@@ -53,10 +53,10 @@ export class FormattedChatData {
       username: string;
     };
   } | null;
-  targetUser?: {
+  users?: {
     id: string;
     username: string;
-  };
+  }[];
   id: string;
   type: ChatType;
   group: {

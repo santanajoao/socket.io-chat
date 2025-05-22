@@ -16,6 +16,7 @@ export class OnInviteResponseBody {
     senderUserId: string;
     receiverUserId: string;
     acceptedAt: Date;
+    chatId: string;
   };
   chat: FormattedChatData;
 }

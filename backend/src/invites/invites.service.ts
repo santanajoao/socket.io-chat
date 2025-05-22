@@ -14,6 +14,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ChatPrismaRepository } from 'src/chats/repositories/chat-prisma.repository';
 import { FormattedChatData } from 'src/chats/dtos/get-user-paginated-chat-list';
 import { ChatFormatter } from 'src/chats/formatters/chat.formatter';
+import { CHAT_EVENTS } from 'src/chats/constants/events';
 
 @Injectable()
 export class InvitesService {
@@ -86,9 +87,13 @@ export class InvitesService {
 
       formattedChat = this.chatFormatter.formatChatData({
         ...chatData,
-        userId: data.userId,
       });
     }
+
+    // TODO:
+    // ao emitir para os dois usuários a propriedade targetUser é a mesma para
+    // os dois e mostra o nome errado no chat
+    // ter id e nome dos dois usuários ao invés de targetUser
 
     const inviteResponseBody: OnInviteResponseBody = {
       invite: {
@@ -97,11 +102,12 @@ export class InvitesService {
         senderUserId: invite.senderUserId,
         receiverUserId: invite.receiverUserId,
         acceptedAt: nowDate,
+        chatId: invite.chatId,
       },
       chat: formattedChat!,
     };
 
-    this.eventEmitter.emit('invite:response', inviteResponseBody);
+    this.eventEmitter.emit(CHAT_EVENTS.INVITE_RESPONSE, inviteResponseBody);
 
     return {
       data: inviteResponseBody,

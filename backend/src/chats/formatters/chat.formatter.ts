@@ -9,23 +9,24 @@ export class ChatFormatter {
     messages,
     _count,
     chatUsers,
-    userId,
     ...chat
   }: FormatChatDataParams): FormattedChatData {
     const lastMessage = messages[0];
 
-    const targetChatUser = chatUsers.find(
-      (chatUser) => chatUser.user.id !== userId,
-    );
+    const users = chatUsers.map((chatUser) => {
+      return {
+        id: chatUser.user.id,
+        username: chatUser.user.username,
+      };
+    });
 
-    const targetUser =
-      chat.type === CHAT_TYPE.DIRECT ? targetChatUser?.user : undefined;
+    const directChatUsers = chat.type === CHAT_TYPE.DIRECT ? users : undefined;
 
     return {
       ...chat,
       unreadMessagesCount: _count.messages,
       lastMessage: lastMessage,
-      targetUser,
+      users: directChatUsers,
     };
   }
 }

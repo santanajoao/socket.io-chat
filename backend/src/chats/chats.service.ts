@@ -23,6 +23,7 @@ import { CHAT_TYPE } from './models/chat.model';
 import { GroupChatPrismaRepository } from './repositories/group-chat-prisma.repository';
 import { GROUP_TYPE } from './models/group-chat.model';
 import { AuthorizeJoinChatServiceParams } from './dtos/join-chat';
+import { ChatFormatter } from './formatters/chat.formatter';
 
 @Injectable()
 export class ChatsService {
@@ -36,6 +37,7 @@ export class ChatsService {
     private readonly groupChatRepository: GroupChatPrismaRepository,
     private readonly prismaTransaction: PrismaTransaction,
     private readonly eventEmitter: EventEmitter2,
+    private readonly chatFormatter: ChatFormatter,
   ) {}
 
   async getAllUserChatIds({ userId }: GetAllUserChatIdsParams) {
@@ -54,24 +56,8 @@ export class ChatsService {
     });
 
     const requestedChats = result.chats.slice(0, pageSize);
-    const formattedChats = requestedChats.map(
-      ({ messages, _count, chatUsers, ...chat }) => {
-        const lastMessage = messages[0];
-
-        const targetChatUser = chatUsers.find(
-          (chatUser) => chatUser.user.id !== userId,
-        );
-
-        const targetUser =
-          chat.type === CHAT_TYPE.DIRECT ? targetChatUser?.user : undefined;
-
-        return {
-          ...chat,
-          unreadMessagesCount: _count.messages,
-          lastMessage: lastMessage,
-          targetUser,
-        };
-      },
+    const formattedChats = requestedChats.map((chat) =>
+      this.chatFormatter.formatChatData(chat),
     );
 
     const hasMore = result.chats.length === pageSize + 1;
@@ -169,7 +155,6 @@ export class ChatsService {
   }
 
   async createGroupChat(params: CreateGroupChatServiceParams) {
-    // envolver em uma transação
     const { chat, groupChat } = await this.prismaTransaction.transaction(
       async () => {
         const chat = await this.chatRepository.createChat({
