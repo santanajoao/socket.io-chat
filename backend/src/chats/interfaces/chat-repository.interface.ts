@@ -12,6 +12,7 @@ import {
   GetUserPaginatedChatListResponse,
 } from '../dtos/get-user-paginated-chat-list';
 import { GetDirectChatByUserIdsParams } from './get-chat-by-type-and-users';
+import { ChatModel } from '../models/chat.model';
 
 export interface ChatRepository extends PrismaRepository {
   getAllUserChatIds({
@@ -27,4 +28,5 @@ export interface ChatRepository extends PrismaRepository {
   getDirectChatByUserIds(
     params: GetDirectChatByUserIdsParams,
   ): Promise<unknown>;
+  getChatById(id: string): Promise<ChatModel | null>;
 }

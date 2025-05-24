@@ -23,3 +23,8 @@ export class CreateInviteRepositoryResponse {
   };
   createdAt: Date;
 }
+
+export class OnChatInviteBody {
+  invite: CreateInviteRepositoryResponse;
+  receiverUserId: string;
+}

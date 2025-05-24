@@ -1,4 +1,4 @@
-export class ChatInvite {
+export class ChatInviteModel {
   id: string;
   senderUserId: string;
   receiverUserId: string;

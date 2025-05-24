@@ -19,4 +19,5 @@ export class OnInviteResponseBody {
     chatId: string;
   };
   chat: FormattedChatData;
+  userIdsToEmitNewChat: string[];
 }

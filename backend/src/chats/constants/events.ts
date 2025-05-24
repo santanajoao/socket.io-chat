@@ -3,4 +3,5 @@ export const CHAT_EVENTS = {
   CREATED_GROUP_CHAT: 'chat:group:created',
   CREATED_CHAT: 'chat:created',
   INVITE_RESPONSE: 'invite:response',
+  CHAT_INVITE: 'chat:invite',
 };

@@ -3,9 +3,10 @@ import { InvitePrismaRepository } from './repositories/invite-prisma.repository'
 import { InvitesController } from './invites.controller';
 import { InvitesService } from './invites.service';
 import { ChatsModule } from 'src/chats/chats.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [forwardRef(() => ChatsModule)],
+  imports: [forwardRef(() => ChatsModule), forwardRef(() => UsersModule)],
   controllers: [InvitesController],
   providers: [InvitePrismaRepository, InvitesService],
   exports: [InvitePrismaRepository, InvitesService],

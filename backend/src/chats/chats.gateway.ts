@@ -13,9 +13,9 @@ import { Namespace } from 'socket.io';
 import { OnEvent } from '@nestjs/event-emitter';
 import { CHAT_NAMESPACE } from './constants/namespaces';
 import { CHAT_EVENTS } from './constants/events';
-import { OnDirectChatCreationBody } from './dtos/create-chat';
 import { RespondInviteRequestBody } from 'src/invites/dto/respond-invite';
 import { InvitesService } from 'src/invites/invites.service';
+import { OnChatInviteBody } from 'src/invites/dto/create-invite';
 
 @WebSocketGateway({ namespace: CHAT_NAMESPACE, cors: FRONTEND_CORS })
 export class ChatsGateway {
@@ -82,22 +82,19 @@ export class ChatsGateway {
       userId: socket.request.user.id,
     });
 
-    const usersRooms = [
-      result.data.invite.senderUserId,
-      result.data.invite.receiverUserId,
-    ];
-
     this.namespace
-      .to(usersRooms)
+      .to([result.data.invite.senderUserId, result.data.invite.receiverUserId])
       .emit(CHAT_EVENTS.INVITE_RESPONSE, result.data.invite);
 
     this.namespace
-      .to(usersRooms)
+      .to(result.data.userIdsToEmitNewChat)
       .emit(CHAT_EVENTS.CREATED_CHAT, result.data.chat);
   }
 
-  @OnEvent(CHAT_EVENTS.CREATED_DIRECT_CHAT)
-  onDirectChatCreation(body: OnDirectChatCreationBody) {
-    this.namespace.to(body.receiverUser.id).emit('chat:invite', body.invite);
+  @OnEvent(CHAT_EVENTS.CHAT_INVITE)
+  sendChatInvite(body: OnChatInviteBody) {
+    this.namespace
+      .to(body.receiverUserId)
+      .emit(CHAT_EVENTS.CHAT_INVITE, body.invite);
   }
 }

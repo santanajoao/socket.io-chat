@@ -5,7 +5,7 @@ import {
   CreateInviteRepositoryResponse,
 } from '../dto/create-invite';
 import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
-import { ChatInvite } from '../models/chat-invite.model';
+import { ChatInviteModel } from '../models/chat-invite.model';
 
 @Injectable()
 export class InvitePrismaRepository
@@ -55,7 +55,7 @@ export class InvitePrismaRepository
     return data;
   }
 
-  async getById(inviteId: string): Promise<ChatInvite | null> {
+  async getById(inviteId: string): Promise<ChatInviteModel | null> {
     const invite = await this.prismaDataSource.chatInvite.findUnique({
       where: {
         id: inviteId,
@@ -108,6 +108,9 @@ export class InvitePrismaRepository
           },
         ],
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
     return invites;
@@ -115,7 +118,7 @@ export class InvitePrismaRepository
 
   async updateInvite(
     inviteId: string,
-    data: Partial<ChatInvite>,
+    data: Partial<ChatInviteModel>,
   ): Promise<void> {
     await this.prismaDataSource.chatInvite.update({
       where: {
@@ -123,5 +126,26 @@ export class InvitePrismaRepository
       },
       data,
     });
+  }
+
+  async getByChatIdAndUserId(
+    chatId: string,
+    userId: string,
+  ): Promise<ChatInviteModel | null> {
+    const data = await this.prismaDataSource.chatInvite.findFirst({
+      where: {
+        chatId,
+        OR: [
+          {
+            receiverUserId: userId,
+          },
+          {
+            senderUserId: userId,
+          },
+        ],
+      },
+    });
+
+    return data;
   }
 }

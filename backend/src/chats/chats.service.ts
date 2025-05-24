@@ -24,6 +24,7 @@ import { GroupChatPrismaRepository } from './repositories/group-chat-prisma.repo
 import { GROUP_TYPE } from './models/group-chat.model';
 import { AuthorizeJoinChatServiceParams } from './dtos/join-chat';
 import { ChatFormatter } from './formatters/chat.formatter';
+import { OnChatInviteBody } from 'src/invites/dto/create-invite';
 
 @Injectable()
 export class ChatsService {
@@ -142,10 +143,12 @@ export class ChatsService {
       return { invite };
     });
 
-    this.eventEmitter.emit(CHAT_EVENTS.CREATED_DIRECT_CHAT, {
-      invite,
-      receiverUser,
-    });
+    const onChatInviteBody: OnChatInviteBody = {
+      invite: invite,
+      receiverUserId: receiverUser.id,
+    };
+
+    this.eventEmitter.emit(CHAT_EVENTS.CHAT_INVITE, onChatInviteBody);
 
     return {
       data: {
@@ -187,6 +190,7 @@ export class ChatsService {
       type: CHAT_TYPE.GROUP,
       unreadMessagesCount: 0,
       lastMessage: null,
+      usersCount: 1,
     };
 
     return {

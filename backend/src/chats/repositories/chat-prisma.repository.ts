@@ -17,7 +17,7 @@ import {
 } from '../dtos/create-chat';
 import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
 import { GetDirectChatByUserIdsParams } from '../interfaces/get-chat-by-type-and-users';
-import { CHAT_TYPE } from '../models/chat.model';
+import { CHAT_TYPE, ChatModel } from '../models/chat.model';
 import { GetUserChatByIdParams } from '../dtos/get-user-chat';
 
 @Injectable()
@@ -52,17 +52,67 @@ export class ChatPrismaRepository
     cursor,
     limit,
   }: GetUserPaginatedChatListRepositoryParams): Promise<GetUserPaginatedChatListResponse> {
-    const [chats, total] = await Promise.all([
-      this.prismaDataSource.chat.findMany({
-        select: this.chatPrismaQueryBuilder.userChatsSelect({
-          userId,
-        }),
-        where: {
-          ...this.chatPrismaQueryBuilder.userChatsWhere({ userId }),
+    const [messages, total] = await Promise.all([
+      this.prismaDataSource.message.findMany({
+        select: {
+          id: true,
+          content: true,
+          sentAt: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+            },
+          },
+          chat: {
+            select: {
+              id: true,
+              type: true,
+              _count: {
+                select: {
+                  messages: {
+                    where: {
+                      userId: {
+                        not: {
+                          equals: userId,
+                        },
+                      },
+                      messageReads: {
+                        none: {
+                          userId: userId,
+                        },
+                      },
+                    },
+                  },
+                  chatUsers: true,
+                },
+              },
+              group: {
+                select: {
+                  id: true,
+                  groupType: true,
+                  title: true,
+                  createdByUserId: true,
+                },
+              },
+              chatUsers: {
+                select: {
+                  user: {
+                    select: {
+                      id: true,
+                      username: true,
+                    },
+                  },
+                },
+                take: 2,
+              },
+            },
+          },
         },
         orderBy: {
-          id: 'asc',
+          sentAt: 'desc',
         },
+        distinct: ['chatId'],
         cursor: cursor !== undefined ? { id: cursor } : undefined,
         take: limit,
       }),
@@ -74,7 +124,22 @@ export class ChatPrismaRepository
       }),
     ]);
 
-    return { chats, total };
+    const formattedChats: ChatData[] = messages.map((message) => {
+      return {
+        ...message.chat,
+        messages: [
+          {
+            id: message.id,
+            content: message.content,
+            sentAt: message.sentAt,
+            user: message.user,
+            chat: message.chat,
+          },
+        ],
+      };
+    });
+
+    return { chats: formattedChats, total };
   }
 
   async createChat(
@@ -115,11 +180,77 @@ export class ChatPrismaRepository
     params: GetUserChatByIdParams,
   ): Promise<ChatData | null> {
     const data = await this.prismaDataSource.chat.findUnique({
-      select: this.chatPrismaQueryBuilder.userChatsSelect({
-        userId: params.userId,
-      }),
+      select: {
+        id: true,
+        type: true,
+        messages: {
+          select: {
+            id: true,
+            content: true,
+            sentAt: true,
+            user: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+          orderBy: {
+            sentAt: 'desc',
+          },
+          take: 1,
+        },
+        _count: {
+          select: {
+            messages: {
+              where: {
+                userId: {
+                  not: {
+                    equals: params.userId,
+                  },
+                },
+                messageReads: {
+                  none: {
+                    userId: params.userId,
+                  },
+                },
+              },
+            },
+            chatUsers: true,
+          },
+        },
+        group: {
+          select: {
+            id: true,
+            groupType: true,
+            title: true,
+            createdByUserId: true,
+          },
+        },
+        chatUsers: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+          take: 2,
+        },
+      },
       where: {
         id: params.chatId,
+      },
+    });
+
+    return data;
+  }
+
+  async getChatById(id: string): Promise<ChatModel | null> {
+    const data = this.prismaDataSource.chat.findUnique({
+      where: {
+        id,
       },
     });
 

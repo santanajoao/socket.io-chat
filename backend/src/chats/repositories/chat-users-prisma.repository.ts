@@ -27,4 +27,15 @@ export class ChatUsersPrismaRepository
       },
     });
   }
+
+  findByChatAndUsers(chatId: string, userIds: string[]): Promise<ChatUser[]> {
+    return this.prismaDataSource.chatUser.findMany({
+      where: {
+        chatId,
+        userId: {
+          in: userIds,
+        },
+      },
+    });
+  }
 }

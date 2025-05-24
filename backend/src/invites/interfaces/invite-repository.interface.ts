@@ -3,7 +3,7 @@ import {
   CreateInviteRepositoryParams,
   CreateInviteRepositoryResponse,
 } from '../dto/create-invite';
-import { ChatInvite } from 'generated/prisma';
+import { ChatInviteModel } from '../models/chat-invite.model';
 
 export interface InviteRepository extends PrismaRepository {
   create(
@@ -11,5 +11,9 @@ export interface InviteRepository extends PrismaRepository {
   ): Promise<CreateInviteRepositoryResponse>;
   getById(id: string): Promise<unknown>;
   getAllByUserId(userId: string): Promise<CreateInviteRepositoryResponse[]>;
-  updateInvite(inviteId: string, data: Partial<ChatInvite>): Promise<void>;
+  updateInvite(inviteId: string, data: Partial<ChatInviteModel>): Promise<void>;
+  getByChatIdAndUserId(
+    chatId: string,
+    userId: string,
+  ): Promise<ChatInviteModel | null>;
 }

@@ -1,4 +1,3 @@
-import { CreateInviteRepositoryResponse } from 'src/invites/dto/create-invite';
 import { ChatModel, ChatType } from '../models/chat.model';
 
 export class CreateChatRepositoryParams {
@@ -14,11 +13,4 @@ export class CreateChatServiceParams {
 
 export class CreateDirectChatBody {
   receiverEmail: string;
-}
-
-export class OnDirectChatCreationBody {
-  invite: CreateInviteRepositoryResponse;
-  receiverUser: {
-    id: string;
-  };
 }
