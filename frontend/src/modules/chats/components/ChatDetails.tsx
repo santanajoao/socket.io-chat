@@ -67,7 +67,7 @@ export function ChatDetails() {
             {ChatFormatter.formatChatInitial(selectedChat!, null)}
           </ChatBadge>
 
-          {/* funcionalidade de editar nome do chat */}
+          {/* TODO: funcionalidade de editar nome do chat */}
           <span className="font-medium">
             {ChatFormatter.formatChatName(selectedChat!, null)}
           </span>
