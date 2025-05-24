@@ -7,6 +7,7 @@ import { backendChatApi } from "../apis/backend";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { useChatContext } from "../contexts/ChatContext";
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
+import { UserChat } from "@/modules/users/types/user-chats";
 
 export function useChatListStates() {
   const {
@@ -17,6 +18,7 @@ export function useChatListStates() {
     setSelectedChatId,
     chats,
     setChats,
+    closeChatDetails,
   } = useChatContext();
 
   const authContext = useAuthContext();
@@ -57,10 +59,13 @@ export function useChatListStates() {
   }
 
   async function selectChat(chatId: string) {
-    setSelectedChatId(chatId);
+    if (selectedChatId === chatId) return;
 
-    const selectedChat = chats.find((chat) => chat.id === chatId);
-    const hasUnreadMessages = selectedChat && selectedChat.unreadMessagesCount > 0;
+    setSelectedChatId(chatId);
+    closeChatDetails();
+
+    const targetChat = chats.find((chat) => chat.id === chatId);
+    const hasUnreadMessages = targetChat && targetChat.unreadMessagesCount > 0;
 
     if (hasUnreadMessages) {
       markChatMessagesAsRead(chatId);
@@ -91,7 +96,11 @@ export function useChatListStates() {
   useEffect(() => {
     initialize();
 
-    function onChatCreated(data: any) {
+    function onChatCreated(data: UserChat) {
+      chatSocket.emit('chat:join', {
+        chatId: data.id,
+      });
+
       setChats((prev) => [data, ...prev]);
     }
 

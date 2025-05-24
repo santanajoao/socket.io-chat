@@ -1,7 +1,6 @@
 import { PageContainer } from "@/modules/shared/components/containers/PageContainer";
-import { ChatList } from "../components/ChatList";
-import { ChatMessages } from "../components/ChatMessages";
 import { ChatProvider } from "../contexts/ChatContext";
+import { Chat } from "../components/Chat";
 
 // loading skeletton nos chats
 // loading skelleton nas mensagens
@@ -15,11 +14,7 @@ export function ChatsPage() {
   return (
     <ChatProvider>
       <PageContainer>
-        <div className="flex flex-1 w-full gap-0.5 overflow-hidden">
-          <ChatList />
-
-          <ChatMessages />
-        </div>
+        <Chat />
       </PageContainer>
     </ChatProvider>
   );

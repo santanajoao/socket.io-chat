@@ -25,12 +25,6 @@ export function useInvitesPopoverStates() {
   }
 
   const updateInviteOnResponse = useCallback((updatedInvite: OnInviteResponseBody) => {
-    if (updatedInvite.accepted) {
-      chatSocket.emit('chat:join', {
-        chatId: updatedInvite.chatId,
-      });
-    }
-
     setInvites((prev) => prev.map((invite) => {
       if (invite.id === updatedInvite.id) {
         return {

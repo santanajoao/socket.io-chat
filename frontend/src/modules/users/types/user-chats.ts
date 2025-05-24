@@ -6,12 +6,13 @@ export type GetUserChatsParams = {
 export type UserChat = {
   id: string;
   type: string;
-  group: {
+  group?: {
     id: string;
     groupType: string;
     title: string;
   }
   unreadMessagesCount: number;
+  usersCount?: number;
   lastMessage: {
     id: string;
     content: string;

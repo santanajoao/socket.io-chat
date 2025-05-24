@@ -2,13 +2,13 @@
 
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
-import { LoginFields, LoginResponse } from "../types/login";
+import { LoginFields, LoggedUser } from "../types/login";
 import { backendAuthApi } from "../api/backend";
 import { ROUTES } from "@/modules/shared/constants/routes";
 import { useRouter } from "next/navigation";
 
 type ContextValues = {
-  user: LoginResponse | null;
+  user: LoggedUser | null;
   isLoading: boolean;
   login: typeof backendAuthApi.login;
 };
@@ -18,7 +18,7 @@ const AuthContext = createContext<ContextValues | null>(null);
 type AuthProviderProps = PropsWithChildren;
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<LoginResponse | null>(null);
+  const [user, setUser] = useState<LoggedUser | null>(null);
   const [isLoading, handleLoading] = useLoading(true);
   const router = useRouter();
 
@@ -37,7 +37,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (response.error) {
         return router.push(ROUTES.SIGNIN);
       }
-  
+
       setUser(response.data);
     })
   }

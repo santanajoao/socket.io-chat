@@ -1,31 +1,18 @@
 'use client';
 
-import { UserChat } from "@/modules/users/types/user-chats";
 import { Button } from "@/modules/shared/components/ui/button";
 import { cn } from "@/modules/shared/lib/utils";
-import { Badge } from "@/modules/shared/components/ui/badge";
 import { DateFormatter } from "@/modules/shared/utils/formatters/dates";
 import { useChatListStates } from "../states/useChatListStates";
 import { BellIcon, CirclePlusIcon } from "lucide-react";
 import { StartNewChatModal } from "./StartNewChatModal";
 import { InvitesPopover } from "./InvitesPopover";
+import { ChatHeaderContainer } from "./ChatHeaderContainer";
+import { ChatBadge } from "./ChatBadge";
+import { ChatFormatter } from "../helpers/formatter";
 
 export function ChatList() {
   const { chatsAreLoading, chats, selectedChatId, selectChat, loggedUser } = useChatListStates();
-
-  function formatChatName(chat: UserChat) {
-    if (chat.group) {
-      return chat.group.title;
-    }
-
-    const targetUser = chat.users?.find((user) => user.id !== loggedUser?.id);
-    return targetUser?.username ?? 'Unknown user';
-  }
-
-  function formatChatInitial(chat: UserChat) {
-    const chatName = formatChatName(chat);
-    return chatName[0].toUpperCase();
-  }
 
   function formatLastMessageSendAt(date: string) {
     const messageDate = new Date(date);
@@ -39,12 +26,12 @@ export function ChatList() {
   }
 
   return (
-    <div className="max-w-1/3 p-2 flex-1 flex flex-col gap-1 border">
-      <div className="flex gap-2 justify-between items-center mb-3 border px-4 py-2">
+    <div className="p-2 flex-1 flex flex-col gap-1 border rounded-md">
+      <ChatHeaderContainer>
         <div className="flex items-center gap-2">
-          <Badge className="rounded-full font-semibold text-sm size-10 shrink-0">
+          <ChatBadge>
             {loggedUser?.username[0].toUpperCase()}
-          </Badge>
+          </ChatBadge>
 
           <span className="font-medium">{loggedUser?.username}</span>
         </div>
@@ -62,7 +49,7 @@ export function ChatList() {
             </Button>
           </StartNewChatModal>
         </div>
-      </div>
+      </ChatHeaderContainer>
 
       {chatsAreLoading ? (
         <div>Loading...</div>
@@ -74,14 +61,14 @@ export function ChatList() {
                 variant="outline"
                 className={cn("w-full h-auto text-left", { "bg-accent": chat.id === selectedChatId })}
                 onClick={() => selectChat(chat.id)}
-                aria-label={`Open chat ${formatChatName(chat)}`}
+                aria-label={`Open chat ${ChatFormatter.formatChatName(chat, loggedUser)}`}
               >
-                <Badge variant="outline" className="rounded-full font-medium size-10 shrink-0">
-                  {formatChatInitial(chat)}
-                </Badge>
+                <ChatBadge variant="outline">
+                  {ChatFormatter.formatChatInitial(chat, loggedUser)}
+                </ChatBadge>
 
                 <span className="flex flex-col flex-1 overflow-hidden">
-                  <span>{formatChatName(chat)}</span>
+                  <span>{ChatFormatter.formatChatName(chat, loggedUser)}</span>
 
                   {chat.lastMessage && (
                     <span className="text-sm line-clamp-1 flex-1">

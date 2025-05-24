@@ -8,10 +8,17 @@ import { DateFormatter } from "@/modules/shared/utils/formatters/dates";
 import { useChatMessagesState } from "../states/useChatMessagesState";
 import { FormEvent } from "react";
 import { ChatMessage } from "../types/chatMessages";
+import { ChatHeaderContainer } from "./ChatHeaderContainer";
+import { ChatBadge } from "./ChatBadge";
+import { ChatFormatter } from "../helpers/formatter";
 
-// ler mensagem seria melhor com websocket?
+// trocar http por websocket na leitura de mensagens
 
-export function ChatMessages() {
+type Props = {
+  className?: string;
+}
+
+export function ChatMessages({ className }: Props) {
   const {
     selectedChatId,
     messageContent,
@@ -21,6 +28,8 @@ export function ChatMessages() {
     messageSubmitIsDisabled,
     handleSendMessage,
     loggedUser,
+    selectedChat,
+    openChatDetails
   } = useChatMessagesState();
 
   function handleMessageSubmit(event: FormEvent<HTMLFormElement>) {
@@ -38,9 +47,21 @@ export function ChatMessages() {
   }
 
   return (
-    <div className="max-w-2/3 p-2 border flex flex-col flex-1 gap-2">
+    <div className={cn("p-2 border flex flex-col flex-1 gap-2 rounded-md overflow-hidden", className)}>
       {selectedChatId && (
         <>
+          <ChatHeaderContainer>
+            <Button variant="link" asChild className="p-0" onClick={openChatDetails}>
+              <div className="flex items-center gap-[inherit]">
+                <ChatBadge>
+                  {ChatFormatter.formatChatInitial(selectedChat!, loggedUser)}
+                </ChatBadge>
+
+                <span className="font-medium">{ChatFormatter.formatChatName(selectedChat!, loggedUser)}</span>
+              </div>
+            </Button>
+          </ChatHeaderContainer>
+
           <div className="flex-1 flex flex-col gap-2 overflow-y-auto overflow-x-hidden pr-2">
             {messagesAreLoading ? (
               <div>Loading messages...</div>

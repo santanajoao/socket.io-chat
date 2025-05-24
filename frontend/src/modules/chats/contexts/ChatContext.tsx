@@ -27,6 +27,12 @@ type ContextValues = {
 
   invites: UserInvite[];
   setInvites: Dispatch<SetStateAction<UserInvite[]>>;
+
+  selectedChat: UserChat | undefined;
+
+  chatDetailsIsOpen: boolean;
+  openChatDetails: () => void;
+  closeChatDetails: () => void;
 };
 
 export const ChatContext = createContext<ContextValues | null>(null);
@@ -43,7 +49,19 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
+  const [chatDetailsIsOpen, setChatDetailsIsOpen] = useState(false);
+
   const selectedChatMessages = selectedChatId ? messages[selectedChatId] ?? [] : [];
+
+  const selectedChat = chats.find((chat) => chat.id === selectedChatId);
+
+  function closeChatDetails() {
+    setChatDetailsIsOpen(false);
+  }
+
+  function openChatDetails() {
+    setChatDetailsIsOpen(true);
+  }
 
   useEffect(() => {
     chatSocket.connect();
@@ -65,6 +83,10 @@ export function ChatProvider({ children }: ChatProviderProps) {
     selectedChatMessages,
     invites,
     setInvites,
+    selectedChat,
+    chatDetailsIsOpen,
+    openChatDetails,
+    closeChatDetails
   };
 
   return (

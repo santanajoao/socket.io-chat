@@ -3,6 +3,7 @@ import { treatAxiosRequest } from "@/modules/shared/utils/axios";
 import { GetChatMessagesParams, GetChatMessagesResponse } from "../types/chatMessages";
 import { InviteToDirectChatApiBody, InviteToDirectChatApiResponse } from "../types/startNewDirectChat";
 import { CreateGroupChatApiBody, CreateGroupChatApiResponse } from "../types/startNewGroupChat";
+import { InviteToGroupChatApiBody } from "../types/inviteToGroupChat";
 
 export const backendChatClient = backendApi.create({
   baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/chats`,

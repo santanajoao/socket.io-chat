@@ -9,7 +9,7 @@ import { backendUserApi } from "@/modules/users/apis/backend";
 import debounce from "lodash.debounce";
 
 export function useChatMessagesState() {
-  const { selectedChatId, messagesAreLoading, setMessages, setChats, selectedChatMessages } = useChatContext();
+  const { selectedChatId, messagesAreLoading, selectedChat, setMessages, setChats, selectedChatMessages, openChatDetails } = useChatContext();
 
   const authContext = useAuthContext();
 
@@ -98,5 +98,7 @@ export function useChatMessagesState() {
     setMessageContent,
     handleSendMessage,
     loggedUser: authContext.user,
+    selectedChat,
+    openChatDetails,
   };
 }

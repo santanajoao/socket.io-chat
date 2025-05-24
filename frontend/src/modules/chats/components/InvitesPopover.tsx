@@ -35,53 +35,56 @@ export function InvitesPopover({ children, ...props }: Props) {
         {children}
       </PopoverTrigger>
 
-      <PopoverContent side="bottom" className="w-sm">
+      <PopoverContent className="w-sm">
         <h3 className="mb-2 font-medium">Invites</h3>
 
         {inviteListIsLoading ? (
           'Loading...'
         ) : invites.length ? (
-          invites.map((invite) => (
-            <div
-              className="px-2 py-1 border rounded-md flex items-center justify-between"
-              key={invite.id}
-            >
-              <div className="flex flex-col">
-                <span className="font-medium text-sm">
-                  {formatInviteMessage(invite)}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {DateFormatter.formatBrazilianDateTime(invite.createdAt)}
-                </span>
-              </div>
+          <ul className="flex flex-col gap-1">
+            {invites.map((invite) => (
+              <li key={invite.id}>
+                <div
+                  className="px-2 py-1 border rounded-md flex items-center justify-between"
+                >
+                  <div className="flex flex-col">
+                    <span className="font-medium text-sm">
+                      {formatInviteMessage(invite)}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {DateFormatter.formatBrazilianDateTime(invite.createdAt)}
+                    </span>
+                  </div>
 
-              {(invite.acceptedAt || invite.receiverUser.id === loggedUser?.id) && (
-                <div className="flex gap-1">
-                  {(!invite.acceptedAt || invite.accepted) && (
-                    <Button
-                      disabled={Boolean(invite.acceptedAt) || inviteResponseIsLoading}
-                      onClick={() => respondInvite({ inviteId: invite.id, accept: true })}
-                      variant="outline"
-                      size="icon-sm"
-                    >
-                      <CheckIcon />
-                    </Button>
-                  )}
+                  {(invite.acceptedAt || invite.receiverUser.id === loggedUser?.id) && (
+                    <div className="flex gap-1">
+                      {(!invite.acceptedAt || invite.accepted) && (
+                        <Button
+                          disabled={Boolean(invite.acceptedAt) || inviteResponseIsLoading}
+                          onClick={() => respondInvite({ inviteId: invite.id, accept: true })}
+                          variant="outline"
+                          size="icon-sm"
+                        >
+                          <CheckIcon />
+                        </Button>
+                      )}
 
-                  {(!invite.acceptedAt || invite.accepted === false) && (
-                    <Button
-                      disabled={Boolean(invite.acceptedAt) || inviteResponseIsLoading}
-                      onClick={() => respondInvite({ inviteId: invite.id, accept: false })}
-                      variant="destructive"
-                      size="icon-sm"
-                    >
-                      <XIcon />
-                    </Button>
+                      {(!invite.acceptedAt || invite.accepted === false) && (
+                        <Button
+                          disabled={Boolean(invite.acceptedAt) || inviteResponseIsLoading}
+                          onClick={() => respondInvite({ inviteId: invite.id, accept: false })}
+                          variant="destructive"
+                          size="icon-sm"
+                        >
+                          <XIcon />
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
-          ))
+              </li>
+            ))}
+          </ul>
         ) : (
           <p className="text-sm text-muted-foreground">No invites</p>
         )}
