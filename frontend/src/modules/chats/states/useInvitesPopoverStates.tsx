@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 export function useInvitesPopoverStates() {
   const authContext = useAuthContext();
 
-  const { invites, setInvites } = useChatContext();
+  const { invites, setInvites, setChats } = useChatContext();
   const [inviteListIsLoading, handleInviteListIsLoading] = useLoading(true);
 
   const [inviteResponseIsLoading, setInviteResponseIsLoading] = useState<boolean>(false);
@@ -40,6 +40,26 @@ export function useInvitesPopoverStates() {
     setInviteResponseIsLoading(false);
   }, []);
 
+  const updateGroupUsersIfAccepted = useCallback(({ receiverUser, accepted, chatId }: OnInviteResponseBody) => {
+    if (!accepted) return;
+
+    setChats((prev) => {
+      return prev.map((chat) => {
+        if (chat.id === chatId) {
+          if (chat.group?.groupType !== "PRIVATE") return chat;
+
+          return {
+            ...chat,
+            users: [...chat.users!, receiverUser],
+            usersCount: chat.usersCount! + 1
+          };
+        }
+
+        return chat;
+      })
+    })
+  }, []);
+
   async function respondInvite(data: RespondInviteParams) {
     setInviteResponseIsLoading(true);
     chatSocket.emit('invite:response', data);
@@ -54,10 +74,12 @@ export function useInvitesPopoverStates() {
 
     chatSocket.on('chat:invite', onNewInviteListener);
     chatSocket.on('invite:response', updateInviteOnResponse)
+    chatSocket.on('invite:response', updateGroupUsersIfAccepted);
 
     return () => {
       chatSocket.off('chat:invite', onNewInviteListener);
       chatSocket.off('invite:response', updateInviteOnResponse)
+      chatSocket.off('invite:response', updateGroupUsersIfAccepted);
     }
   }, []);
 

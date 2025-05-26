@@ -87,7 +87,7 @@ export function useChatMessagesState() {
 
       debouncedMarkAsRead.flush();
     }
-  }, [updateChatLastMessage, addNewMessage]);
+  }, [updateChatLastMessage, addNewMessage, debouncedMarkAsRead]);
 
   return {
     selectedChatId,
