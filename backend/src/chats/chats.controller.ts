@@ -67,4 +67,23 @@ export class ChatsController {
       data: result.data,
     };
   }
+
+  @Get(':chatId/users')
+  async getChatUsers(
+    @Param('chatId') chatId: string,
+    @Query('pageSize', ParseIntPipe) pageSize: number,
+    @Query('cursor') cursor?: string,
+    @Query('search') search?: string,
+  ) {
+    const result = await this.chatService.getChatUsers({
+      chatId,
+      cursor,
+      pageSize,
+      search,
+    });
+
+    return {
+      data: result.data,
+    };
+  }
 }

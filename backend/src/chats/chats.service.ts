@@ -25,6 +25,7 @@ import { GROUP_TYPE } from './models/group-chat.model';
 import { AuthorizeJoinChatServiceParams } from './dtos/join-chat';
 import { ChatFormatter } from './formatters/chat.formatter';
 import { OnChatInviteBody } from 'src/invites/dto/create-invite';
+import { GetChatUsersServiceParams } from './dtos/get-chat-users';
 
 @Injectable()
 export class ChatsService {
@@ -213,6 +214,35 @@ export class ChatsService {
     return {
       data: {
         authorized: true,
+      },
+    };
+  }
+
+  async getChatUsers(data: GetChatUsersServiceParams) {
+    const chatUsers = await this.chatUsersRepository.getChatUsersPaginated({
+      chatId: data.chatId,
+      cursor: data.cursor,
+      pageSize: data.pageSize + 1,
+      search: data.search,
+    });
+
+    const hasMore = chatUsers.users.length === data.pageSize + 1;
+    const lastChatUser = chatUsers.users.at(-1);
+    const nextCursor = hasMore ? lastChatUser?.user.id : undefined;
+
+    const requestedUsers = chatUsers.users.slice(0, data.pageSize);
+    const formattedUsers = requestedUsers.map((chatUser) => {
+      return {
+        id: chatUser.user.id,
+        username: chatUser.user.username,
+      };
+    });
+
+    return {
+      data: {
+        users: formattedUsers,
+        total: chatUsers.total,
+        next: nextCursor,
       },
     };
   }

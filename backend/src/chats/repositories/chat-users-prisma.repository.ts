@@ -3,6 +3,7 @@ import { ChatUsersRepository } from '../interfaces/chat-users-repository.interfa
 import { Injectable } from '@nestjs/common';
 import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
 import { ChatUser } from '../models/chat-user.model';
+import { GetChatUsersPaginatedRepositoryParams } from '../dtos/get-chat-users';
 
 @Injectable()
 export class ChatUsersPrismaRepository
@@ -37,5 +38,58 @@ export class ChatUsersPrismaRepository
         },
       },
     });
+  }
+
+  async getChatUsersPaginated({
+    chatId,
+    cursor,
+    pageSize,
+    search,
+  }: GetChatUsersPaginatedRepositoryParams) {
+    const [users, total] = await Promise.all([
+      this.prismaDataSource.chatUser.findMany({
+        select: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+            },
+          },
+        },
+        where: {
+          chatId,
+          user: search
+            ? {
+                username: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              }
+            : undefined,
+        },
+        take: pageSize,
+        cursor: cursor
+          ? {
+              chatId_userId: {
+                chatId,
+                userId: cursor,
+              },
+            }
+          : undefined,
+        orderBy: {
+          joinedAt: 'desc',
+        },
+      }),
+      this.prismaDataSource.chatUser.count({
+        where: {
+          chatId,
+        },
+      }),
+    ]);
+
+    return {
+      users,
+      total,
+    };
   }
 }
