@@ -92,7 +92,12 @@ export class ChatPrismaRepository
                   id: true,
                   groupType: true,
                   title: true,
-                  createdByUserId: true,
+                  createdByUser: {
+                    select: {
+                      id: true,
+                      username: true,
+                    },
+                  },
                 },
               },
               chatUsers: {
@@ -115,6 +120,11 @@ export class ChatPrismaRepository
         distinct: ['chatId'],
         cursor: cursor !== undefined ? { id: cursor } : undefined,
         take: limit,
+        where: {
+          chat: {
+            ...this.chatPrismaQueryBuilder.userChatsWhere({ userId }),
+          },
+        },
       }),
 
       this.prismaDataSource.chat.count({
@@ -224,7 +234,12 @@ export class ChatPrismaRepository
             id: true,
             groupType: true,
             title: true,
-            createdByUserId: true,
+            createdByUser: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
           },
         },
         chatUsers: {

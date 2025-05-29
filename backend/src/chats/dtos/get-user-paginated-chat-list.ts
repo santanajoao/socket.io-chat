@@ -1,5 +1,6 @@
-import { ChatType } from '../models/chat.model';
-import { GroupType } from '../models/group-chat.model';
+import { MessageUser } from 'src/messages/dtos/get-chat-messages';
+import { ChatTypeModel } from '../models/chat.model';
+import { GroupTypeModel } from '../models/group-chat.model';
 
 export class GetUserPaginatedChatListRepositoryParams {
   userId: string;
@@ -15,27 +16,21 @@ export class GetUserPaginatedChatListServiceParams {
 
 export class ChatData {
   id: string;
-  type: ChatType;
+  type: ChatTypeModel;
   chatUsers: {
-    user: {
-      id: string;
-      username: string;
-    };
+    user: MessageUser;
   }[];
   group: {
     id: string;
     title: string;
-    groupType: GroupType;
-    createdByUserId: string | null;
+    groupType: GroupTypeModel;
+    createdByUser: MessageUser | null;
   } | null;
   messages: {
     id: string;
     content: string;
     sentAt: Date;
-    user: {
-      id: string;
-      username: string;
-    };
+    user: MessageUser;
   }[];
   _count: {
     messages: number;
@@ -50,22 +45,16 @@ export class FormattedChatData {
     id: string;
     content: string;
     sentAt: Date;
-    user: {
-      id: string;
-      username: string;
-    };
+    user: MessageUser;
   } | null;
-  users?: {
-    id: string;
-    username: string;
-  }[];
+  users?: MessageUser[];
   id: string;
-  type: ChatType;
+  type: ChatTypeModel;
   group: {
     id: string;
     title: string;
-    groupType: GroupType;
-    createdByUserId: string | null;
+    groupType: GroupTypeModel;
+    createdByUser: MessageUser | null;
   } | null;
 }
 

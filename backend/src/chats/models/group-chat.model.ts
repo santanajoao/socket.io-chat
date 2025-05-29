@@ -3,12 +3,12 @@ export const GROUP_TYPE = {
   PRIVATE: 'PRIVATE',
 } as const;
 
-export type GroupType = (typeof GROUP_TYPE)[keyof typeof GROUP_TYPE];
+export type GroupTypeModel = (typeof GROUP_TYPE)[keyof typeof GROUP_TYPE];
 
-export class GroupChat {
+export class GroupChatModel {
   id: string;
   title: string;
   chatId: string;
-  groupType: GroupType;
+  groupType: GroupTypeModel;
   createdByUserId: string | null;
 }

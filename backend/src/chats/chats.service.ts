@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   UnauthorizedException,
   UnprocessableEntityException,
@@ -26,6 +27,8 @@ import { AuthorizeJoinChatServiceParams } from './dtos/join-chat';
 import { ChatFormatter } from './formatters/chat.formatter';
 import { OnChatInviteBody } from 'src/invites/dto/create-invite';
 import { GetChatUsersServiceParams } from './dtos/get-chat-users';
+import { MarkMessagesAsReadServiceParams } from './dtos/mark-messages-as-read';
+import { RemoveUserFromChatServiceDto } from './dtos/remove-user-from-chat';
 
 @Injectable()
 export class ChatsService {
@@ -78,10 +81,7 @@ export class ChatsService {
   async markMessagesAsRead({
     chatId,
     userId,
-  }: {
-    chatId: string;
-    userId: string;
-  }) {
+  }: MarkMessagesAsReadServiceParams) {
     const chatMessagesToRead =
       await this.messageRepository.getUnreadMessageIdsByChat({
         chatId,
@@ -177,6 +177,7 @@ export class ChatsService {
             {
               chatId: chat.id,
               userId: params.userId,
+              isAdmin: true,
             },
           ],
         });
@@ -235,6 +236,7 @@ export class ChatsService {
       return {
         id: chatUser.user.id,
         username: chatUser.user.username,
+        isAdmin: chatUser.user.chats?.[0]?.isAdmin,
       };
     });
 
@@ -243,6 +245,44 @@ export class ChatsService {
         users: formattedUsers,
         total: chatUsers.total,
         next: nextCursor,
+      },
+    };
+  }
+
+  async removeUserFromChat(data: RemoveUserFromChatServiceDto) {
+    const senderChatUser = await this.chatUsersRepository.findByUserAndChat(
+      data.requesterUserId,
+      data.chatId,
+    );
+
+    if (!senderChatUser) {
+      throw new UnauthorizedException('You are not in this chat');
+    }
+
+    if (!senderChatUser.isAdmin) {
+      throw new UnauthorizedException(
+        'You are not authorized to remove users from this chat',
+      );
+    }
+
+    const chatUser = await this.chatUsersRepository.findByUserAndChat(
+      data.targetUserId,
+      data.chatId,
+    );
+
+    if (!chatUser) {
+      throw new BadRequestException('User not found in chat');
+    }
+
+    await this.chatUsersRepository.deleteChatUser(
+      data.chatId,
+      data.targetUserId,
+    );
+
+    return {
+      data: {
+        chatId: data.chatId,
+        userId: data.targetUserId,
       },
     };
   }

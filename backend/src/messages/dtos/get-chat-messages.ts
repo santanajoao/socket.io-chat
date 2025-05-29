@@ -14,7 +14,7 @@ export class GetChatMessagesResponse {
   total: number;
 }
 
-class MessageUser {
+export class MessageUser {
   id: string;
   username: string;
 }

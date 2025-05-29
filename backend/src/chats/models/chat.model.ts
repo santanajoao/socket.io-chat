@@ -3,10 +3,10 @@ export const CHAT_TYPE = {
   GROUP: 'GROUP',
 } as const;
 
-export type ChatType = (typeof CHAT_TYPE)[keyof typeof CHAT_TYPE];
+export type ChatTypeModel = (typeof CHAT_TYPE)[keyof typeof CHAT_TYPE];
 
 export class ChatModel {
   id: string;
-  type: ChatType;
+  type: ChatTypeModel;
   createdAt: Date;
 }

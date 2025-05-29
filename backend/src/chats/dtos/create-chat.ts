@@ -1,7 +1,7 @@
-import { ChatModel, ChatType } from '../models/chat.model';
+import { ChatModel, ChatTypeModel } from '../models/chat.model';
 
 export class CreateChatRepositoryParams {
-  type: ChatType;
+  type: ChatTypeModel;
 }
 
 export class CreateChatRepositoryResponse extends ChatModel {}

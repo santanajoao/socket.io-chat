@@ -131,6 +131,10 @@ export class InvitesService {
     );
 
     if (!senderChatUser) {
+      throw new UnauthorizedException('You are not in this chat');
+    }
+
+    if (!senderChatUser.isAdmin) {
       throw new UnauthorizedException(
         'You are not authorized to invite users to this chat',
       );

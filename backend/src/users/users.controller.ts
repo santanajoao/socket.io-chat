@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  Query,
-  Request,
-} from '@nestjs/common';
+import { Controller, Get, ParseIntPipe, Query, Request } from '@nestjs/common';
 import { ChatsService } from 'src/chats/chats.service';
 import { AuthenticatedExpressRequest } from 'src/auth/interfaces/jwt.interfaces';
 
@@ -24,21 +16,6 @@ export class UsersController {
       userId: req.user?.id,
       cursor,
       pageSize,
-    });
-
-    return {
-      data: result.data,
-    };
-  }
-
-  @Post('chats/:chatId/read')
-  async markMessagesAsRead(
-    @Param('chatId') chatId: string,
-    @Request() req: AuthenticatedExpressRequest,
-  ) {
-    const result = await this.chatsService.markMessagesAsRead({
-      chatId,
-      userId: req.user?.id,
     });
 
     return {

@@ -2,7 +2,7 @@ import { AddUsersToChatRepositoryParams } from '../dtos/add-users-to-chat';
 import { ChatUsersRepository } from '../interfaces/chat-users-repository.interface';
 import { Injectable } from '@nestjs/common';
 import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
-import { ChatUser } from '../models/chat-user.model';
+import { ChatUserModel } from '../models/chat-user.model';
 import { GetChatUsersPaginatedRepositoryParams } from '../dtos/get-chat-users';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class ChatUsersPrismaRepository
 {
   async addUsersToChat(
     params: AddUsersToChatRepositoryParams,
-  ): Promise<ChatUser[]> {
+  ): Promise<ChatUserModel[]> {
     const result = await this.prismaDataSource.chatUser.createManyAndReturn({
       data: params.data,
     });
@@ -20,7 +20,10 @@ export class ChatUsersPrismaRepository
     return result;
   }
 
-  findByUserAndChat(userId: string, chatId: string): Promise<ChatUser | null> {
+  findByUserAndChat(
+    userId: string,
+    chatId: string,
+  ): Promise<ChatUserModel | null> {
     return this.prismaDataSource.chatUser.findFirst({
       where: {
         chatId,
@@ -29,7 +32,10 @@ export class ChatUsersPrismaRepository
     });
   }
 
-  findByChatAndUsers(chatId: string, userIds: string[]): Promise<ChatUser[]> {
+  findByChatAndUsers(
+    chatId: string,
+    userIds: string[],
+  ): Promise<ChatUserModel[]> {
     return this.prismaDataSource.chatUser.findMany({
       where: {
         chatId,
@@ -53,6 +59,15 @@ export class ChatUsersPrismaRepository
             select: {
               id: true,
               username: true,
+              chats: {
+                select: {
+                  chatId: true,
+                  isAdmin: true,
+                },
+                where: {
+                  chatId,
+                },
+              },
             },
           },
         },
@@ -91,5 +106,14 @@ export class ChatUsersPrismaRepository
       users,
       total,
     };
+  }
+
+  async deleteChatUser(chatId: string, userId: string): Promise<void> {
+    await this.prismaDataSource.chatUser.deleteMany({
+      where: {
+        chatId,
+        userId,
+      },
+    });
   }
 }

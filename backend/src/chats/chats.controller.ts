@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -80,6 +81,23 @@ export class ChatsController {
       cursor,
       pageSize,
       search,
+    });
+
+    return {
+      data: result.data,
+    };
+  }
+
+  @Delete(':chatId/users/:userId')
+  async removeUserFromChat(
+    @Param('chatId') chatId: string,
+    @Param('userId') userId: string,
+    @Request() req: AuthenticatedExpressRequest,
+  ) {
+    const result = await this.chatService.removeUserFromChat({
+      chatId,
+      requesterUserId: req.user.id,
+      targetUserId: userId,
     });
 
     return {

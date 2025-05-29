@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
 import { GroupChatRepository } from '../interfaces/grop-chat-repository.interface';
-import { CreateGroupChatRepositoryParams } from '../dtos/create-group-chat';
-import { GroupChat } from '../models/group-chat.model';
+import {
+  CreateGroupChatRepositoryParams,
+  CreateGroupChatRepositoryResponse,
+} from '../dtos/create-group-chat';
 
 @Injectable()
 export class GroupChatPrismaRepository
@@ -11,8 +13,16 @@ export class GroupChatPrismaRepository
 {
   async createGroupChat(
     params: CreateGroupChatRepositoryParams,
-  ): Promise<GroupChat> {
+  ): Promise<CreateGroupChatRepositoryResponse> {
     const data = await this.prismaDataSource.groupChat.create({
+      include: {
+        createdByUser: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
       data: {
         title: params.title,
         chatId: params.chatId,

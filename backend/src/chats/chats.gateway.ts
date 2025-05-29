@@ -16,6 +16,7 @@ import { CHAT_EVENTS } from './constants/events';
 import { RespondInviteRequestBody } from 'src/invites/dto/respond-invite';
 import { InvitesService } from 'src/invites/invites.service';
 import { OnChatInviteBody } from 'src/invites/dto/create-invite';
+import { MarkMessagesAsReadBody } from './dtos/mark-messages-as-read';
 
 @WebSocketGateway({ namespace: CHAT_NAMESPACE, cors: FRONTEND_CORS })
 export class ChatsGateway {
@@ -89,6 +90,17 @@ export class ChatsGateway {
     this.namespace
       .to(result.data.userIdsToEmitNewChat)
       .emit(CHAT_EVENTS.CREATED_CHAT, result.data.chat);
+  }
+
+  @SubscribeMessage('chat:messages:read')
+  async markChatMessagesAsRead(
+    @ConnectedSocket() socket: AuthenticatedSocket,
+    @MessageBody() body: MarkMessagesAsReadBody,
+  ) {
+    await this.chatsService.markMessagesAsRead({
+      chatId: body.chatId,
+      userId: socket.request.user.id,
+    });
   }
 
   @OnEvent(CHAT_EVENTS.CHAT_INVITE)
