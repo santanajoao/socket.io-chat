@@ -15,11 +15,6 @@ async function getUserChats({ pageSize, cursor }: GetUserChatsParams) {
   }));
 }
 
-async function markChatMessagesAsRead(chatId: string) {
-  return treatAxiosRequest<GetUserChatsResponse>(() => userClient.post(`/chats/${chatId}/read`));
-}
-
 export const backendUserApi = {
   getUserChats,
-  markChatMessagesAsRead,
 };

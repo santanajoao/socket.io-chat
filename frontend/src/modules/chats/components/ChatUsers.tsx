@@ -7,7 +7,11 @@ import { useCallback, useEffect, useState } from "react";
 import { ChatUser } from "../types/getChatUsers";
 import { backendChatApi } from "../apis/backend";
 import { useChatContext } from "../contexts/ChatContext";
-import { ChatBadge } from "./ChatBadge";
+import { ChatUserItem } from "./ChatUserItem";
+import { useAuthContext } from "@/modules/auth/contexts/authContext";
+import { useLoading } from "@/modules/shared/hooks/useLoading";
+
+const USERS_PAGE_SIZE = 8;
 
 export function ChatUsers() {
   const [chatUsers, setChatUsers] = useState<ChatUser[]>([]);
@@ -15,20 +19,28 @@ export function ChatUsers() {
   const [search, setSearch] = useState<string>("");
   const [prevSearch, setPrevSearch] = useState<string>("");
 
-  const { selectedChatId } = useChatContext();
+  const { selectedChatId, selectedChat } = useChatContext();
+  const { user: loggedUser } = useAuthContext();
+
+  const [chatUsersAreLoading, handleChatUsersLoading] = useLoading();
+
+  const loggedIsCreator = loggedUser?.id === selectedChat?.group?.createdByUser?.id;
+  const hasManyUsers = selectedChat?.usersCount && selectedChat?.usersCount > USERS_PAGE_SIZE;
 
   const fetchChatUsers = useCallback(async (params: { search?: string } = {}) => {
-    if (!selectedChatId) return;
+    return handleChatUsersLoading(async () => {
+      if (!selectedChatId) return;
 
-    const result = await backendChatApi.getChatUsers({
-      chatId: selectedChatId,
-      pageSize: 8,
-      search: params.search ?? search,
-    });
+      const result = await backendChatApi.getChatUsers({
+        chatId: selectedChatId,
+        pageSize: USERS_PAGE_SIZE,
+        search: params.search ?? search,
+      });
 
-    if (result.error) return;
+      if (result.error) return;
 
-    setChatUsers(result.data.users);
+      setChatUsers(result.data.users);
+    })
   }, [selectedChatId, search]);
 
   function handleSearchInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -51,20 +63,27 @@ export function ChatUsers() {
     fetchChatUsers();
   }, []);
 
+  // dar acesso admin
+  // admin remover usuários
+  // admin mudar nome do grupo
+  // o criador não pode ser afetado por essas ações
+  // admin invitar
+
   return (
     <div className="flex flex-col gap-2">
-      {/* TODO: Lidar com dono do chat e permissões, apenas admins podem invitar */}
-      <EmailInviteDialog className="sm:max-w-md" asChild>
-        <Button size="dynamic" variant="outline" className="rounded-md w-full text-left justify-start">
-          <Badge className="size-6 rounded-full">
-            <PlusIcon />
-          </Badge>
+      {(!chatUsersAreLoading && loggedIsCreator) && (
+        <EmailInviteDialog className="sm:max-w-md" asChild>
+          <Button size="dynamic" variant="outline" className="rounded-md w-full text-left justify-start">
+            <Badge className="size-6 rounded-full">
+              <PlusIcon />
+            </Badge>
 
-          <span>Invite new user</span>
-        </Button>
-      </EmailInviteDialog>
+            <span>Invite new user</span>
+          </Button>
+        </EmailInviteDialog>
+      )}
 
-      {true && (
+      {(!chatUsersAreLoading && hasManyUsers) && (
         <div className="flex gap-2">
           <Input
             placeholder="Search for users"
@@ -95,20 +114,17 @@ export function ChatUsers() {
         </div>
       )}
 
-      {/* TODO: Ações nos usuários, expulsar, etc */}
-      <ul id="search-results" aria-live="polite" className="flex flex-col gap-1">
-        {chatUsers.map((user) => (
-          <li key={user.id}>
-            <div className="flex items-center gap-2 border rounded-md p-2">
-              <ChatBadge>
-                {user.username[0].toUpperCase()}
-              </ChatBadge>
-
-              <span>{user.username}</span>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {chatUsersAreLoading ? (
+        <div>Loading...</div>
+      ) : (
+        <ul id="search-results" aria-live="polite" className="flex flex-col gap-1">
+          {chatUsers.map((user) => (
+            <li key={user.id}>
+              <ChatUserItem chatUser={user} />
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

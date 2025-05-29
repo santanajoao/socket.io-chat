@@ -1,7 +1,14 @@
+import { ChatUser } from "@/modules/chats/types/getChatUsers";
+
 export type GetUserChatsParams = {
   pageSize: number;
   cursor?: string;
 };
+
+export type MessageUser = {
+  id: string;
+  username: string;
+}
 
 export type UserChat = {
   id: string;
@@ -10,6 +17,7 @@ export type UserChat = {
     id: string;
     groupType: string;
     title: string;
+    createdByUser?: ChatUser;
   }
   unreadMessagesCount: number;
   usersCount?: number;
@@ -17,15 +25,9 @@ export type UserChat = {
     id: string;
     content: string;
     sentAt: string;
-    user: {
-      id: string;
-      username: string;
-    }
+    user: MessageUser;
   }
-  users?: {
-    id: string;
-    username: string;
-  }[]
+  users?: ChatUser[];
 }
 
 export type GetUserChatsResponse = {

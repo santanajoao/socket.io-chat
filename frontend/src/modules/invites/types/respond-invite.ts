@@ -1,8 +1,3 @@
-export type RespondInviteParams = {
-  inviteId: string;
-  accept: boolean;
-};
-
 export type OnInviteResponseBody = {
   id: string;
   accepted: boolean;

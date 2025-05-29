@@ -12,8 +12,6 @@ import { ChatHeaderContainer } from "./ChatHeaderContainer";
 import { ChatBadge } from "./ChatBadge";
 import { ChatFormatter } from "../helpers/formatter";
 
-// trocar http por websocket na leitura de mensagens
-
 type Props = {
   className?: string;
 }
@@ -46,6 +44,9 @@ export function ChatMessages({ className }: Props) {
     return loggedUser?.id === message.user.id ? 'You' : message.user.username;
   }
 
+  // novo tipo de mensagem
+  // mensagem que indica que o chat foi criado pelo usuário X
+  // mensagem que um novo usuário se juntou ao chat
   return (
     <div className={cn("p-2 border flex flex-col flex-1 gap-2 rounded-md overflow-hidden", className)}>
       {selectedChatId && (

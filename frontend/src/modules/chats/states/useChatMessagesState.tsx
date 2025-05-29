@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useChatContext } from "../contexts/ChatContext";
-import { chatSocket } from "../socket/backend";
+import { chatSocket } from "../socket/connection";
 import { ChatMessage } from "../types/chatMessages";
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
-import { backendUserApi } from "@/modules/users/apis/backend";
 import debounce from "lodash.debounce";
+import { BackendChatSocketEvents } from "../socket/events";
 
 export function useChatMessagesState() {
   const { selectedChatId, messagesAreLoading, selectedChat, setMessages, setChats, selectedChatMessages, openChatDetails } = useChatContext();
@@ -18,10 +18,9 @@ export function useChatMessagesState() {
   const messageSubmitIsDisabled = !messageContent.trim() || messagesAreLoading;
 
   function handleSendMessage() {
-    chatSocket.emit('message:send', {
-      chatId: selectedChatId,
-      content: messageContent,
-    });
+    if (!selectedChatId) return;
+
+    BackendChatSocketEvents.sendMessage(selectedChatId, messageContent);
 
     setMessageContent('');
   }
@@ -60,24 +59,24 @@ export function useChatMessagesState() {
     });
   }, [selectedChatId]);
 
-  const handleMarkAsRead = useCallback(async (chatId: string, message: ChatMessage) => {
+  const handleMessageReadOnReceive = useCallback(async (chatId: string, message: ChatMessage) => {
     const chatIsOpen = chatId === selectedChatId;
     const messageIsNotMine = message.user.id !== authContext.user?.id;
     const shouldMarkAsRead = chatIsOpen && messageIsNotMine;
     if (shouldMarkAsRead) {
-      await backendUserApi.markChatMessagesAsRead(chatId);
+      BackendChatSocketEvents.markChatMessageAsRead(chatId);
     }
   }, [selectedChatId, authContext.user]);
 
-  const debouncedMarkAsRead = useMemo(() => {
-    return debounce(handleMarkAsRead, 700);
-  }, [handleMarkAsRead]);
+  const debouncedHandleMessageReadOnReceive = useMemo(() => {
+    return debounce(handleMessageReadOnReceive, 700);
+  }, [handleMessageReadOnReceive]);
 
   useEffect(() => {
     function handleMessageReceive({ chatId, message }: { chatId: string, message: ChatMessage }) {
       updateChatLastMessage(chatId, message);
       addNewMessage(chatId, message);
-      debouncedMarkAsRead(chatId, message);
+      debouncedHandleMessageReadOnReceive(chatId, message);
     }
 
     chatSocket.on('message:receive', handleMessageReceive);
@@ -85,9 +84,9 @@ export function useChatMessagesState() {
     return () => {
       chatSocket.off('message:receive', handleMessageReceive);
 
-      debouncedMarkAsRead.flush();
+      debouncedHandleMessageReadOnReceive.flush();
     }
-  }, [updateChatLastMessage, addNewMessage, debouncedMarkAsRead]);
+  }, [updateChatLastMessage, addNewMessage, debouncedHandleMessageReadOnReceive]);
 
   return {
     selectedChatId,

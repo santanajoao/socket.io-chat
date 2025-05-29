@@ -13,7 +13,8 @@ import { Loader2Icon } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { newGroupChatSchema } from "../schemas/newGroupChatSchema";
 import { CreateGroupChatFormFields } from "../types/startNewGroupChat";
-import { chatSocket } from "../socket/backend";
+import { chatSocket } from "../socket/connection";
+import { BackendChatSocketEvents } from "../socket/events";
 
 type Props = {
   onClose: () => void;
@@ -39,7 +40,7 @@ export function StartNewGroupForm({ onClose }: Props) {
         return setError(result.error);
       }
 
-      chatSocket.emit('chat:join', { chatId: result.data.id });
+      BackendChatSocketEvents.joinChat(result.data.id);
 
       setChats((prev) => [result.data, ...prev]);
       onClose();

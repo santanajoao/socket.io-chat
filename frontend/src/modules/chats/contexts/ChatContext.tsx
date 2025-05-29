@@ -4,7 +4,7 @@ import { createContext, Dispatch, PropsWithChildren, SetStateAction, useContext,
 import { ChatMessage } from "../types/chatMessages";
 import { useLoading, UseLoadingHandle } from "@/modules/shared/hooks/useLoading";
 import { UserChat } from "@/modules/users/types/user-chats";
-import { chatSocket } from "../socket/backend";
+import { chatSocket } from "../socket/connection";
 import { UserInvite } from "@/modules/invites/types/user-invites";
 
 type MessagesMap = Record<string, ChatMessage[]>

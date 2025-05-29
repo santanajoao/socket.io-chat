@@ -2,6 +2,7 @@
 export type ChatUser = {
   id: string;
   username: string;
+  isAdmin: boolean;
 }
 
 export type ChatUsersApiResponse = {

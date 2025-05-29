@@ -6,7 +6,6 @@ import { Input } from "@/modules/shared/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { register } from "../api/backend";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/modules/shared/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
@@ -17,6 +16,7 @@ import { registerSchema } from "../schemas/registerSchema";
 import { RegisterFields } from "../types/register";
 import { PageContainer } from "@/modules/shared/components/containers/PageContainer";
 import { ROUTES } from "@/modules/shared/constants/routes";
+import { backendAuthApi } from "../api/backend";
 
 export function RegisterPage() {
   const form = useForm<RegisterFields>({
@@ -38,7 +38,7 @@ export function RegisterPage() {
     return handleLoading(async () => {
       setApiError(null);
 
-      const response = await register(data);
+      const response = await backendAuthApi.register(data);
       if (response.error) {
         return setApiError(response.error);
       }

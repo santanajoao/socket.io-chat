@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect } from "react";
-import { chatSocket } from "../socket/backend";
+import { chatSocket } from "../socket/connection";
 import { backendUserApi } from "@/modules/users/apis/backend";
 import { backendChatApi } from "../apis/backend";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { useChatContext } from "../contexts/ChatContext";
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
 import { UserChat } from "@/modules/users/types/user-chats";
+import { BackendChatSocketEvents } from "../socket/events";
 
 export function useChatListStates() {
   const {
@@ -55,7 +56,7 @@ export function useChatListStates() {
       });
     })
 
-    await backendUserApi.markChatMessagesAsRead(chatId);
+    BackendChatSocketEvents.markChatMessageAsRead(chatId);
   }
 
   async function selectChat(chatId: string) {

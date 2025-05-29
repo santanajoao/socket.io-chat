@@ -2,10 +2,11 @@ import { useAuthContext } from "@/modules/auth/contexts/authContext";
 import { useChatContext } from "../contexts/ChatContext";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { backendInviteApi } from "@/modules/invites/apis/backend";
-import { OnInviteResponseBody, RespondInviteParams } from "@/modules/invites/types/respond-invite";
+import { OnInviteResponseBody } from "@/modules/invites/types/respond-invite";
 import { UserInvite } from "@/modules/invites/types/user-invites";
-import { chatSocket } from "../socket/backend";
+import { chatSocket } from "../socket/connection";
 import { useCallback, useEffect, useState } from "react";
+import { BackendChatSocketEvents } from "../socket/events";
 
 export function useInvitesPopoverStates() {
   const authContext = useAuthContext();
@@ -60,9 +61,9 @@ export function useInvitesPopoverStates() {
     })
   }, []);
 
-  async function respondInvite(data: RespondInviteParams) {
+  async function respondInvite(inviteId: string, accept: boolean) {
     setInviteResponseIsLoading(true);
-    chatSocket.emit('invite:response', data);
+    BackendChatSocketEvents.respondInvite(inviteId, accept);
   }
 
   useEffect(() => {

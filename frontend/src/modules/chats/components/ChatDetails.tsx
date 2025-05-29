@@ -1,16 +1,14 @@
 'use client';
 
 import { Button } from "@/modules/shared/components/ui/button";
-import { PlusIcon, SearchIcon, SeparatorHorizontal, XIcon } from "lucide-react";
 import { ChatHeaderContainer } from "./ChatHeaderContainer";
 import { ChatBadge } from "./ChatBadge";
 import { useChatContext } from "../contexts/ChatContext";
 import { ChatFormatter } from "../helpers/formatter";
 import { UserChat } from "@/modules/users/types/user-chats";
-import { Badge } from "@/modules/shared/components/ui/badge";
-import { Input } from "@/modules/shared/components/ui/input";
 import { Separator } from "@/modules/shared/components/ui/separator";
 import { ChatUsers } from "./ChatUsers";
+import { XIcon } from "lucide-react";
 
 export function ChatDetails() {
   const { selectedChat, closeChatDetails } = useChatContext();
@@ -75,6 +73,12 @@ export function ChatDetails() {
           <div>
             {formatChatTypeAndMembers(selectedChat!)}
           </div>
+
+          {selectedChat?.group?.groupType === 'PRIVATE' && (
+            <span className="text-sm">
+              Criado por <span className="font-medium">{selectedChat?.group?.createdByUser?.username}</span>
+            </span>
+          )}
         </div>
 
         <Separator />

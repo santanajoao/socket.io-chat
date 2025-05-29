@@ -61,7 +61,7 @@ export function InvitesPopover({ children, ...props }: Props) {
                       {(!invite.acceptedAt || invite.accepted) && (
                         <Button
                           disabled={Boolean(invite.acceptedAt) || inviteResponseIsLoading}
-                          onClick={() => respondInvite({ inviteId: invite.id, accept: true })}
+                          onClick={() => respondInvite(invite.id, true)}
                           variant="outline"
                           size="icon-sm"
                         >
@@ -72,7 +72,7 @@ export function InvitesPopover({ children, ...props }: Props) {
                       {(!invite.acceptedAt || invite.accepted === false) && (
                         <Button
                           disabled={Boolean(invite.acceptedAt) || inviteResponseIsLoading}
-                          onClick={() => respondInvite({ inviteId: invite.id, accept: false })}
+                          onClick={() => respondInvite(invite.id, false)}
                           variant="destructive"
                           size="icon-sm"
                         >
