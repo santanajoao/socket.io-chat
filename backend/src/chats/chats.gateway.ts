@@ -17,6 +17,7 @@ import { RespondInviteRequestBody } from 'src/invites/dto/respond-invite';
 import { InvitesService } from 'src/invites/invites.service';
 import { OnChatInviteBody } from 'src/invites/dto/create-invite';
 import { MarkMessagesAsReadBody } from './dtos/mark-messages-as-read';
+import { OnAdminRightUpdateBody } from './dtos/grand-admin-rights';
 
 @WebSocketGateway({ namespace: CHAT_NAMESPACE, cors: FRONTEND_CORS })
 export class ChatsGateway {
@@ -84,7 +85,7 @@ export class ChatsGateway {
     });
 
     this.namespace
-      .to([result.data.invite.senderUserId, result.data.invite.receiverUserId])
+      .to([result.data.invite.senderUserId, result.data.invite.receiverUser.id])
       .emit(CHAT_EVENTS.INVITE_RESPONSE, result.data.invite);
 
     this.namespace
@@ -108,5 +109,12 @@ export class ChatsGateway {
     this.namespace
       .to(body.receiverUserId)
       .emit(CHAT_EVENTS.CHAT_INVITE, body.invite);
+  }
+
+  @OnEvent(CHAT_EVENTS.CHAT_ADMIN_RIGHT_UPDATE)
+  onAdminRightUpdate(body: OnAdminRightUpdateBody) {
+    this.namespace
+      .to(body.chatId)
+      .emit(CHAT_EVENTS.CHAT_ADMIN_RIGHT_UPDATE, body);
   }
 }

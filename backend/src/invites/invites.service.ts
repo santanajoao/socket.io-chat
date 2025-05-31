@@ -83,6 +83,10 @@ export class InvitesService {
       });
     });
 
+    const receiverUser = await this.userRepository.findById(
+      invite.receiverUserId,
+    );
+
     let formattedChat: FormattedChatData | null = null;
 
     if (data.accept) {
@@ -106,7 +110,7 @@ export class InvitesService {
         id: invite.id,
         accepted: data.accept,
         senderUserId: invite.senderUserId,
-        receiverUserId: invite.receiverUserId,
+        receiverUser: receiverUser!,
         acceptedAt: nowDate,
         chatId: invite.chatId,
       },

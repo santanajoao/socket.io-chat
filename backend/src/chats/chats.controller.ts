@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   Request,
@@ -81,6 +82,25 @@ export class ChatsController {
       cursor,
       pageSize,
       search,
+    });
+
+    return {
+      data: result.data,
+    };
+  }
+
+  @Patch(':chatId/users/:userId/admin')
+  async grantAdminRights(
+    @Param('chatId') chatId: string,
+    @Param('userId') userId: string,
+    @Body() body: { isAdmin: boolean },
+    @Request() req: AuthenticatedExpressRequest,
+  ) {
+    const result = await this.chatService.updateAdminRights({
+      chatId,
+      requesterUserId: req.user.id,
+      targetUserId: userId,
+      isAdmin: body.isAdmin,
     });
 
     return {

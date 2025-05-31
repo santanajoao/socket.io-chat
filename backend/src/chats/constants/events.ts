@@ -4,4 +4,5 @@ export const CHAT_EVENTS = {
   CREATED_CHAT: 'chat:created',
   INVITE_RESPONSE: 'invite:response',
   CHAT_INVITE: 'chat:invite',
+  CHAT_ADMIN_RIGHT_UPDATE: 'chat:admin-right:update',
 };

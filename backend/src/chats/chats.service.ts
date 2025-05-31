@@ -30,6 +30,7 @@ import { GetChatUsersServiceParams } from './dtos/get-chat-users';
 import { MarkMessagesAsReadServiceParams } from './dtos/mark-messages-as-read';
 import { RemoveUserFromChatServiceDto } from './dtos/remove-user-from-chat';
 import { GetChatDetailsDto } from './dtos/get-chat-details';
+import { UpdateAdminRightsServiceDto } from './dtos/grand-admin-rights';
 
 @Injectable()
 export class ChatsService {
@@ -310,6 +311,58 @@ export class ChatsService {
 
     return {
       data: formattedChatDetails,
+    };
+  }
+
+  async updateAdminRights(data: UpdateAdminRightsServiceDto) {
+    const senderChatUser = await this.chatUsersRepository.findByUserAndChat(
+      data.requesterUserId,
+      data.chatId,
+    );
+
+    if (!senderChatUser) {
+      throw new UnauthorizedException('You are not in this chat');
+    }
+
+    if (!senderChatUser.isAdmin) {
+      throw new UnauthorizedException(
+        'You are not authorized to make admin actions in this chat',
+      );
+    }
+
+    const chatUser = await this.chatUsersRepository.findByUserAndChat(
+      data.targetUserId,
+      data.chatId,
+    );
+
+    if (!chatUser) {
+      throw new BadRequestException('User not found in chat');
+    }
+
+    const stateAlreadyUpdated = chatUser.isAdmin === data.isAdmin;
+    if (stateAlreadyUpdated) {
+      throw new BadRequestException(
+        'Admin rights are already the same as requested',
+      );
+    }
+
+    const updatedChatUser =
+      await this.chatUsersRepository.updateByChatIdAndUserId(
+        data.chatId,
+        data.targetUserId,
+        {
+          isAdmin: data.isAdmin,
+        },
+      );
+
+    this.eventEmitter.emit(CHAT_EVENTS.CHAT_ADMIN_RIGHT_UPDATE, {
+      chatId: data.chatId,
+      userId: data.targetUserId,
+      isAdmin: data.isAdmin,
+    });
+
+    return {
+      data: updatedChatUser,
     };
   }
 }

@@ -14,7 +14,10 @@ export class OnInviteResponseBody {
     id: string;
     accepted: boolean;
     senderUserId: string;
-    receiverUserId: string;
+    receiverUser: {
+      id: string;
+      username: string;
+    };
     acceptedAt: Date;
     chatId: string;
   };

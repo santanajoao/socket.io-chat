@@ -116,4 +116,22 @@ export class ChatUsersPrismaRepository
       },
     });
   }
+
+  async updateByChatIdAndUserId(
+    chatId: string,
+    userId: string,
+    data: Partial<ChatUserModel>,
+  ) {
+    const result = await this.prismaDataSource.chatUser.update({
+      where: {
+        chatId_userId: {
+          chatId,
+          userId,
+        },
+      },
+      data,
+    });
+
+    return result;
+  }
 }
