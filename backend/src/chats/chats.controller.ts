@@ -104,4 +104,19 @@ export class ChatsController {
       data: result.data,
     };
   }
+
+  @Get(':chatId')
+  async getChatDetails(
+    @Request() req: AuthenticatedExpressRequest,
+    @Param('chatId') chatId: string,
+  ) {
+    const result = await this.chatService.getChatDetails({
+      chatId,
+      userId: req.user.id,
+    });
+
+    return {
+      data: result.data,
+    };
+  }
 }

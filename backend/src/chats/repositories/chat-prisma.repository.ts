@@ -84,7 +84,6 @@ export class ChatPrismaRepository
                       },
                     },
                   },
-                  chatUsers: true,
                 },
               },
               group: {
@@ -92,12 +91,6 @@ export class ChatPrismaRepository
                   id: true,
                   groupType: true,
                   title: true,
-                  createdByUser: {
-                    select: {
-                      id: true,
-                      username: true,
-                    },
-                  },
                 },
               },
               chatUsers: {
@@ -264,6 +257,37 @@ export class ChatPrismaRepository
 
   async getChatById(id: string): Promise<ChatModel | null> {
     const data = this.prismaDataSource.chat.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    return data;
+  }
+
+  async getChatDetailsById(id: string) {
+    const data = await this.prismaDataSource.chat.findUnique({
+      select: {
+        id: true,
+        createdAt: true,
+        group: {
+          select: {
+            title: true,
+            groupType: true,
+            createdByUser: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            chatUsers: true,
+          },
+        },
+      },
       where: {
         id,
       },

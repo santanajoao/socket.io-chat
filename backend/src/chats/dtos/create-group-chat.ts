@@ -18,8 +18,5 @@ export class CreateGroupChatRepositoryParams {
   createdByUserId: string;
 }
 
-export class CreateGroupChatRepositoryResponse extends GroupChatModel {
-  createdByUser: MessageUser | null;
-}
-
+export class CreateGroupChatRepositoryResponse extends GroupChatModel {}
 export class OnCreateGroupChatBody extends ChatData {}

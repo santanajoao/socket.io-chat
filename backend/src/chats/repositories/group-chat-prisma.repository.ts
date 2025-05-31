@@ -15,14 +15,6 @@ export class GroupChatPrismaRepository
     params: CreateGroupChatRepositoryParams,
   ): Promise<CreateGroupChatRepositoryResponse> {
     const data = await this.prismaDataSource.groupChat.create({
-      include: {
-        createdByUser: {
-          select: {
-            id: true,
-            username: true,
-          },
-        },
-      },
       data: {
         title: params.title,
         chatId: params.chatId,

@@ -24,7 +24,6 @@ export class ChatData {
     id: string;
     title: string;
     groupType: GroupTypeModel;
-    createdByUser: MessageUser | null;
   } | null;
   messages: {
     id: string;
@@ -34,13 +33,11 @@ export class ChatData {
   }[];
   _count: {
     messages: number;
-    chatUsers: number;
   };
 }
 
 export class FormattedChatData {
   unreadMessagesCount: number;
-  usersCount?: number;
   lastMessage: {
     id: string;
     content: string;
@@ -54,7 +51,6 @@ export class FormattedChatData {
     id: string;
     title: string;
     groupType: GroupTypeModel;
-    createdByUser: MessageUser | null;
   } | null;
 }
 

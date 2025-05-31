@@ -29,6 +29,7 @@ import { OnChatInviteBody } from 'src/invites/dto/create-invite';
 import { GetChatUsersServiceParams } from './dtos/get-chat-users';
 import { MarkMessagesAsReadServiceParams } from './dtos/mark-messages-as-read';
 import { RemoveUserFromChatServiceDto } from './dtos/remove-user-from-chat';
+import { GetChatDetailsDto } from './dtos/get-chat-details';
 
 @Injectable()
 export class ChatsService {
@@ -192,7 +193,6 @@ export class ChatsService {
       type: CHAT_TYPE.GROUP,
       unreadMessagesCount: 0,
       lastMessage: null,
-      usersCount: 1,
     };
 
     return {
@@ -284,6 +284,32 @@ export class ChatsService {
         chatId: data.chatId,
         userId: data.targetUserId,
       },
+    };
+  }
+
+  async getChatDetails({ chatId, userId }: GetChatDetailsDto) {
+    const chatDetails = await this.chatRepository.getChatDetailsById(chatId);
+    if (!chatDetails) {
+      throw new BadRequestException('Chat not found');
+    }
+
+    const chatUser = await this.chatUsersRepository.findByUserAndChat(
+      userId,
+      chatId,
+    );
+    if (!chatUser) {
+      throw new UnauthorizedException('You are not in this chat');
+    }
+
+    const { _count, ...details } = chatDetails;
+    const formattedChatDetails = {
+      ...details,
+      usersCount: _count.chatUsers,
+      isAdmin: chatUser.isAdmin,
+    };
+
+    return {
+      data: formattedChatDetails,
     };
   }
 }
