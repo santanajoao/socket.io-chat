@@ -7,6 +7,7 @@ import { UserChat } from "@/modules/users/types/user-chats";
 import { chatSocket } from "../socket/connection";
 import { UserInvite } from "@/modules/invites/types/user-invites";
 import { TChatDetails } from "../types/chatDetails";
+import { ChatUser } from "../types/getChatUsers";
 
 type MessagesMap = Record<string, ChatMessage[]>
 type SelectedChaId = string | null;
@@ -28,6 +29,9 @@ type ContextValues = {
   setSelectedChatDetails: Dispatch<SetStateAction<TChatDetails | null>>;
 
   selectedChatMessages: ChatMessage[];
+
+  selectedChatUsers: ChatUser[];
+  setSelectedChatUsers: Dispatch<SetStateAction<ChatUser[]>>;
 
   invites: UserInvite[];
   setInvites: Dispatch<SetStateAction<UserInvite[]>>;
@@ -54,11 +58,14 @@ export function ChatProvider({ children }: ChatProviderProps) {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [selectedChatDetails, setSelectedChatDetails] = useState<TChatDetails | null>(null);
 
+  const [selectedChatUsers, setSelectedChatUsers] = useState<ChatUser[]>([]);
+
   const [chatDetailsIsOpen, setChatDetailsIsOpen] = useState(false);
 
   const selectedChatMessages = selectedChatId ? messages[selectedChatId] ?? [] : [];
 
   const selectedChat = chats.find((chat) => chat.id === selectedChatId);
+
 
   function closeChatDetails() {
     setChatDetailsIsOpen(false);
@@ -66,6 +73,8 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
   function openChatDetails() {
     setChatDetailsIsOpen(true);
+    setSelectedChatDetails(null);
+    setSelectedChatUsers([]);
   }
 
   useEffect(() => {
@@ -94,6 +103,8 @@ export function ChatProvider({ children }: ChatProviderProps) {
     closeChatDetails,
     selectedChatDetails,
     setSelectedChatDetails,
+    selectedChatUsers,
+    setSelectedChatUsers,
   };
 
   return (

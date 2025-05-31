@@ -7,12 +7,11 @@ import { UserInvite } from "@/modules/invites/types/user-invites";
 import { chatSocket } from "../socket/connection";
 import { useCallback, useEffect, useState } from "react";
 import { BackendChatSocketEvents } from "../socket/events";
-import { captureRejectionSymbol } from "events";
 
 export function useInvitesPopoverStates() {
   const authContext = useAuthContext();
 
-  const { invites, setInvites, setChats } = useChatContext();
+  const { invites, setInvites, setSelectedChatUsers } = useChatContext();
   const [inviteListIsLoading, handleInviteListIsLoading] = useLoading(true);
 
   const [inviteResponseIsLoading, setInviteResponseIsLoading] = useState<boolean>(false);
@@ -42,24 +41,17 @@ export function useInvitesPopoverStates() {
     setInviteResponseIsLoading(false);
   }, []);
 
-  const updateGroupUsersIfAccepted = useCallback(({ receiverUser, accepted, chatId }: OnInviteResponseBody) => {
-    console.log({ receiverUser, accepted, chatId })
-    if (!accepted) return;
+  const updateGroupUsersIfAccepted = useCallback((data: OnInviteResponseBody) => {
+    if (!data.accepted) return;
 
-    setChats((prev) => {
-      return prev.map((chat) => {
-        if (chat.id === chatId) {
-          if (chat.group?.groupType !== "PRIVATE") return chat;
+    setSelectedChatUsers((prev) => {
+      const newChatUser = {
+        id: data.receiverUser.id,
+        username: data.receiverUser.username,
+        isAdmin: false,
+      }
 
-          const treatedUsers = chat.users || [];
-          return {
-            ...chat,
-            users: [...treatedUsers!, receiverUser],
-          };
-        }
-
-        return chat;
-      })
+      return [...prev, newChatUser]
     })
   }, []);
 

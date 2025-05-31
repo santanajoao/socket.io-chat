@@ -65,6 +65,7 @@ export function useChatListStates() {
     setSelectedChatId(chatId);
     closeChatDetails();
 
+
     const targetChat = chats.find((chat) => chat.id === chatId);
     const hasUnreadMessages = targetChat && targetChat.unreadMessagesCount > 0;
 

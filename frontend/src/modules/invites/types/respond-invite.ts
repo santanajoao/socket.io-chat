@@ -5,7 +5,6 @@ export type OnInviteResponseBody = {
   receiverUser: {
     id: string;
     username: string;
-    isAdmin: boolean;
   };
   acceptedAt: string;
   chatId: string;

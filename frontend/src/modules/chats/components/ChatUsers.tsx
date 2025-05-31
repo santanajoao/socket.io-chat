@@ -4,27 +4,21 @@ import { Input } from "@/modules/shared/components/ui/input";
 import { PlusIcon, SearchIcon, XIcon } from "lucide-react";
 import { EmailInviteDialog } from "./EmailInviteDialog";
 import { useCallback, useEffect, useState } from "react";
-import { ChatUser } from "../types/getChatUsers";
 import { backendChatApi } from "../apis/backend";
 import { useChatContext } from "../contexts/ChatContext";
 import { ChatUserItem } from "./ChatUserItem";
-import { useAuthContext } from "@/modules/auth/contexts/authContext";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 
 const USERS_PAGE_SIZE = 8;
 
 export function ChatUsers() {
-  const [chatUsers, setChatUsers] = useState<ChatUser[]>([]);
-
   const [search, setSearch] = useState<string>("");
   const [prevSearch, setPrevSearch] = useState<string>("");
 
-  const { selectedChatId, selectedChatDetails } = useChatContext();
-  const { user: loggedUser } = useAuthContext();
+  const { selectedChatId, selectedChatDetails, selectedChatUsers, setSelectedChatUsers } = useChatContext();
 
   const [chatUsersAreLoading, handleChatUsersLoading] = useLoading();
 
-  const loggedIsCreator = loggedUser?.id === selectedChatDetails?.group?.createdByUser?.id;
   const hasManyUsers = selectedChatDetails?.usersCount && selectedChatDetails.usersCount > USERS_PAGE_SIZE;
 
   const fetchChatUsers = useCallback(async (params: { search?: string } = {}) => {
@@ -39,7 +33,7 @@ export function ChatUsers() {
 
       if (result.error) return;
 
-      setChatUsers(result.data.users);
+      setSelectedChatUsers(result.data.users);
     })
   }, [selectedChatId, search]);
 
@@ -118,7 +112,7 @@ export function ChatUsers() {
         <div>Loading...</div>
       ) : (
         <ul id="search-results" aria-live="polite" className="flex flex-col gap-1">
-          {chatUsers.map((user) => (
+          {selectedChatUsers.map((user) => (
             <li key={user.id}>
               <ChatUserItem chatUser={user} />
             </li>

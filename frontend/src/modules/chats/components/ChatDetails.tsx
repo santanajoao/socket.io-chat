@@ -9,12 +9,16 @@ import { Separator } from "@/modules/shared/components/ui/separator";
 import { ChatUsers } from "./ChatUsers";
 import { XIcon } from "lucide-react";
 import { TChatDetails } from "../types/chatDetails";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { backendChatApi } from "../apis/backend";
+import { chatSocket } from "../socket/connection";
+import { OnAdminRightUpdateBody } from "../types/updateAdminRights";
+import { useAuthContext } from "@/modules/auth/contexts/authContext";
 
 export function ChatDetails() {
-  const { selectedChat, closeChatDetails, selectedChatDetails, setSelectedChatDetails } = useChatContext();
+  const { selectedChat, closeChatDetails, selectedChatDetails, setSelectedChatDetails, setSelectedChatUsers } = useChatContext();
+  const { user: loggedUser } = useAuthContext();
 
   const isPrivateGroup = selectedChat?.type === "GROUP" && selectedChat.group?.groupType === "PRIVATE";
   const [chatDetailsLoading, handleLoading] = useLoading(isPrivateGroup);
@@ -64,9 +68,42 @@ export function ChatDetails() {
     return formattedChatType;
   }
 
+  const onAdminRightUpdate = useCallback((data: OnAdminRightUpdateBody) => {
+    if (data.userId === loggedUser?.id) {
+      setSelectedChatDetails((prev) => {
+        if (prev) {
+          return {
+            ...prev,
+            isAdmin: data.isAdmin,
+          };
+        }
+
+        return prev;
+      })
+    }
+
+    setSelectedChatUsers((prev) => {
+      return prev.map((user) => {
+        if (user.id === data.userId) {
+          return {
+            ...user,
+            isAdmin: data.isAdmin,
+          };
+        }
+
+        return user;
+      });
+    });
+  }, []);
+
   useEffect(() => {
     if (isPrivateGroup) {
       fetchChatDetails();
+    }
+
+    chatSocket.on('chat:admin-right:update', onAdminRightUpdate);
+    return () => {
+      chatSocket.off('chat:admin-right:update', onAdminRightUpdate);
     }
   }, [selectedChat]);
 

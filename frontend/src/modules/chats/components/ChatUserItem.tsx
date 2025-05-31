@@ -4,6 +4,8 @@ import { ChatBadge } from "./ChatBadge";
 import { Button } from "@/modules/shared/components/ui/button";
 import { ShieldBanIcon, ShieldCheckIcon, UserRoundXIcon } from "lucide-react";
 import { useChatContext } from "../contexts/ChatContext";
+import { useLoading } from "@/modules/shared/hooks/useLoading";
+import { backendChatApi } from "../apis/backend";
 
 type Props = {
   chatUser: ChatUser;
@@ -13,7 +15,8 @@ export function ChatUserItem({ chatUser }: Props) {
   {/* TODO: Ações nos usuários, expulsar, etc */ }
 
   const { user: loggedUser } = useAuthContext();
-  const { selectedChatDetails } = useChatContext();
+  const { selectedChatDetails, setSelectedChatUsers } = useChatContext();
+  const [actionIsLoading, handleActionLoading] = useLoading();
 
   function canDoDangerActionsToUser(user: ChatUser) {
     const isLoggedUser = user.id === loggedUser?.id;
@@ -25,6 +28,34 @@ export function ChatUserItem({ chatUser }: Props) {
     }
 
     return selectedChatDetails?.isAdmin && !user.isAdmin && !isLoggedUser && !isCreator;
+  }
+
+  function toggleAdminRights() {
+    return handleActionLoading(async () => {
+      if (!selectedChatDetails || actionIsLoading) return;
+
+      // TODO: add error toast
+      const response = await backendChatApi.updateAdminRights(
+        selectedChatDetails.id,
+        chatUser.id,
+        { isAdmin: !chatUser.isAdmin }
+      );
+
+      if (!response.error) {
+        setSelectedChatUsers((prev) => {
+          return prev.map((user) => {
+            if (user.id === chatUser.id) {
+              return {
+                ...user,
+                isAdmin: response.data.isAdmin,
+              };
+            }
+
+            return user;
+          });
+        })
+      };
+    });
   }
 
   return (
@@ -41,16 +72,36 @@ export function ChatUserItem({ chatUser }: Props) {
         {canDoDangerActionsToUser(chatUser) && (
           <>
             {chatUser.isAdmin ? (
-              <Button variant="ghost" size="icon-default" className="text-red-500" aria-label="Revoke admin permissions">
+              <Button
+                onClick={toggleAdminRights}
+                variant="ghost"
+                size="icon-default"
+                className="text-red-500"
+                aria-label="Revoke admin permissions"
+                disabled={actionIsLoading}
+              >
                 <ShieldBanIcon />
               </Button>
             ) : (
-              <Button variant="ghost" size="icon-default" className="text-gray-500" aria-label="Grant admin permissions">
+              <Button
+                onClick={toggleAdminRights}
+                variant="ghost"
+                size="icon-default"
+                className="text-gray-500"
+                aria-label="Grant admin permissions"
+                disabled={actionIsLoading}
+              >
                 <ShieldCheckIcon />
               </Button>
             )}
 
-            <Button variant="ghost" size="icon-default" className="text-red-500" aria-label="Remove user">
+            <Button
+              variant="ghost"
+              size="icon-default"
+              className="text-red-500"
+              aria-label="Remove user"
+              disabled={actionIsLoading}
+            >
               <UserRoundXIcon />
             </Button>
           </>
