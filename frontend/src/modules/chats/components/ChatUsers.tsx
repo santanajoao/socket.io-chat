@@ -19,13 +19,13 @@ export function ChatUsers() {
   const [search, setSearch] = useState<string>("");
   const [prevSearch, setPrevSearch] = useState<string>("");
 
-  const { selectedChatId, selectedChat } = useChatContext();
+  const { selectedChatId, selectedChatDetails } = useChatContext();
   const { user: loggedUser } = useAuthContext();
 
   const [chatUsersAreLoading, handleChatUsersLoading] = useLoading();
 
-  const loggedIsCreator = loggedUser?.id === selectedChat?.group?.createdByUser?.id;
-  const hasManyUsers = selectedChat?.usersCount && selectedChat?.usersCount > USERS_PAGE_SIZE;
+  const loggedIsCreator = loggedUser?.id === selectedChatDetails?.group?.createdByUser?.id;
+  const hasManyUsers = selectedChatDetails?.usersCount && selectedChatDetails.usersCount > USERS_PAGE_SIZE;
 
   const fetchChatUsers = useCallback(async (params: { search?: string } = {}) => {
     return handleChatUsersLoading(async () => {
@@ -71,7 +71,7 @@ export function ChatUsers() {
 
   return (
     <div className="flex flex-col gap-2">
-      {(!chatUsersAreLoading && loggedIsCreator) && (
+      {(!chatUsersAreLoading && selectedChatDetails?.isAdmin) && (
         <EmailInviteDialog className="sm:max-w-md" asChild>
           <Button size="dynamic" variant="outline" className="rounded-md w-full text-left justify-start">
             <Badge className="size-6 rounded-full">

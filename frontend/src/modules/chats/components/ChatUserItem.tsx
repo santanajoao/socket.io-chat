@@ -13,15 +13,18 @@ export function ChatUserItem({ chatUser }: Props) {
   {/* TODO: Ações nos usuários, expulsar, etc */ }
 
   const { user: loggedUser } = useAuthContext();
-  const { selectedChat } = useChatContext();
+  const { selectedChatDetails } = useChatContext();
 
   function canDoDangerActionsToUser(user: ChatUser) {
-    const loggedIsCreator = loggedUser?.id === selectedChat?.group?.createdByUser?.id;
-    if (!loggedIsCreator) return false;
-
     const isLoggedUser = user.id === loggedUser?.id;
+    const isCreator = user.id === selectedChatDetails?.group?.createdByUser?.id;
 
-    return !isLoggedUser;
+    const loggedIsCreator = loggedUser?.id === selectedChatDetails?.group?.createdByUser?.id;
+    if (loggedIsCreator) {
+      return !isLoggedUser;
+    }
+
+    return selectedChatDetails?.isAdmin && !user.isAdmin && !isLoggedUser && !isCreator;
   }
 
   return (
@@ -38,12 +41,12 @@ export function ChatUserItem({ chatUser }: Props) {
         {canDoDangerActionsToUser(chatUser) && (
           <>
             {chatUser.isAdmin ? (
-              <Button variant="ghost" size="icon-default" className="text-gray-500" aria-label="Grant admin permissions">
-                <ShieldCheckIcon />
-              </Button>
-            ) : (
               <Button variant="ghost" size="icon-default" className="text-red-500" aria-label="Revoke admin permissions">
                 <ShieldBanIcon />
+              </Button>
+            ) : (
+              <Button variant="ghost" size="icon-default" className="text-gray-500" aria-label="Grant admin permissions">
+                <ShieldCheckIcon />
               </Button>
             )}
 

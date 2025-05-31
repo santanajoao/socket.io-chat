@@ -5,15 +5,32 @@ import { ChatHeaderContainer } from "./ChatHeaderContainer";
 import { ChatBadge } from "./ChatBadge";
 import { useChatContext } from "../contexts/ChatContext";
 import { ChatFormatter } from "../helpers/formatter";
-import { UserChat } from "@/modules/users/types/user-chats";
 import { Separator } from "@/modules/shared/components/ui/separator";
 import { ChatUsers } from "./ChatUsers";
 import { XIcon } from "lucide-react";
+import { TChatDetails } from "../types/chatDetails";
+import { useEffect, useState } from "react";
+import { useLoading } from "@/modules/shared/hooks/useLoading";
+import { backendChatApi } from "../apis/backend";
 
 export function ChatDetails() {
-  const { selectedChat, closeChatDetails } = useChatContext();
+  const { selectedChat, closeChatDetails, selectedChatDetails, setSelectedChatDetails } = useChatContext();
 
-  function formatChatType(chat: UserChat) {
+  const isPrivateGroup = selectedChat?.type === "GROUP" && selectedChat.group?.groupType === "PRIVATE";
+  const [chatDetailsLoading, handleLoading] = useLoading(isPrivateGroup);
+
+  function fetchChatDetails() {
+    return handleLoading(async () => {
+      if (!selectedChat) return;
+      const response = await backendChatApi.getChatDetails(selectedChat.id);
+
+      if (!response.error) {
+        setSelectedChatDetails(response.data);
+      }
+    });
+  }
+
+  function formatChatType(chat: TChatDetails) {
     if (chat.type === "DIRECT") {
       return 'Direct Chat'
     }
@@ -29,7 +46,7 @@ export function ChatDetails() {
     return 'Chat'
   }
 
-  function formatChatMembers(chat: UserChat) {
+  function formatChatMembers(chat: TChatDetails) {
     if (chat.group?.groupType === "PRIVATE") {
       return `${chat.usersCount} members`;
     }
@@ -37,7 +54,7 @@ export function ChatDetails() {
     return null;
   }
 
-  function formatChatTypeAndMembers(chat: UserChat) {
+  function formatChatTypeAndMembers(chat: TChatDetails) {
     const formattedChatType = formatChatType(chat);
 
     if (chat.group?.groupType === "PRIVATE") {
@@ -47,7 +64,11 @@ export function ChatDetails() {
     return formattedChatType;
   }
 
-  const isPrivateGroup = selectedChat?.type === "GROUP" && selectedChat.group?.groupType === "PRIVATE";
+  useEffect(() => {
+    if (isPrivateGroup) {
+      fetchChatDetails();
+    }
+  }, [selectedChat]);
 
   return (
     <div className="flex flex-1 p-2 border rounded-md flex-col">
@@ -65,19 +86,26 @@ export function ChatDetails() {
             {ChatFormatter.formatChatInitial(selectedChat!, null)}
           </ChatBadge>
 
-          {/* TODO: funcionalidade de editar nome do chat */}
           <span className="font-medium">
             {ChatFormatter.formatChatName(selectedChat!, null)}
           </span>
 
-          <div>
-            {formatChatTypeAndMembers(selectedChat!)}
-          </div>
+          {chatDetailsLoading ? (
+            <div className="bg-accent animate-pulse rounded-md h-5 w-40" />
+          ) : (
+            <div>
+              {formatChatTypeAndMembers(selectedChatDetails! || selectedChat!)}
+            </div>
+          )}
 
-          {selectedChat?.group?.groupType === 'PRIVATE' && (
-            <span className="text-sm">
-              Criado por <span className="font-medium">{selectedChat?.group?.createdByUser?.username}</span>
-            </span>
+          {chatDetailsLoading ? (
+            <div className="bg-accent animate-pulse rounded-md h-5 w-20" />
+          ) : (
+            selectedChatDetails?.group?.groupType === 'PRIVATE' && (
+              <span className="text-sm">
+                Criado por <span className="font-medium">{selectedChatDetails.group.createdByUser?.username}</span>
+              </span>
+            )
           )}
         </div>
 

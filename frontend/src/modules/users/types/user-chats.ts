@@ -17,10 +17,8 @@ export type UserChat = {
     id: string;
     groupType: string;
     title: string;
-    createdByUser?: ChatUser;
   }
   unreadMessagesCount: number;
-  usersCount?: number;
   lastMessage: {
     id: string;
     content: string;

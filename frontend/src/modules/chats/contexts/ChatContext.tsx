@@ -6,6 +6,7 @@ import { useLoading, UseLoadingHandle } from "@/modules/shared/hooks/useLoading"
 import { UserChat } from "@/modules/users/types/user-chats";
 import { chatSocket } from "../socket/connection";
 import { UserInvite } from "@/modules/invites/types/user-invites";
+import { TChatDetails } from "../types/chatDetails";
 
 type MessagesMap = Record<string, ChatMessage[]>
 type SelectedChaId = string | null;
@@ -22,6 +23,9 @@ type ContextValues = {
 
   chats: UserChat[];
   setChats: Dispatch<SetStateAction<UserChat[]>>;
+
+  selectedChatDetails: TChatDetails | null;
+  setSelectedChatDetails: Dispatch<SetStateAction<TChatDetails | null>>;
 
   selectedChatMessages: ChatMessage[];
 
@@ -48,6 +52,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
   const [chats, setChats] = useState<UserChat[]>([]);
 
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [selectedChatDetails, setSelectedChatDetails] = useState<TChatDetails | null>(null);
 
   const [chatDetailsIsOpen, setChatDetailsIsOpen] = useState(false);
 
@@ -86,7 +91,9 @@ export function ChatProvider({ children }: ChatProviderProps) {
     selectedChat,
     chatDetailsIsOpen,
     openChatDetails,
-    closeChatDetails
+    closeChatDetails,
+    selectedChatDetails,
+    setSelectedChatDetails,
   };
 
   return (

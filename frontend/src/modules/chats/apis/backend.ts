@@ -3,8 +3,8 @@ import { treatAxiosRequest } from "@/modules/shared/utils/axios";
 import { GetChatMessagesParams, GetChatMessagesResponse } from "../types/chatMessages";
 import { InviteToDirectChatApiBody, InviteToDirectChatApiResponse } from "../types/startNewDirectChat";
 import { CreateGroupChatApiBody, CreateGroupChatApiResponse } from "../types/startNewGroupChat";
-import { InviteToGroupChatApiBody } from "../types/inviteToGroupChat";
 import { ChatUsersApiResponse, GetChatUsersApiParams } from "../types/getChatUsers";
+import { TChatDetails } from "../types/chatDetails";
 
 export const backendChatClient = backendApi.create({
   baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/chats`,
@@ -37,9 +37,14 @@ async function getChatUsers(data: GetChatUsersApiParams) {
   }));
 }
 
+async function getChatDetails(chatId: string) {
+  return treatAxiosRequest<TChatDetails>(() => backendChatClient.get(`/${chatId}`));
+}
+
 export const backendChatApi = {
   getMessages,
   inviteToDirectChat,
   createGroupChat,
   getChatUsers,
+  getChatDetails,
 };

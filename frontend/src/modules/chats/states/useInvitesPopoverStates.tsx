@@ -7,6 +7,7 @@ import { UserInvite } from "@/modules/invites/types/user-invites";
 import { chatSocket } from "../socket/connection";
 import { useCallback, useEffect, useState } from "react";
 import { BackendChatSocketEvents } from "../socket/events";
+import { captureRejectionSymbol } from "events";
 
 export function useInvitesPopoverStates() {
   const authContext = useAuthContext();
@@ -42,6 +43,7 @@ export function useInvitesPopoverStates() {
   }, []);
 
   const updateGroupUsersIfAccepted = useCallback(({ receiverUser, accepted, chatId }: OnInviteResponseBody) => {
+    console.log({ receiverUser, accepted, chatId })
     if (!accepted) return;
 
     setChats((prev) => {
@@ -49,10 +51,10 @@ export function useInvitesPopoverStates() {
         if (chat.id === chatId) {
           if (chat.group?.groupType !== "PRIVATE") return chat;
 
+          const treatedUsers = chat.users || [];
           return {
             ...chat,
-            users: [...chat.users!, receiverUser],
-            usersCount: chat.usersCount! + 1
+            users: [...treatedUsers!, receiverUser],
           };
         }
 
