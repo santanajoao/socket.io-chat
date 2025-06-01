@@ -11,7 +11,7 @@ import { BackendChatSocketEvents } from "../socket/events";
 export function useInvitesPopoverStates() {
   const authContext = useAuthContext();
 
-  const { invites, setInvites, setSelectedChatUsers } = useChatContext();
+  const { invites, setInvites, setSelectedChatUsers, setSelectedChatDetails, selectedChatId } = useChatContext();
   const [inviteListIsLoading, handleInviteListIsLoading] = useLoading(true);
 
   const [inviteResponseIsLoading, setInviteResponseIsLoading] = useState<boolean>(false);
@@ -42,7 +42,18 @@ export function useInvitesPopoverStates() {
   }, []);
 
   const updateGroupUsersIfAccepted = useCallback((data: OnInviteResponseBody) => {
-    if (!data.accepted) return;
+
+    const targetChatIsSelected = data.chatId === selectedChatId;
+    if (!data.accepted || !targetChatIsSelected) return;
+
+    setSelectedChatDetails((prev) => {
+      if (!prev) return prev;
+
+      return {
+        ...prev,
+        usersCount: prev.usersCount + 1
+      }
+    })
 
     setSelectedChatUsers((prev) => {
       const newChatUser = {
@@ -52,8 +63,8 @@ export function useInvitesPopoverStates() {
       }
 
       return [...prev, newChatUser]
-    })
-  }, []);
+    });
+  }, [selectedChatId]);
 
   async function respondInvite(inviteId: string, accept: boolean) {
     setInviteResponseIsLoading(true);
@@ -62,7 +73,9 @@ export function useInvitesPopoverStates() {
 
   useEffect(() => {
     fetchInvites();
+  }, [])
 
+  useEffect(() => {
     function onNewInviteListener(data: UserInvite) {
       setInvites((prev) => [data, ...prev]);
     }
@@ -76,7 +89,7 @@ export function useInvitesPopoverStates() {
       chatSocket.off('invite:response', updateInviteOnResponse)
       chatSocket.off('invite:response', updateGroupUsersIfAccepted);
     }
-  }, []);
+  }, [updateInviteOnResponse, updateGroupUsersIfAccepted]);
 
   return {
     loggedUser: authContext.user,

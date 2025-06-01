@@ -4,13 +4,12 @@ import { Button } from "@/modules/shared/components/ui/button";
 import { cn } from "@/modules/shared/lib/utils";
 import { SendIcon } from "lucide-react";
 import { Textarea } from "@/modules/shared/components/ui/textarea";
-import { DateFormatter } from "@/modules/shared/utils/formatters/dates";
 import { useChatMessagesState } from "../states/useChatMessagesState";
 import { FormEvent } from "react";
-import { ChatMessage } from "../types/chatMessages";
 import { ChatHeaderContainer } from "./ChatHeaderContainer";
 import { ChatBadge } from "./ChatBadge";
-import { ChatFormatter } from "../helpers/formatter";
+import { ChatFormatter } from "../helpers/chatFormatter";
+import { MessageBubble } from "./MessageBubble";
 
 type Props = {
   className?: string;
@@ -40,10 +39,6 @@ export function ChatMessages({ className }: Props) {
     setMessageContent(event.target.value);
   }
 
-  function renderMessageUsername(message: ChatMessage) {
-    return loggedUser?.id === message.user.id ? 'You' : message.user.username;
-  }
-
   // novo tipo de mensagem
   // mensagem que indica que o chat foi criado pelo usuário X
   // mensagem que um novo usuário se juntou ao chat
@@ -68,21 +63,7 @@ export function ChatMessages({ className }: Props) {
               <div>Loading messages...</div>
             ) : (
               selectedChatMessages.map((message) => (
-                <div
-                  className={cn(
-                    "flex flex-col text-sm bg-accent py-1 px-2 rounded-md min-w-3xs w-fit max-w-xs break-words whitespace-pre-wrap",
-                    { "self-end": loggedUser?.id === message.user.id },
-                  )}
-                  key={message.id}
-                >
-                  <div className="font-medium">
-                    {renderMessageUsername(message)}
-                  </div>
-                  <div>{message.content}</div>
-                  <div className="text-xs  text-end">
-                    {DateFormatter.formatBrazilianDateTime(message.sentAt)}
-                  </div>
-                </div>
+                <MessageBubble key={message.id} message={message} />
               ))
             )}
           </div>

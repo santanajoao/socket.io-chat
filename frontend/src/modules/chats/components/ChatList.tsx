@@ -9,7 +9,8 @@ import { StartNewChatModal } from "./StartNewChatModal";
 import { InvitesPopover } from "./InvitesPopover";
 import { ChatHeaderContainer } from "./ChatHeaderContainer";
 import { ChatBadge } from "./ChatBadge";
-import { ChatFormatter } from "../helpers/formatter";
+import { ChatFormatter } from "../helpers/chatFormatter";
+import { MessageFormatter } from "../helpers/messageFormater";
 
 export function ChatList() {
   const { chatsAreLoading, chats, selectedChatId, selectChat, loggedUser } = useChatListStates();
@@ -76,7 +77,7 @@ export function ChatList() {
                         <span className="font-medium">{chat.lastMessage.user.username}: </span>
                       )}
 
-                      {chat.lastMessage.content}
+                      {MessageFormatter.formatMessageContent(chat.lastMessage)}
                     </span>
                   )}
                 </span>

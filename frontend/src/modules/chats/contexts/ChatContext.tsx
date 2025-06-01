@@ -69,12 +69,12 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
   function closeChatDetails() {
     setChatDetailsIsOpen(false);
+    setSelectedChatDetails(null);
+    setSelectedChatUsers([]);
   }
 
   function openChatDetails() {
     setChatDetailsIsOpen(true);
-    setSelectedChatDetails(null);
-    setSelectedChatUsers([]);
   }
 
   useEffect(() => {

@@ -62,9 +62,8 @@ export function useChatListStates() {
   async function selectChat(chatId: string) {
     if (selectedChatId === chatId) return;
 
-    setSelectedChatId(chatId);
     closeChatDetails();
-
+    setSelectedChatId(chatId);
 
     const targetChat = chats.find((chat) => chat.id === chatId);
     const hasUnreadMessages = targetChat && targetChat.unreadMessagesCount > 0;

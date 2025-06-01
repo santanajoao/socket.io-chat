@@ -6,12 +6,7 @@ export type ChatMessage = {
     id: string;
     username: string;
   },
-  messageReads: {
-    user: {
-      id: string;
-      username: string;
-    }
-  }[]
+  type: string;
 }
 
 export type GetChatMessagesParams = {

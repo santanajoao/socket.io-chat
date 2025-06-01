@@ -4,12 +4,12 @@ import { Button } from "@/modules/shared/components/ui/button";
 import { ChatHeaderContainer } from "./ChatHeaderContainer";
 import { ChatBadge } from "./ChatBadge";
 import { useChatContext } from "../contexts/ChatContext";
-import { ChatFormatter } from "../helpers/formatter";
+import { ChatFormatter } from "../helpers/chatFormatter";
 import { Separator } from "@/modules/shared/components/ui/separator";
 import { ChatUsers } from "./ChatUsers";
 import { XIcon } from "lucide-react";
 import { TChatDetails } from "../types/chatDetails";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { backendChatApi } from "../apis/backend";
 import { chatSocket } from "../socket/connection";
@@ -94,7 +94,7 @@ export function ChatDetails() {
         return user;
       });
     });
-  }, []);
+  }, [loggedUser]);
 
   useEffect(() => {
     if (isPrivateGroup) {
@@ -105,7 +105,7 @@ export function ChatDetails() {
     return () => {
       chatSocket.off('chat:admin-right:update', onAdminRightUpdate);
     }
-  }, [selectedChat]);
+  }, [selectedChat, onAdminRightUpdate]);
 
   return (
     <div className="flex flex-1 p-2 border rounded-md flex-col">
