@@ -31,6 +31,7 @@ import { MarkMessagesAsReadServiceParams } from './dtos/mark-messages-as-read';
 import { RemoveUserFromChatServiceDto } from './dtos/remove-user-from-chat';
 import { GetChatDetailsDto } from './dtos/get-chat-details';
 import { UpdateAdminRightsServiceDto } from './dtos/grand-admin-rights';
+import { MESSAGE_TYPE } from 'src/messages/models/message.model';
 
 @Injectable()
 export class ChatsService {
@@ -161,8 +162,8 @@ export class ChatsService {
   }
 
   async createGroupChat(params: CreateGroupChatServiceParams) {
-    const { chat, groupChat } = await this.prismaTransaction.transaction(
-      async () => {
+    const { chat, groupChat, alertMessage } =
+      await this.prismaTransaction.transaction(async () => {
         const chat = await this.chatRepository.createChat({
           type: CHAT_TYPE.GROUP,
         });
@@ -184,17 +185,35 @@ export class ChatsService {
           ],
         });
 
-        return { chat, groupChat };
-      },
-    );
+        const alertMessage = await this.messageRepository.createMessage({
+          chatId: chat.id,
+          userId: params.userId,
+          type: MESSAGE_TYPE.NEW_CHAT,
+        });
+
+        return { chat, groupChat, alertMessage };
+      });
+
+    const user = await this.userRepository.findById(params.userId);
+    if (!user) {
+      throw new UnprocessableEntityException('User not found');
+    }
 
     const onCreateGroupChatBody: FormattedChatData = {
       ...chat,
       group: groupChat,
       type: CHAT_TYPE.GROUP,
       unreadMessagesCount: 0,
-      lastMessage: null,
+      lastMessage: {
+        id: alertMessage.id,
+        content: alertMessage.content,
+        sentAt: alertMessage.sentAt,
+        type: alertMessage.type,
+        user,
+      },
     };
+
+    this.eventEmitter.emit(CHAT_EVENTS.MESSAGE_SEND, alertMessage);
 
     return {
       data: onCreateGroupChatBody,

@@ -18,6 +18,7 @@ import { InvitesService } from 'src/invites/invites.service';
 import { OnChatInviteBody } from 'src/invites/dto/create-invite';
 import { MarkMessagesAsReadBody } from './dtos/mark-messages-as-read';
 import { OnAdminRightUpdateBody } from './dtos/grand-admin-rights';
+import { MessageModel } from 'src/messages/models/message.model';
 
 @WebSocketGateway({ namespace: CHAT_NAMESPACE, cors: FRONTEND_CORS })
 export class ChatsGateway {
@@ -41,7 +42,7 @@ export class ChatsGateway {
     }
   }
 
-  @SubscribeMessage('message:send')
+  @SubscribeMessage(CHAT_EVENTS.MESSAGE_SEND)
   async sendMessage(
     @ConnectedSocket() socket: AuthenticatedSocket,
     @MessageBody() payload: { chatId: string; content: string },
@@ -52,7 +53,7 @@ export class ChatsGateway {
       content: payload.content,
     });
 
-    this.namespace.to(payload.chatId).emit('message:receive', {
+    this.namespace.to(payload.chatId).emit(CHAT_EVENTS.MESSAGE_RECEIVE, {
       chatId: payload.chatId,
       message: result.data,
     });
@@ -116,5 +117,10 @@ export class ChatsGateway {
     this.namespace
       .to(body.chatId)
       .emit(CHAT_EVENTS.CHAT_ADMIN_RIGHT_UPDATE, body);
+  }
+
+  @OnEvent(CHAT_EVENTS.MESSAGE_SEND)
+  onMessage(body: MessageModel) {
+    this.namespace.to(body.chatId).emit(CHAT_EVENTS.MESSAGE_RECEIVE, body);
   }
 }

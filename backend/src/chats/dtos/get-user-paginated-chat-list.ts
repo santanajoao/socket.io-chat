@@ -1,6 +1,7 @@
 import { MessageUser } from 'src/messages/dtos/get-chat-messages';
 import { ChatTypeModel } from '../models/chat.model';
 import { GroupTypeModel } from '../models/group-chat.model';
+import { MessageType } from 'generated/prisma';
 
 export class GetUserPaginatedChatListRepositoryParams {
   userId: string;
@@ -27,9 +28,10 @@ export class ChatData {
   } | null;
   messages: {
     id: string;
-    content: string;
+    content: string | null;
     sentAt: Date;
     user: MessageUser;
+    type: MessageType;
   }[];
   _count: {
     messages: number;
@@ -40,9 +42,10 @@ export class FormattedChatData {
   unreadMessagesCount: number;
   lastMessage: {
     id: string;
-    content: string;
+    content: string | null;
     sentAt: Date;
     user: MessageUser;
+    type: MessageType;
   } | null;
   users?: MessageUser[];
   id: string;

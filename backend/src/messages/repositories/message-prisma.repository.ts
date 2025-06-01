@@ -25,6 +25,7 @@ export class MessagePrismaRepository
           id: true,
           content: true,
           sentAt: true,
+          type: true,
           user: {
             select: {
               id: true,
@@ -68,20 +69,11 @@ export class MessagePrismaRepository
         id: true,
         content: true,
         sentAt: true,
+        type: true,
         user: {
           select: {
             id: true,
             username: true,
-          },
-        },
-        messageReads: {
-          select: {
-            user: {
-              select: {
-                id: true,
-                username: true,
-              },
-            },
           },
         },
       },
@@ -89,6 +81,7 @@ export class MessagePrismaRepository
         chatId: params.chatId,
         content: params.content,
         userId: params.userId,
+        type: params.type,
       },
     });
 

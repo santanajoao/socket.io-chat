@@ -18,14 +18,10 @@ export class MessageUser {
   id: string;
   username: string;
 }
-type MessageReads = {
-  user: MessageUser;
-};
 
 export class ChatMessage {
   id: string;
-  content: string;
+  content: string | null;
   sentAt: Date;
   user: MessageUser;
-  messageReads: MessageReads[];
 }

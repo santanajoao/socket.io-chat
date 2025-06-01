@@ -5,4 +5,6 @@ export const CHAT_EVENTS = {
   INVITE_RESPONSE: 'invite:response',
   CHAT_INVITE: 'chat:invite',
   CHAT_ADMIN_RIGHT_UPDATE: 'chat:admin-right:update',
+  MESSAGE_SEND: 'message:send',
+  MESSAGE_RECEIVE: 'message:receive',
 };

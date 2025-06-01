@@ -2,19 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { GetChatMessagesServiceParams } from './dtos/get-chat-messages';
 import { MessagePrismaRepository } from './repositories/message-prisma.repository';
 import { CreateMessageServiceParams } from './dtos/create-message';
+import { MESSAGE_TYPE } from './models/message.model';
 
 @Injectable()
 export class MessagesService {
-  constructor(
-    private readonly messagePrismaRepository: MessagePrismaRepository,
-  ) {}
+  constructor(private readonly messageRepository: MessagePrismaRepository) {}
 
   async getChatMessages({
     chatId,
     pageSize,
     cursor,
   }: GetChatMessagesServiceParams) {
-    const result = await this.messagePrismaRepository.getMessagesByChat({
+    const result = await this.messageRepository.getMessagesByChat({
       chatId,
       limit: pageSize + 1,
       cursor,
@@ -36,10 +35,11 @@ export class MessagesService {
   }
 
   async createMessage({ chatId, userId, content }: CreateMessageServiceParams) {
-    const message = await this.messagePrismaRepository.createMessage({
+    const message = await this.messageRepository.createMessage({
       chatId,
       userId,
       content,
+      type: MESSAGE_TYPE.DEFAULT,
     });
 
     return {

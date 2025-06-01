@@ -58,6 +58,7 @@ export class ChatPrismaRepository
           id: true,
           content: true,
           sentAt: true,
+          type: true,
           user: {
             select: {
               id: true,
@@ -137,6 +138,7 @@ export class ChatPrismaRepository
             sentAt: message.sentAt,
             user: message.user,
             chat: message.chat,
+            type: message.type,
           },
         ],
       };
@@ -191,6 +193,7 @@ export class ChatPrismaRepository
             id: true,
             content: true,
             sentAt: true,
+            type: true,
             user: {
               select: {
                 id: true,

@@ -82,9 +82,15 @@ model ChatUser {
   @@map("chat_users")
 }
 
+enum MessageType {
+  DEFAULT
+  NEW_CHAT
+}
+
 model Message {
   id String @id @default(uuid())
-  content String
+  content String?
+  type MessageType @default(DEFAULT)
   chatId String @map("chat_id")
   userId String @map("user_id")
   sentAt DateTime @default(now()) @map("sent_at")
