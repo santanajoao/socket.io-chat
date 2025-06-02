@@ -9,6 +9,7 @@ import { useChatContext } from "../contexts/ChatContext";
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
 import { UserChat } from "@/modules/users/types/user-chats";
 import { BackendChatSocketEvents } from "../socket/events";
+import { CHAT_EVENTS } from "../constants/socketEvents";
 
 export function useChatListStates() {
   const {
@@ -90,13 +91,11 @@ export function useChatListStates() {
     });
   }
 
-  async function initialize() {
-    await fetchUserChats();
-  }
+  useEffect(() => {
+    fetchUserChats()
+  }, []);
 
   useEffect(() => {
-    initialize();
-
     function onChatCreated(data: UserChat) {
       chatSocket.emit('chat:join', {
         chatId: data.id,
@@ -105,10 +104,10 @@ export function useChatListStates() {
       setChats((prev) => [data, ...prev]);
     }
 
-    chatSocket.on('chat:created', onChatCreated);
+    chatSocket.on(CHAT_EVENTS.CHAT_CREATED, onChatCreated);
 
     return () => {
-      chatSocket.off('chat:created', onChatCreated);
+      chatSocket.off(CHAT_EVENTS.CHAT_CREATED, onChatCreated);
     }
   }, [])
 

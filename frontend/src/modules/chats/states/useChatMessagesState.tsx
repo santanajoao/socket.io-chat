@@ -7,6 +7,7 @@ import { ChatMessage } from "../types/chatMessages";
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
 import debounce from "lodash.debounce";
 import { BackendChatSocketEvents } from "../socket/events";
+import { CHAT_EVENTS } from "../constants/socketEvents";
 
 export function useChatMessagesState() {
   const { selectedChatId, messagesAreLoading, selectedChat, setMessages, setChats, selectedChatMessages, openChatDetails } = useChatContext();
@@ -72,21 +73,23 @@ export function useChatMessagesState() {
     return debounce(handleMessageReadOnReceive, 700);
   }, [handleMessageReadOnReceive]);
 
-  useEffect(() => {
-    function handleMessageReceive({ chatId, message }: { chatId: string, message: ChatMessage }) {
-      updateChatLastMessage(chatId, message);
-      addNewMessage(chatId, message);
-      debouncedHandleMessageReadOnReceive(chatId, message);
-    }
-
-    chatSocket.on('message:receive', handleMessageReceive);
+  const handleMessageReceive = useCallback(({ chatId, message }: { chatId: string, message: ChatMessage }) => {
+    updateChatLastMessage(chatId, message);
+    addNewMessage(chatId, message);
+    debouncedHandleMessageReadOnReceive(chatId, message);
 
     return () => {
-      chatSocket.off('message:receive', handleMessageReceive);
-
       debouncedHandleMessageReadOnReceive.flush();
     }
-  }, [updateChatLastMessage, addNewMessage, debouncedHandleMessageReadOnReceive]);
+  }, [addNewMessage, debouncedHandleMessageReadOnReceive, updateChatLastMessage]);
+
+  useEffect(() => {
+    chatSocket.on(CHAT_EVENTS.MESSAGE_RECEIVE, handleMessageReceive);
+
+    return () => {
+      chatSocket.off(CHAT_EVENTS.MESSAGE_RECEIVE, handleMessageReceive);
+    }
+  }, [handleMessageReceive]);
 
   return {
     selectedChatId,

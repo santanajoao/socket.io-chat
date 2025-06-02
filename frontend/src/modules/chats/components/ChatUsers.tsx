@@ -35,7 +35,7 @@ export function ChatUsers() {
 
       setSelectedChatUsers(result.data.users);
     })
-  }, [selectedChatId, search]);
+  }, [handleChatUsersLoading, selectedChatId, search, setSelectedChatUsers]);
 
   function handleSearchInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearch(e.target.value);

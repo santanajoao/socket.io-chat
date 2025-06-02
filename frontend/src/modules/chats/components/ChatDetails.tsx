@@ -15,6 +15,7 @@ import { backendChatApi } from "../apis/backend";
 import { chatSocket } from "../socket/connection";
 import { OnAdminRightUpdateBody } from "../types/updateAdminRights";
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
+import { CHAT_EVENTS } from "../constants/socketEvents";
 
 export function ChatDetails() {
   const { selectedChat, closeChatDetails, selectedChatDetails, setSelectedChatDetails, setSelectedChatUsers } = useChatContext();
@@ -23,16 +24,16 @@ export function ChatDetails() {
   const isPrivateGroup = selectedChat?.type === "GROUP" && selectedChat.group?.groupType === "PRIVATE";
   const [chatDetailsLoading, handleLoading] = useLoading(isPrivateGroup);
 
-  function fetchChatDetails() {
+  const fetchChatDetails = useCallback(() => {
     return handleLoading(async () => {
-      if (!selectedChat) return;
+      if (!selectedChat?.id) return;
       const response = await backendChatApi.getChatDetails(selectedChat.id);
 
       if (!response.error) {
         setSelectedChatDetails(response.data);
       }
     });
-  }
+  }, [selectedChat?.id]);
 
   function formatChatType(chat: TChatDetails) {
     if (chat.type === "DIRECT") {
@@ -94,18 +95,20 @@ export function ChatDetails() {
         return user;
       });
     });
-  }, [loggedUser]);
+  }, [loggedUser?.id]);
 
   useEffect(() => {
     if (isPrivateGroup) {
       fetchChatDetails();
     }
+  }, [selectedChat?.id, isPrivateGroup, fetchChatDetails]);
 
-    chatSocket.on('chat:admin-right:update', onAdminRightUpdate);
+  useEffect(() => {
+    chatSocket.on(CHAT_EVENTS.CHAT_ADMIN_RIGHT_UPDATE, onAdminRightUpdate);
     return () => {
-      chatSocket.off('chat:admin-right:update', onAdminRightUpdate);
+      chatSocket.off(CHAT_EVENTS.CHAT_ADMIN_RIGHT_UPDATE, onAdminRightUpdate);
     }
-  }, [selectedChat, onAdminRightUpdate]);
+  }, [onAdminRightUpdate]);
 
   return (
     <div className="flex flex-1 p-2 border rounded-md flex-col">

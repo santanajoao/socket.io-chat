@@ -13,7 +13,6 @@ import { Loader2Icon } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { newGroupChatSchema } from "../schemas/newGroupChatSchema";
 import { CreateGroupChatFormFields } from "../types/startNewGroupChat";
-import { chatSocket } from "../socket/connection";
 import { BackendChatSocketEvents } from "../socket/events";
 
 type Props = {

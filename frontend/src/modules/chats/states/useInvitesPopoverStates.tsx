@@ -7,6 +7,7 @@ import { UserInvite } from "@/modules/invites/types/user-invites";
 import { chatSocket } from "../socket/connection";
 import { useCallback, useEffect, useState } from "react";
 import { BackendChatSocketEvents } from "../socket/events";
+import { CHAT_EVENTS } from "../constants/socketEvents";
 
 export function useInvitesPopoverStates() {
   const authContext = useAuthContext();
@@ -16,14 +17,14 @@ export function useInvitesPopoverStates() {
 
   const [inviteResponseIsLoading, setInviteResponseIsLoading] = useState<boolean>(false);
 
-  async function fetchInvites() {
+  const fetchInvites = useCallback(async () => {
     return await handleInviteListIsLoading(async () => {
       const response = await backendInviteApi.getUserInvites();
       if (!response.error) {
         setInvites(response.data);
       }
     });
-  }
+  }, [handleInviteListIsLoading, setInvites]);
 
   const updateInviteOnResponse = useCallback((updatedInvite: OnInviteResponseBody) => {
     setInvites((prev) => prev.map((invite) => {
@@ -42,7 +43,6 @@ export function useInvitesPopoverStates() {
   }, []);
 
   const updateGroupUsersIfAccepted = useCallback((data: OnInviteResponseBody) => {
-
     const targetChatIsSelected = data.chatId === selectedChatId;
     if (!data.accepted || !targetChatIsSelected) return;
 
@@ -80,14 +80,14 @@ export function useInvitesPopoverStates() {
       setInvites((prev) => [data, ...prev]);
     }
 
-    chatSocket.on('chat:invite', onNewInviteListener);
-    chatSocket.on('invite:response', updateInviteOnResponse)
-    chatSocket.on('invite:response', updateGroupUsersIfAccepted);
+    chatSocket.on(CHAT_EVENTS.CHAT_INVITE, onNewInviteListener);
+    chatSocket.on(CHAT_EVENTS.INVITE_RESPONSE, updateInviteOnResponse)
+    chatSocket.on(CHAT_EVENTS.INVITE_RESPONSE, updateGroupUsersIfAccepted);
 
     return () => {
-      chatSocket.off('chat:invite', onNewInviteListener);
-      chatSocket.off('invite:response', updateInviteOnResponse)
-      chatSocket.off('invite:response', updateGroupUsersIfAccepted);
+      chatSocket.off(CHAT_EVENTS.CHAT_INVITE, onNewInviteListener);
+      chatSocket.off(CHAT_EVENTS.INVITE_RESPONSE, updateInviteOnResponse)
+      chatSocket.off(CHAT_EVENTS.INVITE_RESPONSE, updateGroupUsersIfAccepted);
     }
   }, [updateInviteOnResponse, updateGroupUsersIfAccepted]);
 
