@@ -6,6 +6,10 @@ import {
 } from '../dto/create-invite';
 import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
 import { ChatInviteModel } from '../models/chat-invite.model';
+import {
+  GetAllByUserIdRepositoryParams,
+  GetAllByUserIdRepositoryResponse,
+} from '../dto/get-all-by-user-id';
 
 @Injectable()
 export class InvitePrismaRepository
@@ -65,55 +69,76 @@ export class InvitePrismaRepository
     return invite;
   }
 
-  async getAllByUserId(
-    userId: string,
-  ): Promise<CreateInviteRepositoryResponse[]> {
-    const invites = await this.prismaDataSource.chatInvite.findMany({
-      select: {
-        id: true,
-        accepted: true,
-        chat: {
-          select: {
-            id: true,
-            group: {
-              select: {
-                id: true,
-                title: true,
+  async getAllByUserId({
+    userId,
+    limit,
+    cursor,
+  }: GetAllByUserIdRepositoryParams): Promise<GetAllByUserIdRepositoryResponse> {
+    const userInvitesWhere = {
+      OR: [
+        {
+          receiverUserId: userId,
+        },
+        {
+          senderUserId: userId,
+        },
+      ],
+    };
+
+    const [invites, totalUnanswered] = await Promise.all([
+      this.prismaDataSource.chatInvite.findMany({
+        select: {
+          id: true,
+          accepted: true,
+          chat: {
+            select: {
+              id: true,
+              group: {
+                select: {
+                  id: true,
+                  title: true,
+                },
               },
             },
           },
+          senderUser: {
+            select: {
+              id: true,
+              username: true,
+            },
+          },
+          receiverUser: {
+            select: {
+              id: true,
+              username: true,
+            },
+          },
+          createdAt: true,
+          acceptedAt: true,
         },
-        senderUser: {
-          select: {
-            id: true,
-            username: true,
-          },
+        where: userInvitesWhere,
+        orderBy: {
+          createdAt: 'desc',
         },
-        receiverUser: {
-          select: {
-            id: true,
-            username: true,
-          },
+        take: limit,
+        cursor: cursor
+          ? {
+              id: cursor,
+            }
+          : undefined,
+      }),
+      await this.prismaDataSource.chatInvite.count({
+        where: {
+          ...userInvitesWhere,
+          acceptedAt: null,
         },
-        createdAt: true,
-        acceptedAt: true,
-      },
-      where: {
-        OR: [
-          {
-            receiverUserId: userId,
-          },
-          {
-            senderUserId: userId,
-          },
-        ],
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+      }),
+    ]);
 
-    return invites;
+    return {
+      invites,
+      totalUnanswered,
+    };
   }
 
   async updateInvite(

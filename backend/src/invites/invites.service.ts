@@ -20,6 +20,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CHAT_EVENTS } from 'src/chats/constants/events';
 import { OnChatInviteBody } from './dto/create-invite';
 import { CHAT_TYPE } from 'src/chats/models/chat.model';
+import { GetAllByUserIdServiceParams } from './dto/get-all-by-user-id';
 
 @Injectable()
 export class InvitesService {
@@ -33,11 +34,30 @@ export class InvitesService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  async getAllUserInvites(userId: string) {
-    const invites = await this.inviteRepository.getAllByUserId(userId);
+  async getAllUserInvites({
+    userId,
+    cursor,
+    pageSize,
+  }: GetAllByUserIdServiceParams) {
+    const limit = pageSize && pageSize + 1;
+    const inviteResponse = await this.inviteRepository.getAllByUserId({
+      userId,
+      cursor,
+      limit,
+    });
+
+    const requestedInvites = inviteResponse.invites.slice(0, -1);
+
+    const hasMore = inviteResponse.invites.length === limit;
+    const lastChat = inviteResponse.invites.at(-1);
+    const nextCursor = hasMore ? lastChat?.id : undefined;
 
     return {
-      data: invites,
+      data: {
+        invites: requestedInvites,
+        next: nextCursor,
+        totalUnanswered: inviteResponse.totalUnanswered ?? 0,
+      },
     };
   }
 

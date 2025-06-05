@@ -1,16 +1,21 @@
-import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
 import {
   CreateInviteRepositoryParams,
   CreateInviteRepositoryResponse,
 } from '../dto/create-invite';
+import {
+  GetAllByUserIdRepositoryParams,
+  GetAllByUserIdRepositoryResponse,
+} from '../dto/get-all-by-user-id';
 import { ChatInviteModel } from '../models/chat-invite.model';
 
-export interface InviteRepository extends PrismaRepository {
+export interface InviteRepository {
   create(
     data: CreateInviteRepositoryParams,
   ): Promise<CreateInviteRepositoryResponse>;
   getById(id: string): Promise<unknown>;
-  getAllByUserId(userId: string): Promise<CreateInviteRepositoryResponse[]>;
+  getAllByUserId(
+    params: GetAllByUserIdRepositoryParams,
+  ): Promise<GetAllByUserIdRepositoryResponse>;
   updateInvite(inviteId: string, data: Partial<ChatInviteModel>): Promise<void>;
   getByChatIdAndUserId(
     chatId: string,
