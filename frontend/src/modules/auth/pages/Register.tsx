@@ -32,19 +32,19 @@ export function RegisterPage() {
   const router = useRouter();
 
   const [apiError, setApiError] = useState<ApiErrorResponse | null>(null);
-  const [isLoading, handleLoading] = useLoading();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function onSubmit(data: RegisterFields) {
-    return handleLoading(async () => {
-      setApiError(null);
+    setIsLoading(true);
+    setApiError(null);
 
-      const response = await backendAuthApi.register(data);
-      if (response.error) {
-        return setApiError(response.error);
-      }
+    const response = await backendAuthApi.register(data);
+    if (response.error) {
+      setApiError(response.error);
+      setIsLoading(false);
+    }
 
-      router.push('/login');
-    });
+    router.push('/login');
   }
 
   return (

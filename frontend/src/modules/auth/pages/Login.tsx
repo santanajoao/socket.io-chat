@@ -11,13 +11,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/modules/shared/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { useRouter } from "next/navigation";
 import { ApiErrorResponse } from "@/modules/shared/types/backend";
 import { PageContainer } from "@/modules/shared/components/containers/PageContainer";
 import { ROUTES } from "@/modules/shared/constants/routes";
 import { useAuthContext } from "../contexts/authContext";
 
+// TODO: Add logout button
 export function LoginPage() {
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -31,16 +31,18 @@ export function LoginPage() {
   const authContext = useAuthContext();
 
   const [apiError, setApiError] = useState<ApiErrorResponse | null>(null);
-  const [isLoading, handleLoading] = useLoading();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function onSubmit(data: LoginFields) {
-    return handleLoading(async () => {
-      const response = await authContext.login(data);
-      if (response.error) {
-        return setApiError(response.error);
-      }
-      return router.push('/');
-    })
+    setIsLoading(true);
+
+    const response = await authContext.login(data);
+    if (response.error) {
+      setApiError(response.error);
+      setIsLoading(false);
+    } else {
+      router.push('/');
+    }
   }
 
   return (
