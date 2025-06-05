@@ -1,19 +1,19 @@
 import { backendApi } from "@/modules/shared/apis/backend";
 import { treatAxiosRequest } from "@/modules/shared/utils/axios";
-import { GetUserInviteResponse } from "../types/user-invites";
-import { OnInviteResponseBody, RespondInviteParams } from "../types/respond-invite";
+import { GetUserInviteResponse, GetUserInviteParams } from "../types/user-invites";
 import { InviteToGroupChatApiBody, InviteToGroupChatApiResponse } from "@/modules/chats/types/inviteToGroupChat";
 
 const inviteClient = backendApi.create({
   baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/invites`,
 });
 
-async function getUserInvites() {
-  return treatAxiosRequest<GetUserInviteResponse>(() => inviteClient.get('/'));
-}
-
-async function respondInvite(data: RespondInviteParams) {
-  return treatAxiosRequest<OnInviteResponseBody>(() => inviteClient.post(`${data.inviteId}/respond`, { accept: data.accept }));
+async function getUserInvites({ cursor, pageSize }: GetUserInviteParams = {}) {
+  return treatAxiosRequest<GetUserInviteResponse>(() => inviteClient.get('/', {
+    params: {
+      cursor,
+      pageSize,
+    },
+  }));
 }
 
 async function inviteToGroupChat(data: InviteToGroupChatApiBody) {
@@ -22,6 +22,5 @@ async function inviteToGroupChat(data: InviteToGroupChatApiBody) {
 
 export const backendInviteApi = {
   getUserInvites,
-  respondInvite,
   inviteToGroupChat,
 };

@@ -14,7 +14,7 @@ import { MessageFormatter } from "../helpers/messageFormater";
 import { CHAT_TYPE } from "../constants/chatTypes";
 
 export function ChatList() {
-  const { chatsAreLoading, chats, selectedChatId, selectChat, loggedUser } = useChatListStates();
+  const { chatsAreLoading, chats, selectedChatId, selectChat, loggedUser, unansweredInvitesCount } = useChatListStates();
 
   function formatLastMessageSendAt(date: string) {
     const messageDate = new Date(date);
@@ -40,8 +40,15 @@ export function ChatList() {
 
         <div className="flex items-center gap-[inherit]">
           <InvitesPopover asChild>
-            <Button variant="outline" size="icon-sm">
+            <Button variant="outline" size="icon-sm" className="relative">
               <BellIcon />
+              {/* componentizar */}
+              <span
+                className="absolute -top-2 -left-2 font-medium rounded-full min-w-5 h-5 text-xs flex justify-center items-center bg-accent border"
+                aria-label={`There are ${unansweredInvitesCount} unanswered invites`}
+              >
+                {unansweredInvitesCount}
+              </span>
             </Button>
           </InvitesPopover>
 

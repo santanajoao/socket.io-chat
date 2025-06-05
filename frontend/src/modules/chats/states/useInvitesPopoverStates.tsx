@@ -9,19 +9,25 @@ import { useCallback, useEffect, useState } from "react";
 import { BackendChatSocketEvents } from "../socket/events";
 import { CHAT_EVENTS } from "../constants/socketEvents";
 
+// TODO: paginar invites
+// TODO: exibir quantidade de invites no botão
+
 export function useInvitesPopoverStates() {
   const authContext = useAuthContext();
 
-  const { invites, setInvites, setSelectedChatUsers, setSelectedChatDetails, selectedChatId } = useChatContext();
+  const { invites, setInvites, setSelectedChatUsers, setSelectedChatDetails, selectedChatId, setUnansweredInvitesCount } = useChatContext();
   const [inviteListIsLoading, handleInviteListIsLoading] = useLoading(true);
 
   const [inviteResponseIsLoading, setInviteResponseIsLoading] = useState<boolean>(false);
 
   const fetchInvites = useCallback(async () => {
     return await handleInviteListIsLoading(async () => {
-      const response = await backendInviteApi.getUserInvites();
+      const response = await backendInviteApi.getUserInvites({
+        pageSize: 10
+      });
       if (!response.error) {
-        setInvites(response.data);
+        setInvites(response.data.invites);
+        setUnansweredInvitesCount(response.data.totalUnanswered);
       }
     });
   }, [handleInviteListIsLoading, setInvites]);

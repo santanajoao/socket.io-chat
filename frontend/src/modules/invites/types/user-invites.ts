@@ -20,4 +20,13 @@ export type UserInvite = {
   acceptedAt: string;
 }
 
-export type GetUserInviteResponse = UserInvite[];
+export type GetUserInviteResponse = {
+  invites: UserInvite[];
+  totalUnanswered: number;
+  next?: string
+}
+
+export type GetUserInviteParams = {
+  cursor?: string;
+  pageSize?: number;
+}

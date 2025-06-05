@@ -21,6 +21,7 @@ export function useChatListStates() {
     chats,
     setChats,
     closeChatDetails,
+    unansweredInvitesCount,
   } = useChatContext();
 
   const authContext = useAuthContext();
@@ -117,5 +118,6 @@ export function useChatListStates() {
     selectedChatId,
     selectChat,
     loggedUser: authContext.user,
+    unansweredInvitesCount,
   }
 }

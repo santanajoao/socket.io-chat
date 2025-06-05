@@ -36,6 +36,9 @@ type ContextValues = {
   invites: UserInvite[];
   setInvites: Dispatch<SetStateAction<UserInvite[]>>;
 
+  unansweredInvitesCount: number;
+  setUnansweredInvitesCount: Dispatch<SetStateAction<number>>;
+
   selectedChat: UserChat | undefined;
 
   chatDetailsIsOpen: boolean;
@@ -52,6 +55,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
   const [messagesAreLoading, handleMessagesLoading] = useLoading();
 
   const [invites, setInvites] = useState<UserInvite[]>([]);
+  const [unansweredInvitesCount, setUnansweredInvitesCount] = useState<number>(0);
 
   const [chats, setChats] = useState<UserChat[]>([]);
 
@@ -105,6 +109,8 @@ export function ChatProvider({ children }: ChatProviderProps) {
     setSelectedChatDetails,
     selectedChatUsers,
     setSelectedChatUsers,
+    unansweredInvitesCount,
+    setUnansweredInvitesCount,
   };
 
   return (
