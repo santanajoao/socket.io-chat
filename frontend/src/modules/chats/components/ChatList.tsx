@@ -11,6 +11,7 @@ import { ChatHeaderContainer } from "./ChatHeaderContainer";
 import { ChatBadge } from "./ChatBadge";
 import { ChatFormatter } from "../helpers/chatFormatter";
 import { MessageFormatter } from "../helpers/messageFormater";
+import { CHAT_TYPE } from "../constants/chatTypes";
 
 export function ChatList() {
   const { chatsAreLoading, chats, selectedChatId, selectChat, loggedUser } = useChatListStates();
@@ -73,7 +74,7 @@ export function ChatList() {
 
                   {chat.lastMessage && (
                     <span className="text-sm line-clamp-1 flex-1">
-                      {chat.type === 'GROUP' && (
+                      {chat.type === CHAT_TYPE.GROUP && (
                         <span className="font-medium">{chat.lastMessage.user.username}: </span>
                       )}
 

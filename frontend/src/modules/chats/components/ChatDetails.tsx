@@ -16,12 +16,14 @@ import { chatSocket } from "../socket/connection";
 import { OnAdminRightUpdateBody } from "../types/updateAdminRights";
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
 import { CHAT_EVENTS } from "../constants/socketEvents";
+import { CHAT_TYPE } from "../constants/chatTypes";
+import { GROUP_TYPE } from "../constants/groupTypes";
 
 export function ChatDetails() {
   const { selectedChat, closeChatDetails, selectedChatDetails, setSelectedChatDetails, setSelectedChatUsers } = useChatContext();
   const { user: loggedUser } = useAuthContext();
 
-  const isPrivateGroup = selectedChat?.type === "GROUP" && selectedChat.group?.groupType === "PRIVATE";
+  const isPrivateGroup = selectedChat?.type === CHAT_TYPE.GROUP && selectedChat.group?.groupType === GROUP_TYPE.PRIVATE;
   const [chatDetailsLoading, handleLoading] = useLoading(isPrivateGroup);
 
   const fetchChatDetails = useCallback(() => {
@@ -36,15 +38,15 @@ export function ChatDetails() {
   }, [selectedChat?.id]);
 
   function formatChatType(chat: TChatDetails) {
-    if (chat.type === "DIRECT") {
+    if (chat.type === CHAT_TYPE.DIRECT) {
       return 'Direct Chat'
     }
 
-    if (chat.group?.groupType === "GLOBAL") {
+    if (chat.group?.groupType === GROUP_TYPE.GLOBAL) {
       return 'Global Group'
     }
 
-    if (chat.group?.groupType === "PRIVATE") {
+    if (chat.group?.groupType === GROUP_TYPE.PRIVATE) {
       return 'Private Group'
     }
 
@@ -52,7 +54,7 @@ export function ChatDetails() {
   }
 
   function formatChatMembers(chat: TChatDetails) {
-    if (chat.group?.groupType === "PRIVATE") {
+    if (chat.group?.groupType === GROUP_TYPE.PRIVATE) {
       return `${chat.usersCount} members`;
     }
 
@@ -62,7 +64,7 @@ export function ChatDetails() {
   function formatChatTypeAndMembers(chat: TChatDetails) {
     const formattedChatType = formatChatType(chat);
 
-    if (chat.group?.groupType === "PRIVATE") {
+    if (chat.group?.groupType === GROUP_TYPE.PRIVATE) {
       return `${formattedChatType} - ${formatChatMembers(chat)}`
     }
 
@@ -141,7 +143,7 @@ export function ChatDetails() {
           {chatDetailsLoading ? (
             <div className="bg-accent animate-pulse rounded-md h-5 w-20" />
           ) : (
-            selectedChatDetails?.group?.groupType === 'PRIVATE' && (
+            selectedChatDetails?.group?.groupType === GROUP_TYPE.PRIVATE && (
               <span className="text-sm">
                 Criado por <span className="font-medium">{selectedChatDetails.group.createdByUser?.username}</span>
               </span>
