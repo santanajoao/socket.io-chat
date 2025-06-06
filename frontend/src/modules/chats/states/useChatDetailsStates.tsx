@@ -16,7 +16,6 @@ export function useChatDetailsStates() {
   const { user: loggedUser } = useAuthContext();
 
   const isPrivateGroup = selectedChat?.type === CHAT_TYPE.GROUP && selectedChat.group?.groupType === GROUP_TYPE.PRIVATE;
-  console.log('isPrivateGroup', isPrivateGroup, selectedChat)
   const [chatDetailsLoading, handleLoading] = useLoading(isPrivateGroup);
 
   const fetchChatDetails = useCallback(() => {

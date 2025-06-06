@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { chatSocket } from "../socket/connection";
 import { backendUserApi } from "@/modules/users/apis/backend";
 import { backendChatApi } from "../apis/backend";
@@ -10,7 +10,10 @@ import { useAuthContext } from "@/modules/auth/contexts/authContext";
 import { UserChat } from "@/modules/users/types/user-chats";
 import { BackendChatSocketEvents } from "../socket/events";
 import { CHAT_EVENTS } from "../constants/socketEvents";
+import { OnChatUserRemoveBody } from "../types/removeUserFromChat";
 
+// ao token vencer e receber erro unauthorized em qualquer request redirecionar para login
+// a cada nova mensagem reordenar o chat
 export function useChatListStates() {
   const {
     messages,
@@ -22,6 +25,7 @@ export function useChatListStates() {
     setChats,
     closeChatDetails,
     unansweredInvitesCount,
+    setSelectedChatUsers,
   } = useChatContext();
 
   const authContext = useAuthContext();
@@ -98,21 +102,39 @@ export function useChatListStates() {
     fetchUserChats()
   }, []);
 
+  const onChatUserRemove = useCallback((data: OnChatUserRemoveBody) => {
+    const loggedUserIsRemoved = data.userId === authContext.user?.id;
+    const chatIsSelected = selectedChatId === data.chatId;
+
+    if (!loggedUserIsRemoved && chatIsSelected) {
+      setSelectedChatUsers((prev) => prev.filter((user) => user.id !== data.userId));
+    }
+
+    if (loggedUserIsRemoved && chatIsSelected) {
+      setSelectedChatId(null);
+      closeChatDetails();
+    }
+
+    if (loggedUserIsRemoved) {
+      BackendChatSocketEvents.leaveChat(data.chatId);
+      setChats((prev) => prev.filter((chat) => chat.id !== data.chatId));
+    }
+  }, [authContext.user?.id, selectedChatId]);
+
   useEffect(() => {
     function onChatCreated(data: UserChat) {
-      chatSocket.emit('chat:join', {
-        chatId: data.id,
-      });
-
+      BackendChatSocketEvents.joinChat(data.id);
       setChats((prev) => [data, ...prev]);
     }
 
     chatSocket.on(CHAT_EVENTS.CHAT_CREATED, onChatCreated);
+    chatSocket.on(CHAT_EVENTS.CHAT_USER_REMOVE, onChatUserRemove)
 
     return () => {
       chatSocket.off(CHAT_EVENTS.CHAT_CREATED, onChatCreated);
+      chatSocket.off(CHAT_EVENTS.CHAT_USER_REMOVE, onChatUserRemove)
     }
-  }, [])
+  }, [onChatUserRemove])
 
   return {
     chatsAreLoading,

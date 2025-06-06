@@ -14,7 +14,14 @@ import { MessageFormatter } from "../helpers/messageFormater";
 import { CHAT_TYPE } from "../constants/chatTypes";
 
 export function ChatList() {
-  const { chatsAreLoading, chats, selectedChatId, selectChat, loggedUser, unansweredInvitesCount } = useChatListStates();
+  const {
+    chatsAreLoading,
+    chats,
+    selectedChatId,
+    selectChat,
+    loggedUser,
+    unansweredInvitesCount,
+  } = useChatListStates();
 
   function formatLastMessageSendAt(date: string) {
     const messageDate = new Date(date);

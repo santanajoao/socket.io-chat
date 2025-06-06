@@ -70,7 +70,6 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
   const selectedChat = chats.find((chat) => chat.id === selectedChatId);
 
-
   function closeChatDetails() {
     setChatDetailsIsOpen(false);
     setSelectedChatDetails(null);
@@ -86,7 +85,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
     return () => {
       chatSocket.disconnect();
-    }
+    };
   }, []);
 
   const values: ContextValues = {

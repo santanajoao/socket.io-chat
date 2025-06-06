@@ -6,6 +6,7 @@ import { CreateGroupChatApiBody, CreateGroupChatApiResponse } from "../types/sta
 import { ChatUsersApiResponse, GetChatUsersApiParams } from "../types/getChatUsers";
 import { TChatDetails } from "../types/chatDetails";
 import { UpdateAdminRightsApiBody, UpdateAdminRightsApiResponse } from "../types/updateAdminRights";
+import { RemoveUserFromChatParams } from "../types/removeUserFromChat";
 
 export const backendChatClient = backendApi.create({
   baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/chats`,
@@ -46,6 +47,10 @@ async function updateAdminRights(chatId: string, userId: string, data: UpdateAdm
   return treatAxiosRequest<UpdateAdminRightsApiResponse>(() => backendChatClient.patch(`/${chatId}/users/${userId}/admin`, data));
 }
 
+async function removeUserFromChat({ chatId, userId }: RemoveUserFromChatParams) {
+  return treatAxiosRequest(() => backendChatClient.delete(`/${chatId}/users/${userId}`));
+}
+
 export const backendChatApi = {
   getMessages,
   inviteToDirectChat,
@@ -53,4 +58,5 @@ export const backendChatApi = {
   getChatUsers,
   getChatDetails,
   updateAdminRights,
+  removeUserFromChat,
 };

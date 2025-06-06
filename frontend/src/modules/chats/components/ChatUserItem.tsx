@@ -15,7 +15,7 @@ export function ChatUserItem({ chatUser }: Props) {
   {/* TODO: Ações nos usuários, expulsar, etc */ }
 
   const { user: loggedUser } = useAuthContext();
-  const { selectedChatDetails, setSelectedChatUsers } = useChatContext();
+  const { selectedChatDetails, setSelectedChatUsers, selectedChatId } = useChatContext();
   const [actionIsLoading, handleActionLoading] = useLoading();
 
   function canDoDangerActionsToUser(user: ChatUser) {
@@ -58,6 +58,19 @@ export function ChatUserItem({ chatUser }: Props) {
     });
   }
 
+  async function removeUserFromChat() {
+    if (!selectedChatId) return;
+
+    const response = await backendChatApi.removeUserFromChat({
+      chatId: selectedChatId,
+      userId: chatUser.id,
+    });
+
+    if (response.error) {
+      // toggle
+    }
+  }
+
   return (
     <div className="flex items-center gap-2 border rounded-md p-2 justify-between">
       <div className="gap-[inherit] flex items-center">
@@ -77,7 +90,7 @@ export function ChatUserItem({ chatUser }: Props) {
                 variant="ghost"
                 size="icon-default"
                 className="text-red-500"
-                aria-label="Revoke admin permissions"
+                aria-label={`Revoke admin permissions from ${chatUser.username}`}
                 disabled={actionIsLoading}
               >
                 <ShieldBanIcon />
@@ -88,7 +101,7 @@ export function ChatUserItem({ chatUser }: Props) {
                 variant="ghost"
                 size="icon-default"
                 className="text-gray-500"
-                aria-label="Grant admin permissions"
+                aria-label={`Grant admin permissions to ${chatUser.username}`}
                 disabled={actionIsLoading}
               >
                 <ShieldCheckIcon />
@@ -99,8 +112,9 @@ export function ChatUserItem({ chatUser }: Props) {
               variant="ghost"
               size="icon-default"
               className="text-red-500"
-              aria-label="Remove user"
+              aria-label={`Remove user ${chatUser.username} from chat`}
               disabled={actionIsLoading}
+              onClick={removeUserFromChat}
             >
               <UserRoundXIcon />
             </Button>
