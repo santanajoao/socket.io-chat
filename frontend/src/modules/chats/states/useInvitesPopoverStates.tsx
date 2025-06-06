@@ -45,8 +45,16 @@ export function useInvitesPopoverStates() {
       return invite;
     }));
 
+    setUnansweredInvitesCount((prev) => {
+      if (updatedInvite.receiverUser.id === authContext.user?.id) {
+        return prev - 1;
+      }
+
+      return prev;
+    });
+
     setInviteResponseIsLoading(false);
-  }, []);
+  }, [authContext.user?.id]);
 
   const updateGroupUsersIfAccepted = useCallback((data: OnInviteResponseBody) => {
     const targetChatIsSelected = data.chatId === selectedChatId;
@@ -72,6 +80,17 @@ export function useInvitesPopoverStates() {
     });
   }, [selectedChatId]);
 
+  const onNewInviteListener = useCallback((data: UserInvite) => {
+    setInvites((prev) => [data, ...prev]);
+    setUnansweredInvitesCount((prev) => {
+      if (data.receiverUser.id === authContext.user?.id) {
+        return prev + 1;
+      }
+
+      return prev;
+    });
+  }, [])
+
   async function respondInvite(inviteId: string, accept: boolean) {
     setInviteResponseIsLoading(true);
     BackendChatSocketEvents.respondInvite(inviteId, accept);
@@ -82,10 +101,6 @@ export function useInvitesPopoverStates() {
   }, [])
 
   useEffect(() => {
-    function onNewInviteListener(data: UserInvite) {
-      setInvites((prev) => [data, ...prev]);
-    }
-
     chatSocket.on(CHAT_EVENTS.CHAT_INVITE, onNewInviteListener);
     chatSocket.on(CHAT_EVENTS.INVITE_RESPONSE, updateInviteOnResponse)
     chatSocket.on(CHAT_EVENTS.INVITE_RESPONSE, updateGroupUsersIfAccepted);
@@ -95,7 +110,7 @@ export function useInvitesPopoverStates() {
       chatSocket.off(CHAT_EVENTS.INVITE_RESPONSE, updateInviteOnResponse)
       chatSocket.off(CHAT_EVENTS.INVITE_RESPONSE, updateGroupUsersIfAccepted);
     }
-  }, [updateInviteOnResponse, updateGroupUsersIfAccepted]);
+  }, [updateInviteOnResponse, updateGroupUsersIfAccepted, onNewInviteListener]);
 
   return {
     loggedUser: authContext.user,
