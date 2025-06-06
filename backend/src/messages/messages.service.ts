@@ -3,6 +3,7 @@ import { GetChatMessagesServiceParams } from './dtos/get-chat-messages';
 import { MessagePrismaRepository } from './repositories/message-prisma.repository';
 import { CreateMessageServiceParams } from './dtos/create-message';
 import { MESSAGE_TYPE } from './models/message.model';
+import { CursorPaginationFormatter } from 'src/shared/formatters/cursor-pagination.formatter';
 
 @Injectable()
 export class MessagesService {
@@ -13,22 +14,23 @@ export class MessagesService {
     pageSize,
     cursor,
   }: GetChatMessagesServiceParams) {
+    const limit = pageSize + 1;
     const result = await this.messageRepository.getMessagesByChat({
       chatId,
-      limit: pageSize + 1,
+      limit: limit,
       cursor,
     });
 
-    const requestedMessages = result.messages.slice(0, pageSize);
-
-    const lastMessage = result.messages.at(-1);
-    const hasMore = requestedMessages.length === pageSize + 1;
-    const nextCursor = hasMore ? lastMessage?.id : undefined;
+    const formatted = CursorPaginationFormatter.formatCursorPagination(
+      result.messages,
+      'id',
+      limit,
+    );
 
     return {
       data: {
-        messages: requestedMessages,
-        nextCursor,
+        messages: formatted.data,
+        next: formatted.next,
         total: result.total,
       },
     };

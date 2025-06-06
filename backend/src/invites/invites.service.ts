@@ -21,6 +21,7 @@ import { CHAT_EVENTS } from 'src/chats/constants/events';
 import { OnChatInviteBody } from './dto/create-invite';
 import { CHAT_TYPE } from 'src/chats/models/chat.model';
 import { GetAllByUserIdServiceParams } from './dto/get-all-by-user-id';
+import { CursorPaginationFormatter } from 'src/shared/formatters/cursor-pagination.formatter';
 
 @Injectable()
 export class InvitesService {
@@ -46,16 +47,16 @@ export class InvitesService {
       limit,
     });
 
-    const requestedInvites = inviteResponse.invites.slice(0, -1);
-
-    const hasMore = inviteResponse.invites.length === limit;
-    const lastChat = inviteResponse.invites.at(-1);
-    const nextCursor = hasMore ? lastChat?.id : undefined;
+    const formatted = CursorPaginationFormatter.formatCursorPagination(
+      inviteResponse.invites,
+      'id',
+      limit,
+    );
 
     return {
       data: {
-        invites: requestedInvites,
-        next: nextCursor,
+        invites: formatted.data,
+        next: formatted.next,
         totalUnanswered: inviteResponse.totalUnanswered ?? 0,
       },
     };

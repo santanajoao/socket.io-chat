@@ -32,6 +32,7 @@ import { RemoveUserFromChatServiceDto } from './dtos/remove-user-from-chat';
 import { GetChatDetailsDto } from './dtos/get-chat-details';
 import { UpdateAdminRightsServiceDto } from './dtos/grand-admin-rights';
 import { MESSAGE_TYPE } from 'src/messages/models/message.model';
+import { CursorPaginationFormatter } from 'src/shared/formatters/cursor-pagination.formatter';
 
 @Injectable()
 export class ChatsService {
@@ -57,26 +58,28 @@ export class ChatsService {
     cursor,
     pageSize,
   }: GetUserPaginatedChatListServiceParams) {
+    const limit = pageSize + 1;
     const result = await this.chatRepository.getUserPaginatedChatList({
       userId,
       cursor,
-      limit: pageSize + 1,
+      limit: limit,
     });
 
-    const requestedChats = result.chats.slice(0, pageSize);
-    const formattedChats = requestedChats.map((chat) =>
-      this.chatFormatter.formatChatData(chat),
+    const formatted = CursorPaginationFormatter.formatCursorPagination(
+      result.chats,
+      'id',
+      limit,
     );
 
-    const hasMore = result.chats.length === pageSize + 1;
-    const lastChat = result.chats.at(-1);
-    const nextCursor = hasMore ? lastChat?.id : undefined;
+    const formattedChats = formatted.data.map((chat) =>
+      this.chatFormatter.formatChatData(chat),
+    );
 
     return {
       data: {
         ...result,
         chats: formattedChats,
-        next: nextCursor,
+        next: formatted.next,
       },
     };
   }
@@ -240,19 +243,20 @@ export class ChatsService {
   }
 
   async getChatUsers(data: GetChatUsersServiceParams) {
+    const limit = data.pageSize + 1;
     const chatUsers = await this.chatUsersRepository.getChatUsersPaginated({
       chatId: data.chatId,
       cursor: data.cursor,
-      pageSize: data.pageSize + 1,
+      pageSize: limit,
       search: data.search,
     });
 
-    const hasMore = chatUsers.users.length === data.pageSize + 1;
-    const lastChatUser = chatUsers.users.at(-1);
-    const nextCursor = hasMore ? lastChatUser?.user.id : undefined;
+    const formated = CursorPaginationFormatter.formatCursorPagination(
+      chatUsers.users,
+      'user',
+    );
 
-    const requestedUsers = chatUsers.users.slice(0, data.pageSize);
-    const formattedUsers = requestedUsers.map((chatUser) => {
+    const formattedUsers = formated.data.map((chatUser) => {
       return {
         id: chatUser.user.id,
         username: chatUser.user.username,
@@ -264,7 +268,7 @@ export class ChatsService {
       data: {
         users: formattedUsers,
         total: chatUsers.total,
-        next: nextCursor,
+        next: formated.next,
       },
     };
   }
