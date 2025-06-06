@@ -19,6 +19,7 @@ import { OnChatInviteBody } from 'src/invites/dto/create-invite';
 import { MarkMessagesAsReadBody } from './dtos/mark-messages-as-read';
 import { OnAdminRightUpdateBody } from './dtos/grand-admin-rights';
 import { MessageModel } from 'src/messages/models/message.model';
+import { OnRemoveUserFromChatBody } from './dtos/remove-user-from-chat';
 
 @WebSocketGateway({ namespace: CHAT_NAMESPACE, cors: FRONTEND_CORS })
 export class ChatsGateway {
@@ -105,6 +106,14 @@ export class ChatsGateway {
     });
   }
 
+  @SubscribeMessage('chat:leave')
+  async leaveChat(
+    @ConnectedSocket() socket: AuthenticatedSocket,
+    @MessageBody() { chatId }: { chatId: string },
+  ) {
+    await socket.leave(chatId);
+  }
+
   @OnEvent(CHAT_EVENTS.CHAT_INVITE)
   sendChatInvite(body: OnChatInviteBody) {
     this.namespace
@@ -122,5 +131,10 @@ export class ChatsGateway {
   @OnEvent(CHAT_EVENTS.MESSAGE_SEND)
   onMessage(body: MessageModel) {
     this.namespace.to(body.chatId).emit(CHAT_EVENTS.MESSAGE_RECEIVE, body);
+  }
+
+  @OnEvent(CHAT_EVENTS.CHAT_USER_REMOVE)
+  onRemoveUserFromChat(body: OnRemoveUserFromChatBody) {
+    this.namespace.to(body.chatId).emit(CHAT_EVENTS.CHAT_USER_REMOVE, body);
   }
 }

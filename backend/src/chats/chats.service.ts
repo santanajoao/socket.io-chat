@@ -28,7 +28,10 @@ import { ChatFormatter } from './formatters/chat.formatter';
 import { OnChatInviteBody } from 'src/invites/dto/create-invite';
 import { GetChatUsersServiceParams } from './dtos/get-chat-users';
 import { MarkMessagesAsReadServiceParams } from './dtos/mark-messages-as-read';
-import { RemoveUserFromChatServiceDto } from './dtos/remove-user-from-chat';
+import {
+  OnRemoveUserFromChatBody,
+  RemoveUserFromChatServiceDto,
+} from './dtos/remove-user-from-chat';
 import { GetChatDetailsDto } from './dtos/get-chat-details';
 import { UpdateAdminRightsServiceDto } from './dtos/grand-admin-rights';
 import { MESSAGE_TYPE } from 'src/messages/models/message.model';
@@ -302,6 +305,16 @@ export class ChatsService {
     await this.chatUsersRepository.deleteChatUser(
       data.chatId,
       data.targetUserId,
+    );
+
+    const onRemoveUserFromChatBody: OnRemoveUserFromChatBody = {
+      chatId: data.chatId,
+      userId: data.targetUserId,
+    };
+
+    this.eventEmitter.emit(
+      CHAT_EVENTS.CHAT_USER_REMOVE,
+      onRemoveUserFromChatBody,
     );
 
     return {

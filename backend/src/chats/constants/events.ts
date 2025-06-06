@@ -7,4 +7,5 @@ export const CHAT_EVENTS = {
   CHAT_ADMIN_RIGHT_UPDATE: 'chat:admin-right:update',
   MESSAGE_SEND: 'message:send',
   MESSAGE_RECEIVE: 'message:receive',
+  CHAT_USER_REMOVE: 'chat:user:remove',
 };

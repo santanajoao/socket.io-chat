@@ -173,4 +173,26 @@ export class InvitePrismaRepository
 
     return data;
   }
+
+  async getUnansweredOrRejectedByChatId(
+    chatId: string,
+    userId: string,
+  ): Promise<ChatInviteModel | null> {
+    const data = await this.prismaDataSource.chatInvite.findFirst({
+      where: {
+        chatId,
+        receiverUserId: userId,
+        OR: [
+          {
+            acceptedAt: null,
+          },
+          {
+            accepted: false,
+          },
+        ],
+      },
+    });
+
+    return data;
+  }
 }

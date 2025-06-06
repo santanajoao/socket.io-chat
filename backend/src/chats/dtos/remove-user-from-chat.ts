@@ -3,3 +3,8 @@ export class RemoveUserFromChatServiceDto {
   requesterUserId: string;
   targetUserId: string;
 }
+
+export class OnRemoveUserFromChatBody {
+  chatId: string;
+  userId: string;
+}

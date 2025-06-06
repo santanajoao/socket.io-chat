@@ -165,13 +165,15 @@ export class InvitesService {
       );
     }
 
-    const user = await this.userRepository.findByEmail(data.receiverEmail);
-    if (!user) {
+    const receiverUser = await this.userRepository.findByEmail(
+      data.receiverEmail,
+    );
+    if (!receiverUser) {
       throw new BadRequestException('No user found with this email');
     }
 
     const receiverChatUser = await this.chatUsersRepository.findByUserAndChat(
-      user.id,
+      receiverUser.id,
       data.chatId,
     );
 
@@ -181,10 +183,12 @@ export class InvitesService {
       );
     }
 
-    const existingInvite = await this.inviteRepository.getByChatIdAndUserId(
-      data.chatId,
-      user.id,
-    );
+    const existingInvite =
+      await this.inviteRepository.getUnansweredOrRejectedByChatId(
+        data.chatId,
+        receiverUser.id,
+      );
+
     if (existingInvite) {
       throw new BadRequestException(
         'You have already invited this user to this chat',
@@ -194,12 +198,12 @@ export class InvitesService {
     const createdInvite = await this.inviteRepository.create({
       chatId: data.chatId,
       senderUserId: data.senderUserId,
-      receiverUserId: user.id,
+      receiverUserId: receiverUser.id,
     });
 
     const onChatInviteBody: OnChatInviteBody = {
       invite: createdInvite,
-      receiverUserId: user.id,
+      receiverUserId: receiverUser.id,
     };
 
     this.eventEmitter.emit(CHAT_EVENTS.CHAT_INVITE, onChatInviteBody);
