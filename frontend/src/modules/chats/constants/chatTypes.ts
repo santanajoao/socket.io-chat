@@ -1,4 +1,4 @@
 export const CHAT_TYPE = {
-  DIRECT: 'direct',
-  GROUP: 'group',
+  DIRECT: 'DIRECT',
+  GROUP: 'GROUP',
 };

@@ -3,39 +3,23 @@
 import { Button } from "@/modules/shared/components/ui/button";
 import { ChatHeaderContainer } from "./ChatHeaderContainer";
 import { ChatBadge } from "./ChatBadge";
-import { useChatContext } from "../contexts/ChatContext";
 import { ChatFormatter } from "../helpers/chatFormatter";
 import { Separator } from "@/modules/shared/components/ui/separator";
 import { ChatUsers } from "./ChatUsers";
 import { XIcon } from "lucide-react";
 import { TChatDetails } from "../types/chatDetails";
-import { useCallback, useEffect } from "react";
-import { useLoading } from "@/modules/shared/hooks/useLoading";
-import { backendChatApi } from "../apis/backend";
-import { chatSocket } from "../socket/connection";
-import { OnAdminRightUpdateBody } from "../types/updateAdminRights";
-import { useAuthContext } from "@/modules/auth/contexts/authContext";
-import { CHAT_EVENTS } from "../constants/socketEvents";
 import { CHAT_TYPE } from "../constants/chatTypes";
 import { GROUP_TYPE } from "../constants/groupTypes";
+import { useChatDetailsStates } from "../states/useChatDetailsStates";
 
 export function ChatDetails() {
-  const { selectedChat, closeChatDetails, selectedChatDetails, setSelectedChatDetails, setSelectedChatUsers } = useChatContext();
-  const { user: loggedUser } = useAuthContext();
-
-  const isPrivateGroup = selectedChat?.type === CHAT_TYPE.GROUP && selectedChat.group?.groupType === GROUP_TYPE.PRIVATE;
-  const [chatDetailsLoading, handleLoading] = useLoading(isPrivateGroup);
-
-  const fetchChatDetails = useCallback(() => {
-    return handleLoading(async () => {
-      if (!selectedChat?.id) return;
-      const response = await backendChatApi.getChatDetails(selectedChat.id);
-
-      if (!response.error) {
-        setSelectedChatDetails(response.data);
-      }
-    });
-  }, [selectedChat?.id]);
+  const {
+    closeChatDetails,
+    selectedChat,
+    chatDetailsLoading,
+    selectedChatDetails,
+    isPrivateGroup,
+  } = useChatDetailsStates();
 
   function formatChatType(chat: TChatDetails) {
     if (chat.type === CHAT_TYPE.DIRECT) {
@@ -70,47 +54,6 @@ export function ChatDetails() {
 
     return formattedChatType;
   }
-
-  const onAdminRightUpdate = useCallback((data: OnAdminRightUpdateBody) => {
-    if (data.userId === loggedUser?.id) {
-      setSelectedChatDetails((prev) => {
-        if (prev) {
-          return {
-            ...prev,
-            isAdmin: data.isAdmin,
-          };
-        }
-
-        return prev;
-      })
-    }
-
-    setSelectedChatUsers((prev) => {
-      return prev.map((user) => {
-        if (user.id === data.userId) {
-          return {
-            ...user,
-            isAdmin: data.isAdmin,
-          };
-        }
-
-        return user;
-      });
-    });
-  }, [loggedUser?.id]);
-
-  useEffect(() => {
-    if (isPrivateGroup) {
-      fetchChatDetails();
-    }
-  }, [selectedChat?.id, isPrivateGroup, fetchChatDetails]);
-
-  useEffect(() => {
-    chatSocket.on(CHAT_EVENTS.CHAT_ADMIN_RIGHT_UPDATE, onAdminRightUpdate);
-    return () => {
-      chatSocket.off(CHAT_EVENTS.CHAT_ADMIN_RIGHT_UPDATE, onAdminRightUpdate);
-    }
-  }, [onAdminRightUpdate]);
 
   return (
     <div className="flex flex-1 p-2 border rounded-md flex-col">

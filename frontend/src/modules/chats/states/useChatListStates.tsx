@@ -33,6 +33,8 @@ export function useChatListStates() {
       const response = await backendChatApi.getMessages({ chatId, pageSize: 20 });
       if (response.error) return;
 
+      // ordena para renderizar de baixo para cima
+      // lembrar disso quando for implementar o fetch on scroll
       const messagesSorted = response.data.messages.sort(
         (a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()
       );
