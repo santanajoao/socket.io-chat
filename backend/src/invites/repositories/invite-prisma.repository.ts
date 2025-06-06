@@ -129,8 +129,8 @@ export class InvitePrismaRepository
       }),
       await this.prismaDataSource.chatInvite.count({
         where: {
-          ...userInvitesWhere,
           acceptedAt: null,
+          receiverUserId: userId,
         },
       }),
     ]);
