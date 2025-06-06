@@ -65,11 +65,11 @@ export class ChatsService {
       limit: limit,
     });
 
-    const formatted = CursorPaginationFormatter.formatCursorPagination(
-      result.chats,
-      'id',
-      limit,
-    );
+    const formatted = CursorPaginationFormatter.formatCursorPagination({
+      data: result.chats,
+      cursorColumn: 'id',
+      pageSize: limit,
+    });
 
     const formattedChats = formatted.data.map((chat) =>
       this.chatFormatter.formatChatData(chat),
@@ -251,12 +251,7 @@ export class ChatsService {
       search: data.search,
     });
 
-    const formated = CursorPaginationFormatter.formatCursorPagination(
-      chatUsers.users,
-      'user',
-    );
-
-    const formattedUsers = formated.data.map((chatUser) => {
+    const formattedUsers = chatUsers.users.map((chatUser) => {
       return {
         id: chatUser.user.id,
         username: chatUser.user.username,
@@ -264,11 +259,17 @@ export class ChatsService {
       };
     });
 
+    const formatted = CursorPaginationFormatter.formatCursorPagination({
+      data: formattedUsers,
+      cursorColumn: 'id',
+      pageSize: limit,
+    });
+
     return {
       data: {
-        users: formattedUsers,
+        users: formatted.data,
         total: chatUsers.total,
-        next: formated.next,
+        next: formatted.next,
       },
     };
   }

@@ -47,11 +47,11 @@ export class InvitesService {
       limit,
     });
 
-    const formatted = CursorPaginationFormatter.formatCursorPagination(
-      inviteResponse.invites,
-      'id',
-      limit,
-    );
+    const formatted = CursorPaginationFormatter.formatCursorPagination({
+      data: inviteResponse.invites,
+      cursorColumn: 'id',
+      pageSize: limit,
+    });
 
     return {
       data: {

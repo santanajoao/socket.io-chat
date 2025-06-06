@@ -21,11 +21,11 @@ export class MessagesService {
       cursor,
     });
 
-    const formatted = CursorPaginationFormatter.formatCursorPagination(
-      result.messages,
-      'id',
-      limit,
-    );
+    const formatted = CursorPaginationFormatter.formatCursorPagination({
+      data: result.messages,
+      cursorColumn: 'id',
+      pageSize: limit,
+    });
 
     return {
       data: {
