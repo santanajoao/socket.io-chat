@@ -1,6 +1,7 @@
 export const MESSAGE_TYPE = {
   DEFAULT: 'DEFAULT',
   NEW_CHAT: 'NEW_CHAT',
+  CHAT_JOIN: 'CHAT_JOIN',
 } as const;
 
 export type MessageTypeModel = (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE];

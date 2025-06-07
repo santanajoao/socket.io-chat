@@ -22,6 +22,9 @@ import { OnChatInviteBody } from './dto/create-invite';
 import { CHAT_TYPE } from 'src/chats/models/chat.model';
 import { GetAllByUserIdServiceParams } from './dto/get-all-by-user-id';
 import { CursorPaginationFormatter } from 'src/shared/formatters/cursor-pagination.formatter';
+import { MessagePrismaRepository } from 'src/messages/repositories/message-prisma.repository';
+import { MESSAGE_TYPE } from 'src/messages/models/message.model';
+import { ChatMessage } from 'src/messages/dtos/get-chat-messages';
 
 @Injectable()
 export class InvitesService {
@@ -33,6 +36,7 @@ export class InvitesService {
     private readonly prismaTransaction: PrismaTransaction,
     private readonly userRepository: UserPrismaRepository,
     private readonly eventEmitter: EventEmitter2,
+    private readonly messageRepository: MessagePrismaRepository,
   ) {}
 
   async getAllUserInvites({
@@ -91,18 +95,32 @@ export class InvitesService {
 
     const nowDate = new Date();
 
-    await this.prismaTransaction.transaction(async () => {
-      if (data.accept) {
-        await this.chatUsersRepository.addUsersToChat({
-          data: usersToAdd,
-        });
-      }
+    const { alertMessage } = await this.prismaTransaction.transaction(
+      async () => {
+        if (data.accept) {
+          await this.chatUsersRepository.addUsersToChat({
+            data: usersToAdd,
+          });
+        }
 
-      await this.inviteRepository.updateInvite(data.inviteId, {
-        accepted: data.accept,
-        acceptedAt: nowDate,
-      });
-    });
+        await this.inviteRepository.updateInvite(data.inviteId, {
+          accepted: data.accept,
+          acceptedAt: nowDate,
+        });
+
+        let alertMessage: ChatMessage | null = null;
+
+        if (data.accept) {
+          alertMessage = await this.messageRepository.createMessage({
+            chatId: chat.id,
+            userId: invite.receiverUserId,
+            type: MESSAGE_TYPE.CHAT_JOIN,
+          });
+        }
+
+        return { alertMessage };
+      },
+    );
 
     const receiverUser = await this.userRepository.findById(
       invite.receiverUserId,
@@ -122,6 +140,13 @@ export class InvitesService {
 
       formattedChat = this.chatFormatter.formatChatData({
         ...chatData,
+      });
+    }
+
+    if (alertMessage) {
+      this.eventEmitter.emit(CHAT_EVENTS.MESSAGE_SEND, {
+        chatId: invite.chatId,
+        message: alertMessage,
       });
     }
 

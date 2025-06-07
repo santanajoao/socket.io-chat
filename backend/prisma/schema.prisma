@@ -85,6 +85,7 @@ model ChatUser {
 enum MessageType {
   DEFAULT
   NEW_CHAT
+  CHAT_JOIN
 }
 
 model Message {
