@@ -40,7 +40,6 @@ export function ChatMessages({ className }: Props) {
     setMessageContent(event.target.value);
   }
 
-  // mensagem que um novo usuário se juntou ao chat
   return (
     <div className={cn("p-2 border flex flex-col flex-1 gap-2 rounded-md overflow-hidden", className)}>
       {selectedChatId && (

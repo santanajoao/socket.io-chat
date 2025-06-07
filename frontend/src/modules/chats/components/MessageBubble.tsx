@@ -3,6 +3,7 @@ import { ChatMessage } from "../types/chatMessages";
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
 import { cn } from "@/modules/shared/lib/utils";
 import { MessageFormatter } from "../helpers/messageFormater";
+import { MESSAGE_TYPE } from "../constants/messageTypes";
 
 type Props = {
   message: ChatMessage;
@@ -16,7 +17,7 @@ export function MessageBubble({ message }: Props) {
   }
 
   const isFromLoggedUser = loggedUser?.id === message.user.id;
-  const isUserMessage = message.type === 'DEFAULT';
+  const isUserMessage = message.type === MESSAGE_TYPE.DEFAULT;
 
   return (
     <div

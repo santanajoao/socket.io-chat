@@ -1,0 +1,5 @@
+export const MESSAGE_TYPE = {
+  DEFAULT: 'DEFAULT',
+  CHAT_JOIN: 'CHAT_JOIN',
+  NEW_CHAT: 'NEW_CHAT',
+};

@@ -14,6 +14,7 @@ import { MessageFormatter } from "../helpers/messageFormater";
 import { CHAT_TYPE } from "../constants/chatTypes";
 import { CountBadge } from "./CountBadge";
 import { LoaderContainer } from "@/modules/shared/components/containers/LoaderContainer";
+import { MESSAGE_TYPE } from "../constants/messageTypes";
 
 export function ChatList() {
   const {
@@ -100,7 +101,7 @@ export function ChatList() {
                     <span>{ChatFormatter.formatChatName(chat, loggedUser)}</span>
                     {chat.lastMessage && (
                       <span className="text-sm line-clamp-1 flex-1">
-                        {chat.type === CHAT_TYPE.GROUP && (
+                        {(chat.type === CHAT_TYPE.GROUP && chat.lastMessage.type === MESSAGE_TYPE.DEFAULT) && (
                           <span className="font-medium">{chat.lastMessage.user.username}: </span>
                         )}
                         {MessageFormatter.formatMessageContent(chat.lastMessage)}
