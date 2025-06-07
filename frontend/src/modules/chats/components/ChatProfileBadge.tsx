@@ -21,7 +21,7 @@ type Props = PropsWithChildren<{
   className?: ClassValue,
 }> & VariantProps<typeof chatBadgeVariants>;
 
-export function ChatBadge({ children, className, variant, size }: Props) {
+export function ChatProfileBadge({ children, className, variant, size }: Props) {
   return (
     <Badge variant={variant} className={cn(chatBadgeVariants({ variant, size }), className)}>
       {children}

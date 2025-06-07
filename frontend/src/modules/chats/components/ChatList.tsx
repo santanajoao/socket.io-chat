@@ -8,10 +8,12 @@ import { BellIcon, CirclePlusIcon } from "lucide-react";
 import { StartNewChatModal } from "./StartNewChatModal";
 import { InvitesPopover } from "./InvitesPopover";
 import { ChatHeaderContainer } from "./ChatHeaderContainer";
-import { ChatBadge } from "./ChatBadge";
+import { ChatProfileBadge } from "./ChatProfileBadge";
 import { ChatFormatter } from "../helpers/chatFormatter";
 import { MessageFormatter } from "../helpers/messageFormater";
 import { CHAT_TYPE } from "../constants/chatTypes";
+import { CountBadge } from "./CountBadge";
+import { LoaderContainer } from "@/modules/shared/components/containers/LoaderContainer";
 
 export function ChatList() {
   const {
@@ -38,24 +40,31 @@ export function ChatList() {
     <div className="p-2 flex-1 flex flex-col gap-1 border rounded-md">
       <ChatHeaderContainer>
         <div className="flex items-center gap-2">
-          <ChatBadge>
-            {loggedUser?.username[0].toUpperCase()}
-          </ChatBadge>
+          {loggedUser ? (
+            <ChatProfileBadge>
+              {loggedUser.username[0].toUpperCase()}
+            </ChatProfileBadge>
+          ) : (
+            <ChatProfileBadge className="bg-accent animate-pulse" />
+          )}
 
-          <span className="font-medium">{loggedUser?.username}</span>
+          {loggedUser ? (
+            <span className="font-medium">{loggedUser?.username}</span>
+          ) : (
+            <LoaderContainer className="h-5 w-20" />
+          )}
         </div>
 
         <div className="flex items-center gap-[inherit]">
           <InvitesPopover asChild>
             <Button variant="outline" size="icon-sm" className="relative">
               <BellIcon />
-              {/* componentizar */}
-              <span
-                className="absolute -top-2 -left-2 font-medium rounded-full min-w-5 h-5 text-xs flex justify-center items-center bg-accent border"
+              <CountBadge
+                className="absolute -top-2 -left-2"
                 aria-label={`There are ${unansweredInvitesCount} unanswered invites`}
               >
                 {unansweredInvitesCount}
-              </span>
+              </CountBadge>
             </Button>
           </InvitesPopover>
 
@@ -67,50 +76,51 @@ export function ChatList() {
         </div>
       </ChatHeaderContainer>
 
-      {chatsAreLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <ul className="flex-1 flex flex-col gap-[inherit]">
-          {chats.map((chat) => (
-            <li key={chat.id}>
-              <Button
-                variant="outline"
-                className={cn("w-full h-auto text-left", { "bg-accent": chat.id === selectedChatId })}
-                onClick={() => selectChat(chat.id)}
-                aria-label={`Open chat ${ChatFormatter.formatChatName(chat, loggedUser)}`}
-              >
-                <ChatBadge variant="outline">
-                  {ChatFormatter.formatChatInitial(chat, loggedUser)}
-                </ChatBadge>
-
-                <span className="flex flex-col flex-1 overflow-hidden">
-                  <span>{ChatFormatter.formatChatName(chat, loggedUser)}</span>
-
-                  {chat.lastMessage && (
-                    <span className="text-sm line-clamp-1 flex-1">
-                      {chat.type === CHAT_TYPE.GROUP && (
-                        <span className="font-medium">{chat.lastMessage.user.username}: </span>
-                      )}
-
-                      {MessageFormatter.formatMessageContent(chat.lastMessage)}
-                    </span>
-                  )}
-                </span>
-
-                <span className="flex flex-col items-end text-sm gap-1">
-                  {chat.lastMessage && (
-                    <span>{formatLastMessageSendAt(chat.lastMessage.sentAt)}</span>
-                  )}
-
-                  <span className="font-medium rounded-full min-w-5 h-5 text-xs flex justify-center items-center bg-accent border">
-                    {chat.unreadMessagesCount}
+      <div className="flex-1 flex flex-col gap-[inherit]">
+        {chatsAreLoading ? (
+          <div className="flex-1 flex flex-col gap-[inherit]">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <LoaderContainer key={index} className="h-16" />
+            ))}
+          </div>
+        ) : (
+          <ul className="flex-1 flex flex-col gap-[inherit]">
+            {chats.map((chat) => (
+              <li key={chat.id}>
+                <Button
+                  variant="outline"
+                  className={cn("w-full h-auto text-left", { "bg-accent": chat.id === selectedChatId })}
+                  onClick={() => selectChat(chat.id)}
+                  aria-label={`Open chat ${ChatFormatter.formatChatName(chat, loggedUser)}`}
+                >
+                  <ChatProfileBadge variant="outline">
+                    {ChatFormatter.formatChatInitial(chat, loggedUser)}
+                  </ChatProfileBadge>
+                  <span className="flex flex-col flex-1 overflow-hidden">
+                    <span>{ChatFormatter.formatChatName(chat, loggedUser)}</span>
+                    {chat.lastMessage && (
+                      <span className="text-sm line-clamp-1 flex-1">
+                        {chat.type === CHAT_TYPE.GROUP && (
+                          <span className="font-medium">{chat.lastMessage.user.username}: </span>
+                        )}
+                        {MessageFormatter.formatMessageContent(chat.lastMessage)}
+                      </span>
+                    )}
                   </span>
-                </span>
-              </Button>
-            </li>
-          ))}
-        </ul>
-      )}
+                  <span className="flex flex-col items-end text-sm gap-1">
+                    {chat.lastMessage && (
+                      <span>{formatLastMessageSendAt(chat.lastMessage.sentAt)}</span>
+                    )}
+                    <CountBadge>
+                      {chat.unreadMessagesCount}
+                    </CountBadge>
+                  </span>
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

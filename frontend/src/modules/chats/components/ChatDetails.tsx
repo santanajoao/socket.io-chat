@@ -2,7 +2,7 @@
 
 import { Button } from "@/modules/shared/components/ui/button";
 import { ChatHeaderContainer } from "./ChatHeaderContainer";
-import { ChatBadge } from "./ChatBadge";
+import { ChatProfileBadge } from "./ChatProfileBadge";
 import { ChatFormatter } from "../helpers/chatFormatter";
 import { Separator } from "@/modules/shared/components/ui/separator";
 import { ChatUsers } from "./ChatUsers";
@@ -11,6 +11,9 @@ import { TChatDetails } from "../types/chatDetails";
 import { CHAT_TYPE } from "../constants/chatTypes";
 import { GROUP_TYPE } from "../constants/groupTypes";
 import { useChatDetailsStates } from "../states/useChatDetailsStates";
+
+// TODO: alterar nome do grupo
+// TODO: apagar grupo
 
 export function ChatDetails() {
   const {
@@ -67,9 +70,9 @@ export function ChatDetails() {
 
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2 justify-center flex-col">
-          <ChatBadge variant="secondary" size="big">
+          <ChatProfileBadge variant="secondary" size="big">
             {ChatFormatter.formatChatInitial(selectedChat!, null)}
-          </ChatBadge>
+          </ChatProfileBadge>
 
           <span className="font-medium">
             {ChatFormatter.formatChatName(selectedChat!, null)}

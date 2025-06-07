@@ -9,7 +9,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/modules/shared/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { useRouter } from "next/navigation";
 import { ApiErrorResponse } from "@/modules/shared/types/backend";
 import { registerSchema } from "../schemas/registerSchema";

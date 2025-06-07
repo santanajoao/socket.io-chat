@@ -92,6 +92,7 @@ export function useChatListStates() {
         pageSize: 10,
       });
 
+      // on error render error component
       if (!response.error) {
         setChats(response.data.chats);
       }

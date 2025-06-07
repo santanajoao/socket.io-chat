@@ -10,7 +10,6 @@ import { BackendChatSocketEvents } from "../socket/events";
 import { CHAT_EVENTS } from "../constants/socketEvents";
 
 // TODO: paginar invites
-// TODO: exibir quantidade de invites no botão
 
 export function useInvitesPopoverStates() {
   const authContext = useAuthContext();
@@ -25,12 +24,13 @@ export function useInvitesPopoverStates() {
       const response = await backendInviteApi.getUserInvites({
         pageSize: 10
       });
+      // on error render error component
       if (!response.error) {
         setInvites(response.data.invites);
         setUnansweredInvitesCount(response.data.totalUnanswered);
       }
     });
-  }, [handleInviteListIsLoading, setInvites]);
+  }, []);
 
   const updateInviteOnResponse = useCallback((updatedInvite: OnInviteResponseBody) => {
     setInvites((prev) => prev.map((invite) => {

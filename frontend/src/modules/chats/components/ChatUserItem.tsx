@@ -1,19 +1,18 @@
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
 import { ChatUser } from "../types/getChatUsers"
-import { ChatBadge } from "./ChatBadge";
+import { ChatProfileBadge } from "./ChatProfileBadge";
 import { Button } from "@/modules/shared/components/ui/button";
 import { ShieldBanIcon, ShieldCheckIcon, UserRoundXIcon } from "lucide-react";
 import { useChatContext } from "../contexts/ChatContext";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { backendChatApi } from "../apis/backend";
+import { toast } from "sonner";
 
 type Props = {
   chatUser: ChatUser;
 }
 
 export function ChatUserItem({ chatUser }: Props) {
-  {/* TODO: Ações nos usuários, expulsar, etc */ }
-
   const { user: loggedUser } = useAuthContext();
   const { selectedChatDetails, setSelectedChatUsers, selectedChatId } = useChatContext();
   const [actionIsLoading, handleActionLoading] = useLoading();
@@ -34,27 +33,28 @@ export function ChatUserItem({ chatUser }: Props) {
     return handleActionLoading(async () => {
       if (!selectedChatDetails || actionIsLoading) return;
 
-      // TODO: add error toast
       const response = await backendChatApi.updateAdminRights(
         selectedChatDetails.id,
         chatUser.id,
         { isAdmin: !chatUser.isAdmin }
       );
 
-      if (!response.error) {
-        setSelectedChatUsers((prev) => {
-          return prev.map((user) => {
-            if (user.id === chatUser.id) {
-              return {
-                ...user,
-                isAdmin: response.data.isAdmin,
-              };
-            }
+      if (response.error) {
+        return toast.error(response.error.message, { richColors: true });
+      }
 
-            return user;
-          });
-        })
-      };
+      setSelectedChatUsers((prev) => {
+        return prev.map((user) => {
+          if (user.id === chatUser.id) {
+            return {
+              ...user,
+              isAdmin: response.data.isAdmin,
+            };
+          }
+
+          return user;
+        });
+      })
     });
   }
 
@@ -67,16 +67,16 @@ export function ChatUserItem({ chatUser }: Props) {
     });
 
     if (response.error) {
-      // toggle
+      return toast.error(response.error.message, { richColors: true });
     }
   }
 
   return (
     <div className="flex items-center gap-2 border rounded-md p-2 justify-between">
       <div className="gap-[inherit] flex items-center">
-        <ChatBadge>
+        <ChatProfileBadge>
           {chatUser.username[0].toUpperCase()}
-        </ChatBadge>
+        </ChatProfileBadge>
 
         <span>{chatUser.username}</span>
       </div>

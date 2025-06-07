@@ -7,9 +7,10 @@ import { Textarea } from "@/modules/shared/components/ui/textarea";
 import { useChatMessagesState } from "../states/useChatMessagesState";
 import { FormEvent } from "react";
 import { ChatHeaderContainer } from "./ChatHeaderContainer";
-import { ChatBadge } from "./ChatBadge";
+import { ChatProfileBadge } from "./ChatProfileBadge";
 import { ChatFormatter } from "../helpers/chatFormatter";
 import { MessageBubble } from "./MessageBubble";
+import { MessageLoadingSkelleton } from "./MessageLoadingSkelleton";
 
 type Props = {
   className?: string;
@@ -47,9 +48,9 @@ export function ChatMessages({ className }: Props) {
           <ChatHeaderContainer>
             <Button variant="link" asChild className="p-0" onClick={openChatDetails}>
               <div className="flex items-center gap-[inherit]">
-                <ChatBadge>
+                <ChatProfileBadge>
                   {ChatFormatter.formatChatInitial(selectedChat!, loggedUser)}
-                </ChatBadge>
+                </ChatProfileBadge>
 
                 <span className="font-medium">{ChatFormatter.formatChatName(selectedChat!, loggedUser)}</span>
               </div>
@@ -58,7 +59,7 @@ export function ChatMessages({ className }: Props) {
 
           <div className="flex-1 flex flex-col gap-2 overflow-y-auto overflow-x-hidden pr-2">
             {messagesAreLoading ? (
-              <div>Loading messages...</div>
+              <MessageLoadingSkelleton />
             ) : (
               selectedChatMessages.map((message) => (
                 <MessageBubble key={message.id} message={message} />

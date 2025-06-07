@@ -8,6 +8,7 @@ import { backendChatApi } from "../apis/backend";
 import { useChatContext } from "../contexts/ChatContext";
 import { ChatUserItem } from "./ChatUserItem";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
+import { LoaderContainer } from "@/modules/shared/components/containers/LoaderContainer";
 
 const USERS_PAGE_SIZE = 8;
 
@@ -31,6 +32,7 @@ export function ChatUsers() {
         search: params.search ?? search,
       });
 
+      // em caso de erro renderizar componente de erro
       if (result.error) return;
 
       setSelectedChatUsers(result.data.users);
@@ -56,12 +58,6 @@ export function ChatUsers() {
   useEffect(() => {
     fetchChatUsers();
   }, []);
-
-  // dar acesso admin
-  // admin remover usuários
-  // admin mudar nome do grupo
-  // o criador não pode ser afetado por essas ações
-  // admin invitar
 
   return (
     <div className="flex flex-col gap-2">
@@ -108,17 +104,23 @@ export function ChatUsers() {
         </div>
       )}
 
-      {chatUsersAreLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <ul id="search-results" aria-live="polite" className="flex flex-col gap-1">
-          {selectedChatUsers.map((user) => (
-            <li key={user.id}>
-              <ChatUserItem chatUser={user} />
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="flex flex-col gap-1">
+        {chatUsersAreLoading ? (
+          <div className="flex-1 flex flex-col gap-[inherit]">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <LoaderContainer key={index} className="h-15" />
+            ))}
+          </div>
+        ) : (
+          <ul id="search-results" aria-live="polite" className="flex flex-col gap-[inherit]">
+            {selectedChatUsers.map((user) => (
+              <li key={user.id}>
+                <ChatUserItem chatUser={user} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

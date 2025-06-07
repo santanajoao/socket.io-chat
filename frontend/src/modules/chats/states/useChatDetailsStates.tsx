@@ -23,6 +23,7 @@ export function useChatDetailsStates() {
       if (!selectedChat?.id) return;
       const response = await backendChatApi.getChatDetails(selectedChat.id);
 
+      // render error component on error
       if (!response.error) {
         setSelectedChatDetails(response.data);
       }
