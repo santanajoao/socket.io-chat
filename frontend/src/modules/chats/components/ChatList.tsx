@@ -45,19 +45,21 @@ export function ChatList() {
 
         <div className="flex items-center gap-[inherit]">
           <InvitesPopover asChild>
-            <Button variant="outline" size="icon-sm" className="relative">
+            <Button
+              aria-label={`Open invite list. There are ${unansweredInvitesCount} unanswered invites`}
+              variant="outline"
+              size="icon-sm"
+              className="relative"
+            >
               <BellIcon />
-              <CountBadge
-                className="absolute -top-2 -left-2"
-                aria-label={`There are ${unansweredInvitesCount} unanswered invites`}
-              >
+              <CountBadge className="absolute -top-2 -left-2">
                 {unansweredInvitesCount}
               </CountBadge>
             </Button>
           </InvitesPopover>
 
           <StartNewChatModal trigger asChild>
-            <Button variant="outline" size="icon-sm">
+            <Button variant="outline" size="icon-sm" aria-label="Start a new chat">
               <CirclePlusIcon />
             </Button>
           </StartNewChatModal>

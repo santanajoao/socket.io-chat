@@ -11,7 +11,12 @@ export function UserMenu() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="blank" className="flex items-center gap-2">
+        <Button
+          aria-label="User actions menu"
+          variant="ghost"
+          size="blank"
+          className="flex items-center gap-2"
+        >
           {isLoading ? (
             <ChatProfileBadge className="bg-accent animate-pulse" />
           ) : (

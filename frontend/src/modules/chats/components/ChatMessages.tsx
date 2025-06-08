@@ -45,14 +45,18 @@ export function ChatMessages({ className }: Props) {
       {selectedChatId && (
         <>
           <ChatHeaderContainer>
-            <Button variant="link" asChild className="p-0" onClick={openChatDetails}>
-              <div className="flex items-center gap-[inherit]">
-                <ChatProfileBadge>
-                  {ChatFormatter.formatChatInitial(selectedChat!, loggedUser)}
-                </ChatProfileBadge>
+            <Button
+              variant="link"
+              className="gap-[inherit]"
+              size="blank"
+              onClick={openChatDetails}
+              aria-label="Open chat details"
+            >
+              <ChatProfileBadge>
+                {ChatFormatter.formatChatInitial(selectedChat!, loggedUser)}
+              </ChatProfileBadge>
 
-                <span className="font-medium">{ChatFormatter.formatChatName(selectedChat!, loggedUser)}</span>
-              </div>
+              <span className="font-medium">{ChatFormatter.formatChatName(selectedChat!, loggedUser)}</span>
             </Button>
           </ChatHeaderContainer>
 
@@ -73,9 +77,10 @@ export function ChatMessages({ className }: Props) {
               disabled={messagesAreLoading}
               onChange={handleMessageInputChange}
               className="resize-none"
+              aria-label="Message input"
             />
 
-            <Button type="submit" disabled={messageSubmitIsDisabled}>
+            <Button aria-label="Send message" type="submit" disabled={messageSubmitIsDisabled}>
               <SendIcon />
             </Button>
           </form>

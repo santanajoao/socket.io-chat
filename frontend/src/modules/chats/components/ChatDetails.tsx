@@ -63,7 +63,12 @@ export function ChatDetails() {
       <ChatHeaderContainer>
         <h3>Chat Details</h3>
 
-        <Button variant="ghost" size="icon-sm" onClick={closeChatDetails}>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={closeChatDetails}
+          aria-label="Close chat details"
+        >
           <XIcon />
         </Button>
       </ChatHeaderContainer>
