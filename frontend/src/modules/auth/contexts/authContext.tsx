@@ -6,11 +6,13 @@ import { LoginFields, LoggedUser } from "../types/login";
 import { backendAuthApi } from "../api/backend";
 import { ROUTES } from "@/modules/shared/constants/routes";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type ContextValues = {
   user: LoggedUser | null;
   isLoading: boolean;
   login: typeof backendAuthApi.login;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<ContextValues | null>(null);
@@ -42,6 +44,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     })
   }
 
+  async function logout() {
+    const response = await backendAuthApi.logout();
+    if (response.error) {
+      toast.error('Error logging out', { richColors: true });
+    } else {
+      router.push(ROUTES.SIGNIN);
+    }
+  }
+
   useEffect(() => {
     fetchUser();
   }, []);
@@ -50,6 +61,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     isLoading,
     login,
+    logout,
   };
 
   return (

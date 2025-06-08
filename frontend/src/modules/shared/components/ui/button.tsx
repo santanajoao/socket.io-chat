@@ -28,6 +28,7 @@ const buttonVariants = cva(
         dynamic: "h-auto p-2",
         'icon-default': "size-9",
         'icon-sm': "size-8",
+        blank: "p-0 w-auto"
       },
     },
     defaultVariants: {

@@ -6,6 +6,6 @@ type Props = {
 
 export function LoaderContainer({ className }: Props) {
   return (
-    <div aria-label="Loading" className={cn('bg-accent animate-pulse rounded-md', className)} />
+    <span aria-label="Loading" className={cn('bg-accent animate-pulse rounded-md block', className)} />
   );
 }

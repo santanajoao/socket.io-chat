@@ -2,6 +2,7 @@ import { backendApi } from "@/modules/shared/apis/backend";
 import { treatAxiosRequest } from "@/modules/shared/utils/axios";
 import { LoginFields, LoginResponse } from "../types/login";
 import { RegisterFields, RegisterResponse } from "../types/register";
+import axios from "axios";
 
 const authClient = backendApi.create({
   baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth`,
@@ -19,8 +20,13 @@ async function getUser() {
   return treatAxiosRequest<LoginResponse>(() => authClient.get('/user'));
 }
 
+async function logout() {
+  return treatAxiosRequest(() => axios.post('/api/logout'));
+}
+
 export const backendAuthApi = {
   login,
   register,
   getUser,
+  logout,
 };
