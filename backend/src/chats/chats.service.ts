@@ -36,6 +36,10 @@ import { GetChatDetailsDto } from './dtos/get-chat-details';
 import { UpdateAdminRightsServiceDto } from './dtos/grand-admin-rights';
 import { MESSAGE_TYPE } from 'src/messages/models/message.model';
 import { CursorPaginationFormatter } from 'src/shared/formatters/cursor-pagination.formatter';
+import {
+  OnChatGroupUpdateBody,
+  UpdateChatGroupServiceParams,
+} from './dtos/update-chat';
 
 @Injectable()
 export class ChatsService {
@@ -400,6 +404,49 @@ export class ChatsService {
 
     return {
       data: updatedChatUser,
+    };
+  }
+
+  async updateChatGroup(data: UpdateChatGroupServiceParams) {
+    const chatUser = await this.chatUsersRepository.findByUserAndChat(
+      data.userId,
+      data.chatId,
+    );
+
+    if (!chatUser) {
+      throw new UnauthorizedException('You are not in this chat');
+    }
+
+    if (!chatUser.isAdmin) {
+      throw new UnauthorizedException(
+        'You are not authorized to update this chat',
+      );
+    }
+
+    const chat = await this.chatRepository.getChatById(data.chatId);
+    if (!chat) {
+      throw new BadRequestException('Chat not found');
+    }
+
+    const updatedGroup = await this.groupChatRepository.updateGroupChat(
+      data.chatId,
+      {
+        title: data.title,
+      },
+    );
+
+    const response: OnChatGroupUpdateBody = {
+      chatId: data.chatId,
+      group: updatedGroup,
+    };
+
+    this.eventEmitter.emit(CHAT_EVENTS.CHAT_GROUP_UPDATE, response);
+
+    return {
+      data: {
+        ...chat,
+        group: updatedGroup,
+      },
     };
   }
 }

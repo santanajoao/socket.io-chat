@@ -15,6 +15,7 @@ import { CreateDirectChatBody } from './dtos/create-chat';
 import { ChatsService } from './chats.service';
 import { AuthenticatedExpressRequest } from 'src/auth/interfaces/jwt.interfaces';
 import { CreateGroupChatBody } from './dtos/create-group-chat';
+import { UpdateChatGroupBody } from './dtos/update-chat';
 
 @Controller('chats')
 export class ChatsController {
@@ -133,6 +134,23 @@ export class ChatsController {
     const result = await this.chatService.getChatDetails({
       chatId,
       userId: req.user.id,
+    });
+
+    return {
+      data: result.data,
+    };
+  }
+
+  @Patch(':chatId/group')
+  async updateGroupChat(
+    @Request() req: AuthenticatedExpressRequest,
+    @Param('chatId') chatId: string,
+    @Body() body: UpdateChatGroupBody,
+  ) {
+    const result = await this.chatService.updateChatGroup({
+      chatId,
+      userId: req.user.id,
+      ...body,
     });
 
     return {

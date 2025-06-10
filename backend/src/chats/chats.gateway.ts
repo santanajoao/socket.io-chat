@@ -20,6 +20,7 @@ import { MarkMessagesAsReadBody } from './dtos/mark-messages-as-read';
 import { OnAdminRightUpdateBody } from './dtos/grand-admin-rights';
 import { MessageModel } from 'src/messages/models/message.model';
 import { OnRemoveUserFromChatBody } from './dtos/remove-user-from-chat';
+import { OnChatGroupUpdateBody } from './dtos/update-chat';
 
 @WebSocketGateway({ namespace: CHAT_NAMESPACE, cors: FRONTEND_CORS })
 export class ChatsGateway {
@@ -136,5 +137,10 @@ export class ChatsGateway {
   @OnEvent(CHAT_EVENTS.CHAT_USER_REMOVE)
   onRemoveUserFromChat(body: OnRemoveUserFromChatBody) {
     this.namespace.to(body.chatId).emit(CHAT_EVENTS.CHAT_USER_REMOVE, body);
+  }
+
+  @OnEvent(CHAT_EVENTS.CHAT_GROUP_UPDATE)
+  onChatGroupUpdate(body: OnChatGroupUpdateBody) {
+    this.namespace.to(body.chatId).emit(CHAT_EVENTS.CHAT_GROUP_UPDATE, body);
   }
 }

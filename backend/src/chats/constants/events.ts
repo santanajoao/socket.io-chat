@@ -8,4 +8,5 @@ export const CHAT_EVENTS = {
   MESSAGE_SEND: 'message:send',
   MESSAGE_RECEIVE: 'message:receive',
   CHAT_USER_REMOVE: 'chat:user:remove',
+  CHAT_GROUP_UPDATE: 'chat:group:update',
 };

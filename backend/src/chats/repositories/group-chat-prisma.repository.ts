@@ -5,6 +5,7 @@ import {
   CreateGroupChatRepositoryParams,
   CreateGroupChatRepositoryResponse,
 } from '../dtos/create-group-chat';
+import { UpdateChatGroupRepositoryParams } from '../dtos/update-chat';
 
 @Injectable()
 export class GroupChatPrismaRepository
@@ -24,5 +25,16 @@ export class GroupChatPrismaRepository
     });
 
     return data;
+  }
+
+  async updateGroupChat(chatId: string, data: UpdateChatGroupRepositoryParams) {
+    const updatedChat = await this.prismaDataSource.groupChat.update({
+      where: { chatId },
+      data: {
+        title: data.title,
+      },
+    });
+
+    return updatedChat;
   }
 }
