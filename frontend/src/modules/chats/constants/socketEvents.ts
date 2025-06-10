@@ -9,4 +9,5 @@ export const CHAT_EVENTS = {
   INVITE_RESPONSE: 'invite:response',
   CHAT_USER_REMOVE: 'chat:user:remove',
   READ_CHAT_MESSAGES: 'chat:messages:read',
+  CHAT_GROUP_UPDATE: 'chat:group:update',
 };

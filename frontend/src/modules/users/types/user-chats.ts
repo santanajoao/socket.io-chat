@@ -13,11 +13,11 @@ export type MessageUser = {
 export type UserChat = {
   id: string;
   type: string;
-  group?: {
+  group: {
     id: string;
     groupType: string;
     title: string;
-  }
+  } | null;
   unreadMessagesCount: number;
   lastMessage: {
     id: string;

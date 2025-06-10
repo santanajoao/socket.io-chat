@@ -17,7 +17,6 @@ import { PageContainer } from "@/modules/shared/components/containers/PageContai
 import { ROUTES } from "@/modules/shared/constants/routes";
 import { useAuthContext } from "../contexts/authContext";
 
-// TODO: Add logout button
 export function LoginPage() {
   const form = useForm({
     resolver: zodResolver(loginSchema),

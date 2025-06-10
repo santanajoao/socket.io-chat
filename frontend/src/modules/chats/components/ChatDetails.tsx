@@ -6,13 +6,13 @@ import { ChatProfileBadge } from "./ChatProfileBadge";
 import { ChatFormatter } from "../helpers/chatFormatter";
 import { Separator } from "@/modules/shared/components/ui/separator";
 import { ChatUsers } from "./ChatUsers";
-import { XIcon } from "lucide-react";
+import { PencilIcon, PencilOffIcon, SaveIcon, XIcon } from "lucide-react";
 import { TChatDetails } from "../types/chatDetails";
 import { CHAT_TYPE } from "../constants/chatTypes";
 import { GROUP_TYPE } from "../constants/groupTypes";
 import { useChatDetailsStates } from "../states/useChatDetailsStates";
+import { Input } from "@/modules/shared/components/ui/input";
 
-// TODO: alterar nome do grupo
 // TODO: apagar grupo
 
 export function ChatDetails() {
@@ -22,6 +22,14 @@ export function ChatDetails() {
     chatDetailsLoading,
     selectedChatDetails,
     isPrivateGroup,
+    isEditingGroupName,
+    startGroupNameEdition,
+    editedGroupName,
+    cancelGroupNameEdition,
+    saveGroupName,
+    setEditedGroupName,
+    groupNameEditionIsLoading,
+    editedGroupNameIsTheSame
   } = useChatDetailsStates();
 
   function formatChatType(chat: TChatDetails) {
@@ -58,6 +66,10 @@ export function ChatDetails() {
     return formattedChatType;
   }
 
+  function onGroupNameChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setEditedGroupName(event.target.value);
+  }
+
   return (
     <div className="flex flex-1 p-2 border rounded-md flex-col">
       <ChatHeaderContainer>
@@ -79,9 +91,50 @@ export function ChatDetails() {
             {ChatFormatter.formatChatInitial(selectedChat!, null)}
           </ChatProfileBadge>
 
-          <span className="font-medium">
-            {ChatFormatter.formatChatName(selectedChat!, null)}
-          </span>
+          <div className="flex items-center gap-1">
+            {isEditingGroupName ? (
+              <Input onChange={onGroupNameChange} defaultValue={editedGroupName} className="h-7" />
+            ) : (
+              <span className="font-medium">
+                {ChatFormatter.formatChatName(selectedChat!, null)}
+              </span>
+            )}
+
+            {isPrivateGroup && selectedChatDetails?.isAdmin && (
+              isEditingGroupName ? (
+                <>
+                  <Button
+                    aria-label="Cancel group name edition"
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={cancelGroupNameEdition}
+                    disabled={groupNameEditionIsLoading}
+                  >
+                    <PencilOffIcon />
+                  </Button>
+
+                  <Button
+                    aria-label="Save group name"
+                    variant="ghost"
+                    size="icon-sm"
+                    disabled={!editedGroupName || editedGroupNameIsTheSame || groupNameEditionIsLoading}
+                    onClick={saveGroupName}
+                  >
+                    <SaveIcon />
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  aria-label="Edit group name"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={startGroupNameEdition}
+                >
+                  <PencilIcon />
+                </Button>
+              )
+            )}
+          </div>
 
           {chatDetailsLoading ? (
             <div className="bg-accent animate-pulse rounded-md h-5 w-40" />
@@ -94,9 +147,9 @@ export function ChatDetails() {
           {chatDetailsLoading ? (
             <div className="bg-accent animate-pulse rounded-md h-5 w-20" />
           ) : (
-            selectedChatDetails?.group?.groupType === GROUP_TYPE.PRIVATE && (
+            isPrivateGroup && (
               <span className="text-sm">
-                Criado por <span className="font-medium">{selectedChatDetails.group.createdByUser?.username}</span>
+                Criado por <span className="font-medium">{selectedChatDetails?.group?.createdByUser?.username}</span>
               </span>
             )
           )}

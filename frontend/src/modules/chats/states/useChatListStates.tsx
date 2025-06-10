@@ -11,6 +11,7 @@ import { UserChat } from "@/modules/users/types/user-chats";
 import { BackendChatSocketEvents } from "../socket/events";
 import { CHAT_EVENTS } from "../constants/socketEvents";
 import { OnChatUserRemoveBody } from "../types/removeUserFromChat";
+import { OnChatGroupUpdate } from "../types/updateChatGroup";
 
 // ao token vencer e receber erro unauthorized em qualquer request redirecionar para login
 // a cada nova mensagem reordenar o chat
@@ -122,20 +123,38 @@ export function useChatListStates() {
     }
   }, [authContext.user?.id, selectedChatId]);
 
-  useEffect(() => {
-    function onChatCreated(data: UserChat) {
-      BackendChatSocketEvents.joinChat(data.id);
-      setChats((prev) => [data, ...prev]);
-    }
+  const onChatGroupUpdate = useCallback((data: OnChatGroupUpdate) => {
+    setChats((prev) => {
+      return prev.map((chat) => {
+        if (chat.id !== data.chatId || !chat.group) return chat;
 
+        return {
+          ...chat,
+          group: {
+            ...chat.group,
+            title: data.group.title,
+          },
+        }
+      })
+    });
+  }, []);
+
+  const onChatCreated = useCallback((data: UserChat) => {
+    BackendChatSocketEvents.joinChat(data.id);
+    setChats((prev) => [data, ...prev]);
+  }, []);
+
+  useEffect(() => {
     chatSocket.on(CHAT_EVENTS.CHAT_CREATED, onChatCreated);
     chatSocket.on(CHAT_EVENTS.CHAT_USER_REMOVE, onChatUserRemove)
+    chatSocket.on(CHAT_EVENTS.CHAT_GROUP_UPDATE, onChatGroupUpdate)
 
     return () => {
       chatSocket.off(CHAT_EVENTS.CHAT_CREATED, onChatCreated);
       chatSocket.off(CHAT_EVENTS.CHAT_USER_REMOVE, onChatUserRemove)
+      chatSocket.off(CHAT_EVENTS.CHAT_GROUP_UPDATE, onChatGroupUpdate);
     }
-  }, [onChatUserRemove])
+  }, [onChatUserRemove, onChatGroupUpdate, onChatCreated])
 
   return {
     chatsAreLoading,
