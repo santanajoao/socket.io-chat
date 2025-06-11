@@ -89,7 +89,7 @@ export function useInvitesPopoverStates() {
 
       return prev;
     });
-  }, [])
+  }, [authContext.user?.id])
 
   async function respondInvite(inviteId: string, accept: boolean) {
     setInviteResponseIsLoading(true);

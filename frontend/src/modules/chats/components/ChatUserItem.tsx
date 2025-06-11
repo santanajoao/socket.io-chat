@@ -7,6 +7,7 @@ import { useChatContext } from "../contexts/ChatContext";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { backendChatApi } from "../apis/backend";
 import { toast } from "sonner";
+import { ConfirmationModalTrigger } from "./ConfirmationModalTrigger";
 
 type Props = {
   chatUser: ChatUser;
@@ -82,42 +83,51 @@ export function ChatUserItem({ chatUser }: Props) {
       </div>
 
       <div>
+        {/* modal de confirmação ao dar admin ou remover */}
         {canDoDangerActionsToUser(chatUser) && (
           <>
-            {chatUser.isAdmin ? (
+            <ConfirmationModalTrigger
+              asChild
+              onConfirm={toggleAdminRights}
+            >
+              {chatUser.isAdmin ? (
+                <Button
+                  variant="ghost"
+                  size="icon-default"
+                  className="text-red-500"
+                  aria-label={`Revoke admin permissions from ${chatUser.username}`}
+                  disabled={actionIsLoading}
+                >
+                  <ShieldBanIcon />
+                </Button>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="icon-default"
+                  className="text-gray-500"
+                  aria-label={`Grant admin permissions to ${chatUser.username}`}
+                  disabled={actionIsLoading}
+                >
+                  <ShieldCheckIcon />
+                </Button>
+              )}
+            </ConfirmationModalTrigger>
+
+            <ConfirmationModalTrigger
+              asChild
+              variant="destructive"
+              onConfirm={removeUserFromChat}
+            >
               <Button
-                onClick={toggleAdminRights}
                 variant="ghost"
                 size="icon-default"
                 className="text-red-500"
-                aria-label={`Revoke admin permissions from ${chatUser.username}`}
+                aria-label={`Remove user ${chatUser.username} from chat`}
                 disabled={actionIsLoading}
               >
-                <ShieldBanIcon />
+                <UserRoundXIcon />
               </Button>
-            ) : (
-              <Button
-                onClick={toggleAdminRights}
-                variant="ghost"
-                size="icon-default"
-                className="text-gray-500"
-                aria-label={`Grant admin permissions to ${chatUser.username}`}
-                disabled={actionIsLoading}
-              >
-                <ShieldCheckIcon />
-              </Button>
-            )}
-
-            <Button
-              variant="ghost"
-              size="icon-default"
-              className="text-red-500"
-              aria-label={`Remove user ${chatUser.username} from chat`}
-              disabled={actionIsLoading}
-              onClick={removeUserFromChat}
-            >
-              <UserRoundXIcon />
-            </Button>
+            </ConfirmationModalTrigger>
           </>
         )}
       </div>

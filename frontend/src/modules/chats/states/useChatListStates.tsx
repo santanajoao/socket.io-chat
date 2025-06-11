@@ -121,7 +121,7 @@ export function useChatListStates() {
       BackendChatSocketEvents.leaveChat(data.chatId);
       setChats((prev) => prev.filter((chat) => chat.id !== data.chatId));
     }
-  }, [authContext.user?.id, selectedChatId]);
+  }, [selectedChatId, authContext.user?.id]);
 
   const onChatGroupUpdate = useCallback((data: OnChatGroupUpdate) => {
     setChats((prev) => {

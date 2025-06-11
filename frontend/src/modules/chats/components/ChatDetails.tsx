@@ -13,6 +13,7 @@ import { GROUP_TYPE } from "../constants/groupTypes";
 import { useChatDetailsStates } from "../states/useChatDetailsStates";
 import { Input } from "@/modules/shared/components/ui/input";
 
+// TODO: sair do grupo
 // TODO: apagar grupo
 
 export function ChatDetails() {

@@ -67,7 +67,7 @@ export function useChatMessagesState() {
     if (shouldMarkAsRead) {
       BackendChatSocketEvents.markChatMessageAsRead(chatId);
     }
-  }, [selectedChatId, authContext.user]);
+  }, [selectedChatId, authContext.user?.id]);
 
   const debouncedHandleMessageReadOnReceive = useMemo(() => {
     return debounce(handleMessageReadOnReceive, 700);
