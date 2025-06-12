@@ -11,6 +11,12 @@ export class MessageFormatter {
     if (message.type === MESSAGE_TYPE.CHAT_JOIN) {
       return <><span className="font-medium">{message.user.username}</span> joined the chat</>
     }
+    if (message.type === MESSAGE_TYPE.CHAT_LEAVE) {
+      return <><span className="font-medium">{message.user.username}</span> left the chat</>
+    }
+    if (message.type === MESSAGE_TYPE.USER_REMOVED) {
+      return <><span className="font-medium">{message.user.username}</span> was removed from the chat</>
+    }
 
     return message.content
   }
