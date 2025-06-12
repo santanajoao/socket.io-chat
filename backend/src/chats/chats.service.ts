@@ -307,9 +307,21 @@ export class ChatsService {
       throw new BadRequestException('User not found in chat');
     }
 
-    await this.chatUsersRepository.deleteChatUser(
-      data.chatId,
-      data.targetUserId,
+    const { alertMessage } = await this.prismaTransaction.transaction(
+      async () => {
+        await this.chatUsersRepository.deleteChatUser(
+          data.chatId,
+          data.targetUserId,
+        );
+
+        const alertMessage = await this.messageRepository.createMessage({
+          chatId: data.chatId,
+          userId: data.requesterUserId,
+          type: MESSAGE_TYPE.USER_REMOVED,
+        });
+
+        return { alertMessage };
+      },
     );
 
     const onRemoveUserFromChatBody: OnRemoveUserFromChatBody = {
@@ -321,6 +333,8 @@ export class ChatsService {
       CHAT_EVENTS.CHAT_USER_REMOVE,
       onRemoveUserFromChatBody,
     );
+
+    this.eventEmitter.emit(CHAT_EVENTS.MESSAGE_SEND, alertMessage);
 
     return {
       data: {
@@ -479,7 +493,21 @@ export class ChatsService {
         );
       }
 
-      await this.chatUsersRepository.deleteChatUser(chatId, userId);
+      const { alertMessage } = await this.prismaTransaction.transaction(
+        async () => {
+          await this.chatUsersRepository.deleteChatUser(chatId, userId);
+
+          const alertMessage = await this.messageRepository.createMessage({
+            chatId: chatId,
+            userId: userId,
+            type: MESSAGE_TYPE.CHAT_LEAVE,
+          });
+
+          return { alertMessage };
+        },
+      );
+
+      this.eventEmitter.emit(CHAT_EVENTS.MESSAGE_SEND, alertMessage);
     }
 
     const onChatUserRemoveBody: OnRemoveUserFromChatBody = {
