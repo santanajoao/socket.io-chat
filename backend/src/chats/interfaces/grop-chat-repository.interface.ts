@@ -13,4 +13,5 @@ export interface GroupChatRepository {
     chatId: string,
     data: UpdateChatGroupRepositoryParams,
   ): Promise<GroupChatModel>;
+  getByChatId(chatId: string): Promise<GroupChatModel | null>;
 }

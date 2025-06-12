@@ -298,4 +298,12 @@ export class ChatPrismaRepository
 
     return data;
   }
+
+  async deleteChatById(id: string): Promise<void> {
+    await this.prismaDataSource.chat.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }

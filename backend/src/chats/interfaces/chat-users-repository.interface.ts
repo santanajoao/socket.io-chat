@@ -1,4 +1,5 @@
 import { AddUsersToChatRepositoryParams } from '../dtos/add-users-to-chat';
+import { CountChatUsersRepositoryResponse } from '../dtos/count-chat-users';
 import { ChatUserModel } from '../models/chat-user.model';
 
 export interface ChatUsersRepository {
@@ -14,4 +15,5 @@ export interface ChatUsersRepository {
     userIds: string[],
   ): Promise<ChatUserModel[]>;
   deleteChatUser(chatId: string, userId: string): Promise<void>;
+  countChatUsers(chatId: string): Promise<CountChatUsersRepositoryResponse>;
 }

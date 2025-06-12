@@ -37,4 +37,12 @@ export class GroupChatPrismaRepository
 
     return updatedChat;
   }
+
+  async getByChatId(chatId: string) {
+    const chat = await this.prismaDataSource.groupChat.findUnique({
+      where: { chatId },
+    });
+
+    return chat;
+  }
 }

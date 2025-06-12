@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaRepository } from 'src/shared/repositories/prisma-repository';
 import { ChatUserModel } from '../models/chat-user.model';
 import { GetChatUsersPaginatedRepositoryParams } from '../dtos/get-chat-users';
+import { CountChatUsersRepositoryResponse } from '../dtos/count-chat-users';
 
 @Injectable()
 export class ChatUsersPrismaRepository
@@ -24,10 +25,12 @@ export class ChatUsersPrismaRepository
     userId: string,
     chatId: string,
   ): Promise<ChatUserModel | null> {
-    return this.prismaDataSource.chatUser.findFirst({
+    return this.prismaDataSource.chatUser.findUnique({
       where: {
-        chatId,
-        userId,
+        chatId_userId: {
+          chatId,
+          userId,
+        },
       },
     });
   }
@@ -133,5 +136,24 @@ export class ChatUsersPrismaRepository
     });
 
     return result;
+  }
+
+  async countChatUsers(
+    chatId: string,
+  ): Promise<CountChatUsersRepositoryResponse> {
+    const count = await this.prismaDataSource.chatUser.count({
+      where: {
+        chatId,
+      },
+      select: {
+        isAdmin: true,
+        _all: true,
+      },
+    });
+
+    return {
+      adminCount: count.isAdmin,
+      total: count._all,
+    };
   }
 }

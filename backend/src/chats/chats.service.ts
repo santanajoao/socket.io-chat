@@ -40,6 +40,7 @@ import {
   OnChatGroupUpdateBody,
   UpdateChatGroupServiceParams,
 } from './dtos/update-chat';
+import { LeaveGroupChatServiceParams } from './dtos/leave-group-chat';
 
 @Injectable()
 export class ChatsService {
@@ -446,6 +447,52 @@ export class ChatsService {
       data: {
         ...chat,
         group: updatedGroup,
+      },
+    };
+  }
+
+  async leaveGroupChat({ chatId, userId }: LeaveGroupChatServiceParams) {
+    const chatUser = await this.chatUsersRepository.findByUserAndChat(
+      userId,
+      chatId,
+    );
+
+    if (!chatUser) {
+      throw new UnauthorizedException('You are not in this chat');
+    }
+
+    const groupChat = await this.groupChatRepository.getByChatId(chatId);
+    if (!groupChat) {
+      throw new BadRequestException('This chat is not a group');
+    }
+
+    const userCounts = await this.chatUsersRepository.countChatUsers(chatId);
+    const hasOnlyOneUser = userCounts.total === 1;
+
+    if (hasOnlyOneUser) {
+      await this.chatRepository.deleteChatById(chatId);
+    } else {
+      const userIsOnlyAdmin = userCounts.adminCount > 1;
+      if (chatUser.isAdmin && userIsOnlyAdmin) {
+        throw new BadRequestException(
+          'You are the only admin in this group. Please assign admin rights to another member before leaving the chat.',
+        );
+      }
+
+      await this.chatUsersRepository.deleteChatUser(chatId, userId);
+    }
+
+    const onChatUserRemoveBody: OnRemoveUserFromChatBody = {
+      chatId,
+      userId,
+    };
+
+    this.eventEmitter.emit(CHAT_EVENTS.CHAT_USER_REMOVE, onChatUserRemoveBody);
+
+    return {
+      data: {
+        chatId,
+        userId,
       },
     };
   }

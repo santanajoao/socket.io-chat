@@ -157,4 +157,19 @@ export class ChatsController {
       data: result.data,
     };
   }
+
+  @Post(':chatId/group/leave')
+  async leaveGroupChat(
+    @Request() req: AuthenticatedExpressRequest,
+    @Param('chatId') chatId: string,
+  ) {
+    const result = await this.chatService.leaveGroupChat({
+      chatId,
+      userId: req.user.id,
+    });
+
+    return {
+      data: result.data,
+    };
+  }
 }
