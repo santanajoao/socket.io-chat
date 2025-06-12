@@ -159,17 +159,19 @@ export function ChatDetails() {
 
         {isPrivateGroup && <ChatUsers />}
 
-        <ConfirmationModalTrigger
-          asChild
-          variant="destructive"
-          onConfirm={leaveGroupChat}
-        >
-          <Button disabled={chatDetailsLoading} size="lg" variant="outline">
-            <LogOutIcon />
+        {isPrivateGroup && (
+          <ConfirmationModalTrigger
+            asChild
+            variant="destructive"
+            onConfirm={leaveGroupChat}
+          >
+            <Button disabled={chatDetailsLoading} size="lg" variant="outline">
+              <LogOutIcon />
 
-            Sair do grupo
-          </Button>
-        </ConfirmationModalTrigger>
+              Leave Group
+            </Button>
+          </ConfirmationModalTrigger>
+        )}
       </div>
     </div>
   );
