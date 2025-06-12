@@ -316,7 +316,7 @@ export class ChatsService {
 
         const alertMessage = await this.messageRepository.createMessage({
           chatId: data.chatId,
-          userId: data.requesterUserId,
+          userId: data.targetUserId,
           type: MESSAGE_TYPE.USER_REMOVED,
         });
 
