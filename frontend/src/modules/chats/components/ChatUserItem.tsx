@@ -83,7 +83,6 @@ export function ChatUserItem({ chatUser }: Props) {
       </div>
 
       <div>
-        {/* modal de confirmação ao dar admin ou remover */}
         {canDoDangerActionsToUser(chatUser) && (
           <>
             <ConfirmationModalTrigger

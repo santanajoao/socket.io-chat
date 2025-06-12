@@ -6,15 +6,13 @@ import { ChatProfileBadge } from "./ChatProfileBadge";
 import { ChatFormatter } from "../helpers/chatFormatter";
 import { Separator } from "@/modules/shared/components/ui/separator";
 import { ChatUsers } from "./ChatUsers";
-import { PencilIcon, PencilOffIcon, SaveIcon, XIcon } from "lucide-react";
+import { LogOutIcon, PencilIcon, PencilOffIcon, SaveIcon, XIcon } from "lucide-react";
 import { TChatDetails } from "../types/chatDetails";
 import { CHAT_TYPE } from "../constants/chatTypes";
 import { GROUP_TYPE } from "../constants/groupTypes";
 import { useChatDetailsStates } from "../states/useChatDetailsStates";
 import { Input } from "@/modules/shared/components/ui/input";
-
-// TODO: sair do grupo
-// TODO: apagar grupo
+import { ConfirmationModalTrigger } from "./ConfirmationModalTrigger";
 
 export function ChatDetails() {
   const {
@@ -30,7 +28,8 @@ export function ChatDetails() {
     saveGroupName,
     setEditedGroupName,
     groupNameEditionIsLoading,
-    editedGroupNameIsTheSame
+    editedGroupNameIsTheSame,
+    leaveGroupChat,
   } = useChatDetailsStates();
 
   function formatChatType(chat: TChatDetails) {
@@ -72,7 +71,7 @@ export function ChatDetails() {
   }
 
   return (
-    <div className="flex flex-1 p-2 border rounded-md flex-col">
+    <div className="flex flex-1 p-2 border rounded-md flex-col overflow-hidden">
       <ChatHeaderContainer>
         <h3>Chat Details</h3>
 
@@ -86,7 +85,7 @@ export function ChatDetails() {
         </Button>
       </ChatHeaderContainer>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 flex-1 overflow-hidden">
         <div className="flex items-center gap-2 justify-center flex-col">
           <ChatProfileBadge variant="secondary" size="big">
             {ChatFormatter.formatChatInitial(selectedChat!, null)}
@@ -159,6 +158,18 @@ export function ChatDetails() {
         <Separator />
 
         {isPrivateGroup && <ChatUsers />}
+
+        <ConfirmationModalTrigger
+          asChild
+          variant="destructive"
+          onConfirm={leaveGroupChat}
+        >
+          <Button disabled={chatDetailsLoading} size="lg" variant="outline">
+            <LogOutIcon />
+
+            Sair do grupo
+          </Button>
+        </ConfirmationModalTrigger>
       </div>
     </div>
   );

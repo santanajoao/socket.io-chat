@@ -60,7 +60,7 @@ export function ChatUsers() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 flex-1 overflow-hidden">
       {(!chatUsersAreLoading && selectedChatDetails?.isAdmin) && (
         <EmailInviteDialog className="sm:max-w-md" asChild>
           <Button size="dynamic" variant="outline" className="rounded-md w-full text-left justify-start">
@@ -104,15 +104,15 @@ export function ChatUsers() {
         </div>
       )}
 
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 flex-1 overflow-hidden">
         {chatUsersAreLoading ? (
-          <div className="flex-1 flex flex-col gap-[inherit]">
+          <div className="flex-1 flex flex-col overflow-y-auto gap-[inherit]">
             {Array.from({ length: 5 }).map((_, index) => (
-              <LoaderContainer key={index} className="h-15" />
+              <LoaderContainer key={index} className="h-15 shrink-0" />
             ))}
           </div>
         ) : (
-          <ul id="search-results" aria-live="polite" className="flex flex-col gap-[inherit]">
+          <ul id="search-results" aria-live="polite" className="flex flex-col flex-1 overflow-y-auto gap-[inherit]">
             {selectedChatUsers.map((user) => (
               <li key={user.id}>
                 <ChatUserItem chatUser={user} />

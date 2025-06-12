@@ -20,7 +20,7 @@ type ChatLike = {
 }
 
 export function useChatDetailsStates() {
-  const { selectedChatId, selectedChat, closeChatDetails, selectedChatDetails, setSelectedChatDetails, setSelectedChatUsers, setChats } = useChatContext();
+  const { selectedChatId, selectedChat, closeChatDetails, setSelectedChatId, selectedChatDetails, setSelectedChatDetails, setSelectedChatUsers, setChats } = useChatContext();
   const { user: loggedUser } = useAuthContext();
 
   const [isEditingGroupName, setIsEditingGroupName] = useState<boolean>(false);
@@ -136,6 +136,21 @@ export function useChatDetailsStates() {
     })
   }
 
+  function leaveGroupChat() {
+    handleLoading(async () => {
+      if (!selectedChatId) return;
+
+      const result = await backendChatApi.leaveGroupChat(selectedChatId);
+
+      if (result.error) {
+        return toast.error(result.error.message, { richColors: true });
+      }
+
+      setSelectedChatId(null);
+      closeChatDetails();
+      setChats((prev) => prev.filter(chat => chat.id !== selectedChatId));
+    });
+  }
 
   return {
     closeChatDetails,
@@ -152,5 +167,6 @@ export function useChatDetailsStates() {
     saveGroupName,
     groupNameEditionIsLoading,
     editedGroupNameIsTheSame,
+    leaveGroupChat,
   };
 }
