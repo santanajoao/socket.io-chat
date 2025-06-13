@@ -26,25 +26,25 @@ export function useChatMessagesState() {
     setMessageContent('');
   }
 
-  const addNewMessage = useCallback((chatId: string, message: ChatMessage) => {
+  const addNewMessage = useCallback((message: ChatMessage) => {
     setMessages((prev) => {
-      const prevMessages = prev[chatId];
+      const prevMessages = prev[message.chatId];
       const treatedPrevMessages = prevMessages ?? []
       if (!prevMessages) return prev;
 
       const newMessages = [...treatedPrevMessages, message];
       return {
         ...prev,
-        [chatId]: newMessages,
+        [message.chatId]: newMessages,
       }
     });
   }, []);
 
-  const updateChatLastMessage = useCallback((chatId: string, message: ChatMessage) => {
+  const updateChatLastMessage = useCallback((message: ChatMessage) => {
     setChats((prev) => {
       const updatedChats = prev.map((chat) => {
-        if (chat.id === chatId) {
-          const targetChatIsOpen = chatId === selectedChatId;
+        if (chat.id === message.chatId) {
+          const targetChatIsOpen = message.chatId === selectedChatId;
 
           return {
             ...chat,
@@ -60,12 +60,12 @@ export function useChatMessagesState() {
     });
   }, [selectedChatId]);
 
-  const handleMessageReadOnReceive = useCallback(async (chatId: string, message: ChatMessage) => {
-    const chatIsOpen = chatId === selectedChatId;
+  const handleMessageReadOnReceive = useCallback(async (message: ChatMessage) => {
+    const chatIsOpen = message.chatId === selectedChatId;
     const messageIsNotMine = message.user.id !== authContext.user?.id;
     const shouldMarkAsRead = chatIsOpen && messageIsNotMine;
     if (shouldMarkAsRead) {
-      BackendChatSocketEvents.markChatMessageAsRead(chatId);
+      BackendChatSocketEvents.markChatMessageAsRead(message.chatId);
     }
   }, [selectedChatId, authContext.user?.id]);
 
@@ -73,10 +73,10 @@ export function useChatMessagesState() {
     return debounce(handleMessageReadOnReceive, 700);
   }, [handleMessageReadOnReceive]);
 
-  const handleMessageReceive = useCallback(({ chatId, message }: { chatId: string, message: ChatMessage }) => {
-    updateChatLastMessage(chatId, message);
-    addNewMessage(chatId, message);
-    debouncedHandleMessageReadOnReceive(chatId, message);
+  const handleMessageReceive = useCallback((message: ChatMessage) => {
+    updateChatLastMessage(message);
+    addNewMessage(message);
+    debouncedHandleMessageReadOnReceive(message);
 
     return () => {
       debouncedHandleMessageReadOnReceive.flush();
