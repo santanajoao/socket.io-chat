@@ -11,8 +11,8 @@ export class CursorPaginationFormatter {
     const hasMore = data.length === pageSize;
     const requestedData = hasMore ? data.slice(0, -1) : data;
 
-    const lastChat = pageSize ? data.at(pageSize) : undefined;
-    const nextCursor = hasMore ? lastChat?.[cursorColumn] : undefined;
+    const hasItem = pageSize ? data.at(-1) : undefined;
+    const nextCursor = hasMore ? hasItem?.[cursorColumn] : undefined;
 
     return {
       data: requestedData,
