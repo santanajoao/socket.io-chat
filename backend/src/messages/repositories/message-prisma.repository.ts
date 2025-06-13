@@ -70,6 +70,7 @@ export class MessagePrismaRepository
         content: true,
         sentAt: true,
         type: true,
+        chatId: true,
         user: {
           select: {
             id: true,

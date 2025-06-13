@@ -55,10 +55,9 @@ export class ChatsGateway {
       content: payload.content,
     });
 
-    this.namespace.to(payload.chatId).emit(CHAT_EVENTS.MESSAGE_RECEIVE, {
-      chatId: payload.chatId,
-      message: result.data,
-    });
+    this.namespace
+      .to(payload.chatId)
+      .emit(CHAT_EVENTS.MESSAGE_RECEIVE, result.data);
   }
 
   @SubscribeMessage('chat:join')

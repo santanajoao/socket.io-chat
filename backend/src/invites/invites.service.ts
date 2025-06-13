@@ -144,10 +144,7 @@ export class InvitesService {
     }
 
     if (alertMessage) {
-      this.eventEmitter.emit(CHAT_EVENTS.MESSAGE_SEND, {
-        chatId: invite.chatId,
-        message: alertMessage,
-      });
+      this.eventEmitter.emit(CHAT_EVENTS.MESSAGE_SEND, alertMessage);
     }
 
     const userIdsToEmitNewChat = usersToAdd.map((user) => user.userId);
