@@ -49,9 +49,9 @@ export function InvitesPopover({ children, ...props }: Props) {
           ) : invites.length ? (
             <ul className="flex flex-col gap-[inherit]">
               {invites.map((invite) => (
-                <li key={invite.id}>
+                <li key={invite.id} className="gap-[inherit]">
                   <div
-                    className="px-2 py-1 border rounded-md flex items-center justify-between"
+                    className="px-2 py-1 border rounded-md flex items-center justify-between gap-[inherit]"
                   >
                     <div className="flex flex-col">
                       <span className="font-medium text-sm">
