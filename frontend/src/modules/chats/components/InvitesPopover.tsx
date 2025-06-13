@@ -96,7 +96,7 @@ export function InvitesPopover({ children, ...props }: Props) {
               )}
 
               {nextInvitesCursor && (
-                <Button disabled={inviteListIsLoading} onClick={() => fetchInvites()}>
+                <Button size="sm" variant="default" disabled={inviteListIsLoading} onClick={fetchInvites}>
                   More
                 </Button>
               )}
