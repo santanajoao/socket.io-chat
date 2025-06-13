@@ -18,6 +18,8 @@ export function InvitesPopover({ children, ...props }: Props) {
     invites,
     inviteResponseIsLoading,
     respondInvite,
+    fetchInvites,
+    nextInvitesCursor,
   } = useInvitesPopoverStates();
 
   function formatInviteMessage(invite: UserInvite) {
@@ -36,59 +38,69 @@ export function InvitesPopover({ children, ...props }: Props) {
         {children}
       </PopoverTrigger>
 
-      <PopoverContent className="w-sm">
+      <PopoverContent className="w-sm max-h-[70dvh] flex flex-col">
         <h3 className="mb-2 font-medium">Invites</h3>
 
-        <div className="flex flex-1 flex-col gap-1">
-          {inviteListIsLoading ? (
-            <div className="flex-1 flex flex-col gap-[inherit]">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <LoaderContainer key={index} className="h-12" />
-              ))}
-            </div>
-          ) : invites.length ? (
-            <ul className="flex flex-col gap-[inherit]">
-              {invites.map((invite) => (
-                <li key={invite.id} className="gap-[inherit]">
-                  <div
-                    className="px-2 py-1 border rounded-md flex items-center justify-between gap-[inherit]"
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-medium text-sm">
-                        {formatInviteMessage(invite)}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {DateFormatter.formatBrazilianDateTime(invite.createdAt)}
-                      </span>
-                    </div>
-                    {(invite.acceptedAt || invite.receiverUser.id === loggedUser?.id) && (
-                      <div className="flex gap-[inherit]">
-                        {(!invite.acceptedAt || invite.accepted) && (
-                          <Button
-                            disabled={Boolean(invite.acceptedAt) || inviteResponseIsLoading}
-                            onClick={() => respondInvite(invite.id, true)}
-                            variant="outline"
-                            size="icon-sm"
-                          >
-                            <CheckIcon />
-                          </Button>
-                        )}
-                        {(!invite.acceptedAt || invite.accepted === false) && (
-                          <Button
-                            disabled={Boolean(invite.acceptedAt) || inviteResponseIsLoading}
-                            onClick={() => respondInvite(invite.id, false)}
-                            variant="destructive"
-                            size="icon-sm"
-                          >
-                            <XIcon />
-                          </Button>
-                        )}
+        <div className="flex flex-1 flex-col gap-1 overflow-y-auto">
+          {invites.length ? (
+            <>
+              <ul className="flex flex-col gap-[inherit] ">
+                {invites.map((invite) => (
+                  <li key={invite.id} className="gap-[inherit]">
+                    <div
+                      className="px-2 py-1 border rounded-md flex items-center justify-between gap-[inherit]"
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium text-sm">
+                          {formatInviteMessage(invite)}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {DateFormatter.formatBrazilianDateTime(invite.createdAt)}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
+                      {(invite.acceptedAt || invite.receiverUser.id === loggedUser?.id) && (
+                        <div className="flex gap-[inherit]">
+                          {(!invite.acceptedAt || invite.accepted) && (
+                            <Button
+                              disabled={Boolean(invite.acceptedAt) || inviteResponseIsLoading}
+                              onClick={() => respondInvite(invite.id, true)}
+                              variant="outline"
+                              size="icon-sm"
+                            >
+                              <CheckIcon />
+                            </Button>
+                          )}
+                          {(!invite.acceptedAt || invite.accepted === false) && (
+                            <Button
+                              disabled={Boolean(invite.acceptedAt) || inviteResponseIsLoading}
+                              onClick={() => respondInvite(invite.id, false)}
+                              variant="destructive"
+                              size="icon-sm"
+                            >
+                              <XIcon />
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              {inviteListIsLoading && (
+                <div className="flex-1 shrink-0 flex flex-col gap-[inherit] overflow-y-auto">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <LoaderContainer key={index} className="h-12" />
+                  ))}
+                </div>
+              )}
+
+              {nextInvitesCursor && (
+                <Button disabled={inviteListIsLoading} onClick={() => fetchInvites()}>
+                  More
+                </Button>
+              )}
+            </>
           ) : (
             <p className="text-sm text-muted-foreground">No invites</p>
           )}

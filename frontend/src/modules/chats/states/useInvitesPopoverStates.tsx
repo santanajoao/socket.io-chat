@@ -19,18 +19,28 @@ export function useInvitesPopoverStates() {
 
   const [inviteResponseIsLoading, setInviteResponseIsLoading] = useState<boolean>(false);
 
-  const fetchInvites = useCallback(async () => {
-    return await handleInviteListIsLoading(async () => {
+  const [nextInvitesCursor, setNextInvitesCursor] = useState<string | undefined>(undefined);
+
+  async function fetchInvites() {
+    return handleInviteListIsLoading(async () => {
       const response = await backendInviteApi.getUserInvites({
-        pageSize: 10
+        pageSize: 10,
+        cursor: nextInvitesCursor,
       });
-      // on error render error component
+
       if (!response.error) {
-        setInvites(response.data.invites);
+        setInvites((prev) => {
+          if (nextInvitesCursor) {
+            return [...prev, ...response.data.invites];
+          }
+
+          return response.data.invites;
+        });
         setUnansweredInvitesCount(response.data.totalUnanswered);
+        setNextInvitesCursor(response.data.next);
       }
     });
-  }, []);
+  }
 
   const updateInviteOnResponse = useCallback((updatedInvite: OnInviteResponseBody) => {
     setInvites((prev) => prev.map((invite) => {
@@ -117,6 +127,8 @@ export function useInvitesPopoverStates() {
     inviteListIsLoading,
     invites,
     inviteResponseIsLoading,
-    respondInvite
+    respondInvite,
+    fetchInvites,
+    nextInvitesCursor,
   }
 }
