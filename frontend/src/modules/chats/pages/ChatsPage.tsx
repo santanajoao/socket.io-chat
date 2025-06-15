@@ -2,9 +2,6 @@ import { PageContainer } from "@/modules/shared/components/containers/PageContai
 import { ChatProvider } from "../contexts/ChatContext";
 import { Chat } from "../components/Chat";
 
-// scroll deve iniciar em baixo
-// ao receber mensagem o scroll deve ir para baixo
-
 // lidar com timezones
 
 export function ChatsPage() {

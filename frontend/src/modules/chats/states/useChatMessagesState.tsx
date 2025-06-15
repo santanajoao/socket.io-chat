@@ -94,7 +94,11 @@ export function useChatMessagesState() {
         return chat;
       });
 
-      return updatedChats;
+      const sortedByLastMessageTimeDesc = updatedChats.sort((a, b) => {
+        return new Date(b.lastMessage.sentAt).getTime() - new Date(a.lastMessage.sentAt).getTime()
+      })
+
+      return sortedByLastMessageTimeDesc;
     });
   }, [selectedChatId]);
 
