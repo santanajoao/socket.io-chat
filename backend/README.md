@@ -1,98 +1,153 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Socket IO Chat - Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Table of Contents
+- [Description](#description)
+- [Tech and Tools](#tech-and-tools)
+- [Installation and Setup](#installation-and-setup)
+- [Features](#features)
+- [Architecture and Organization](#architecture-and-organization)
+- [Modules common structure](#modules-common-structure)
+- [Shared module structure](#shared-module-structure)
+- [Response Format](#response-format)
 
 ## Description
+A backend application for a chat system that provides a API and real-time communication features using Node.js, NestJS, and Socket.IO.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tech and Tools
+- **Node.js** (v18+): [Node.js Documentation](https://nodejs.org/)
+- **NestJS** (v11+): [NestJS Documentation](https://nestjs.com/)
+- **Socket.IO** (v4+): [Socket.IO Documentation](https://socket.io/)
+- **TypeScript** (v5+): [TypeScript Documentation](https://www.typescriptlang.org/)
+- **Zod**: [Zod Documentation](https://zod.dev/)
+- **Prisma** (v6+): [Prisma Documentation](https://www.prisma.io/)
+- **ESLint** (v9+): [ESLint Documentation](https://eslint.org/)
+- **Prettier** (v3+): [Prettier Documentation](https://prettier.io/)
+- **pnpm** (v8+): [pnpm Documentation](https://pnpm.io/)
 
-## Project setup
+## Installation and Setup
+This project is the backend part of a fullstack application. To ensure all features work as expected, set up both the frontend and backend. For an integrated experience, refer to the root repository's README for the recommended Docker setup.
 
-```bash
-$ pnpm install
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/santanajoao/socket.io-chat.git
+   ```
+
+2. Navigate to the backend directory:
+   ```bash
+   cd socket.io-chat/backend
+   ```
+
+3. Install dependencies using your preferred package manager:
+   - Using **pnpm**:
+     ```bash
+     pnpm install
+     ```
+   - Using **npm**:
+     ```bash
+     npm install
+     ```
+   - Using **yarn**:
+     ```bash
+     yarn install
+     ```
+
+4. Configure the environment file:
+   - Rename the `.env.example` file to `.env`.
+   - Update the environment variables as needed, such as the database URL.
+
+5. Run database migrations:
+   ```bash
+   pnpm prisma migrate dev
+   ```
+
+6. Start the development server:
+   - Using **pnpm**:
+     ```bash
+     pnpm dev
+     ```
+   - Using **npm**:
+     ```bash
+     npm run dev
+     ```
+   - Using **yarn**:
+     ```bash
+     yarn dev
+     ```
+
+7. The backend will be available at `http://localhost:3001` or the port configured in the `.env` file.
+
+## Features
+- **RESTful API**: Provides endpoints for authentication, user management, chats, and invitations using **NestJS**.
+- **Real-Time Communication**: Manages WebSocket events for messages, notifications, and state updates using **Socket.IO** and **NestJS WebSocket adapters**.
+- **JWT Authentication**: Implements secure token-based authentication with support for **cookies** using **jsonwebtoken**, **cookie-parser** and **guards**.
+- **Data Validation**: Uses **Zod** for input schema validation.
+- **Relational Database**: Managed with **Prisma** and **PostgreSQL**.
+- **Custom Decorators**: Utilizes **NestJS custom decorators** to simplify and standardize request handling and validation.
+- **Error Handlers**: Centralized error handling using **NestJS's built-in exception filters**.
+- **Event Emitters**: Uses **NestJS's Event Emitter module** to handle asynchronous events across the application.
+
+## Response Format
+
+All API responses follow a consistent structure to ensure clarity and ease of integration. Below is the standard format:
+
+### Successful Response
+
+- **HTTP Status**: Any success status (e.g., 200, 201).
+- **Body**:
+```json
+{
+  "data": "data here"
+}
 ```
 
-## Compile and run the project
+### Error Response
 
-```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+- **HTTP Status**: Corresponds to the type of error (e.g., 400, 401, 404, 500).
+- **Body**:
+```json
+{
+  "error": {
+    "message": "Error message here",
+    "status": 400,
+    "statusText": "Bad Request"
+  }
+}
 ```
 
-## Run tests
+## Architecture and Organization
 
-```bash
-# unit tests
-$ pnpm run test
+- **`src/`**: Contains the main backend source code.
+  - **`app.module.ts`**: The root module that imports and organizes all feature modules.
+  - **`main.ts`**: The entry point of the application, responsible for initializing the NestJS application.
+  - **`auth/`**: Handles authentication logic.
+  - **`chats/`**: Manages chat functionality.
+  - **`invites/`**: Handles invitation logic for chats and groups.
+  - **`messages/`**: Manages chat messages and their metadata.
+  - **`shared/`**: Contains reusable resources shared across the application.
+  - **`users/`**: Manages user-related logic.
 
-# e2e tests
-$ pnpm run test:e2e
+### Modules common structure
+Each module (e.g., `auth/`, `chats/`, `invites/`, `messages/`, `users/`) follows a common structure with the following folders:
 
-# test coverage
-$ pnpm run test:cov
-```
+- **`controllers/`**: Defines the endpoint logic.
+- **`services/`**: Contains business logic and database interactions.
+- **`dtos/`**: Data Transfer Objects for request validation and data handling.
+- **`interfaces/`**: Defines TypeScript interfaces for repositories and services.
+- **`repositories/`**: Implements database operations using Prisma or other data sources.
+- **`models/`**: Represents data models for the module.
+- **`constants/`**: Stores constants specific to the module.
+- **`formatters/`**: Utilities for formatting data specific to the module.
+- **`adapters/`**: Custom adapters for module-specific functionality (e.g., WebSocket adapters).
+- **`guards/`**: Implements route protection logic.
+- **`decorators/`**: Custom decorators for simplifying route handling.
 
-## Deployment
+### Shared module structure
+The **`shared/`** module contains reusable resources shared across the application. Its structure is as follows:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- **`config/`**: Configuration files, such as CORS settings.
+- **`datasources/`**: Manages database connections, such as Prisma datasource.
+- **`exception-filters/`**: Global exception filters for error handling.
+- **`formatters/`**: Utilities for formatting data, such as pagination.
+- **`hashing/`**: Services for hashing
+- **`repositories/`**: Base repository implementations and transaction handling.
+- **`shared.module.ts`**: A module that exports shared services and utilities.
