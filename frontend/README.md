@@ -31,7 +31,7 @@ This project is the frontend part of a fullstack application. To ensure all feat
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/santanajoao/socket-io-chat.git
+   git clone https://github.com/santanajoao/socket.io-chat.git
    ```
 
 2. Navigate to the frontend directory:
