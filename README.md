@@ -12,7 +12,7 @@
 - [Features](#features)
 
 ## Description
-Socket IO Chat is a fullstack application designed for real-time communication. It combines a **React** and **Next.js** frontend with a **NestJS** and **Prisma** backend, leveraging **Socket.IO** for seamless real-time interactions.
+A fullstack chat application. It combines a **React** and **Next.js** frontend with a **NestJS** and **Prisma** backend, leveraging **Socket.IO** for seamless real-time interactions.
 
 ## Detailed Documentation
 For more detailed information about the frontend and backend, refer to their respective documentation:
