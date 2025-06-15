@@ -3,7 +3,6 @@
 import { useCallback, useEffect } from "react";
 import { chatSocket } from "../socket/connection";
 import { backendUserApi } from "@/modules/users/apis/backend";
-import { backendChatApi } from "../apis/backend";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { useChatContext } from "../contexts/ChatContext";
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
@@ -17,9 +16,6 @@ import { OnChatGroupUpdate } from "../types/updateChatGroup";
 // a cada nova mensagem reordenar o chat
 export function useChatListStates() {
   const {
-    messages,
-    setMessages,
-    handleMessagesLoading,
     selectedChatId,
     setSelectedChatId,
     chats,
@@ -32,24 +28,6 @@ export function useChatListStates() {
   const authContext = useAuthContext();
 
   const [chatsAreLoading, handleChatLoading] = useLoading();
-
-  function fetchChatMessages(chatId: string) {
-    return handleMessagesLoading(async () => {
-      const response = await backendChatApi.getMessages({ chatId, pageSize: 20 });
-      if (response.error) return;
-
-      // ordena para renderizar de baixo para cima
-      // lembrar disso quando for implementar o fetch on scroll
-      const messagesSorted = response.data.messages.sort(
-        (a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()
-      );
-
-      setMessages((prev) => ({
-        ...prev,
-        [chatId]: messagesSorted,
-      }));
-    });
-  }
 
   async function markChatMessagesAsRead(chatId: string) {
     setChats((prev) => {
@@ -80,11 +58,6 @@ export function useChatListStates() {
     if (hasUnreadMessages) {
       markChatMessagesAsRead(chatId);
     }
-
-    const messagesNotFetched = !messages[chatId];
-    if (messagesNotFetched) {
-      fetchChatMessages(chatId);
-    };
   }
 
   async function fetchUserChats() {

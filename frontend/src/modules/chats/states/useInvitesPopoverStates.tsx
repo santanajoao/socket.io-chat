@@ -9,8 +9,6 @@ import { useCallback, useEffect, useState } from "react";
 import { BackendChatSocketEvents } from "../socket/events";
 import { CHAT_EVENTS } from "../constants/socketEvents";
 
-// TODO: paginar invites
-
 export function useInvitesPopoverStates() {
   const authContext = useAuthContext();
 
