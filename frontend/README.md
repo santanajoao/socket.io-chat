@@ -15,12 +15,12 @@
 A frontend project for practicing real-time chat functionality using React, Next.js, and Socket.IO.
 
 ## Tech and Tools
-- **React** (v18+): [React Documentation](https://reactjs.org/)
+- **React** (v18+): [React Documentation](https://react.dev/)
 - **Next.js** (v13+): [Next.js Documentation](https://nextjs.org/)
 - **Socket.IO Client** (v4+): [Socket.IO Documentation](https://socket.io/)
 - **TailwindCSS** (v3+): [TailwindCSS Documentation](https://tailwindcss.com/)
 - **Axios** (v1+): [Axios Documentation](https://axios-http.com/)
-- **Shadcn**: [shadcn Documentation](https://shadcn.dev/)
+- **Shadcn**: [shadcn Documentation](https://ui.shadcn.com/)
 - **React Hook Form** (v7+): [React Hook Form Documentation](https://react-hook-form.com/)
 - **Zod** (v3+): [Zod Documentation](https://zod.dev/)
 - **ESLint** (v8+): [ESLint Documentation](https://eslint.org/)

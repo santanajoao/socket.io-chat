@@ -24,12 +24,12 @@ For more detailed information about the frontend and backend, refer to their res
 
 ### Frontend
 The frontend is built with modern tools and frameworks to ensure a responsive and dynamic user experience:
-- **React**: [React Documentation](https://reactjs.org/)
+- **React**: [React Documentation](https://react.dev/)
 - **Next.js**: [Next.js Documentation](https://nextjs.org/)
 - **Socket.IO Client**: [Socket.IO Documentation](https://socket.io/)
 - **TailwindCSS**: [TailwindCSS Documentation](https://tailwindcss.com/)
 - **Axios**: [Axios Documentation](https://axios-http.com/)
-- **Shadcn**: [shadcn Documentation](https://shadcn.dev/)
+- **Shadcn**: [shadcn Documentation](https://ui.shadcn.com/)
 - **React Hook Form**: [React Hook Form Documentation](https://react-hook-form.com/)
 - **Zod**: [Zod Documentation](https://zod.dev/)
 - **ESLint**: [ESLint Documentation](https://eslint.org/)
