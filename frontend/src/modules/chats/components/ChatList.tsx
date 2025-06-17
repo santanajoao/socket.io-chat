@@ -39,7 +39,7 @@ export function ChatList() {
   }
 
   return (
-    <div className="p-2 flex-1 flex flex-col gap-1 border rounded-md">
+    <section className="p-2 flex-1 flex flex-col gap-1 border rounded-md">
       <ChatHeaderContainer>
         <UserMenu />
 
@@ -111,6 +111,6 @@ export function ChatList() {
           </ul>
         )}
       </div>
-    </div>
+    </section>
   );
 }

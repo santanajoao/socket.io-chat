@@ -29,7 +29,7 @@ export function ChatMessages({ className }: Props) {
     selectedChat,
     openChatDetails,
     setMessageListRef,
-    fetchChatMessages
+    fetchChatMessages,
   } = useChatMessagesState();
 
   function handleMessageSubmit(event: FormEvent<HTMLFormElement>) {
@@ -56,7 +56,7 @@ export function ChatMessages({ className }: Props) {
   }
 
   return (
-    <div className={cn("p-2 border flex flex-col flex-1 gap-2 rounded-md overflow-hidden", className)}>
+    <section className={cn("p-2 border flex flex-col flex-1 gap-2 rounded-md overflow-hidden", className)}>
       {selectedChatId && (
         <>
           <ChatHeaderContainer>
@@ -66,6 +66,7 @@ export function ChatMessages({ className }: Props) {
               size="blank"
               onClick={openChatDetails}
               aria-label="Open chat details"
+              aria-controls="chat-details"
             >
               <ChatProfileBadge>
                 {ChatFormatter.formatChatInitial(selectedChat!, loggedUser)}
@@ -107,6 +108,6 @@ export function ChatMessages({ className }: Props) {
           </form>
         </>
       )}
-    </div>
+    </section>
   );
 }

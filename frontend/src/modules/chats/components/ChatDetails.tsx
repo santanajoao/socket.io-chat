@@ -71,7 +71,7 @@ export function ChatDetails() {
   }
 
   return (
-    <div className="flex flex-1 p-2 border rounded-md flex-col overflow-hidden">
+    <section id="chat-details" className="flex flex-1 p-2 border rounded-md flex-col overflow-hidden">
       <ChatHeaderContainer>
         <h3>Chat Details</h3>
 
@@ -80,6 +80,7 @@ export function ChatDetails() {
           size="icon-sm"
           onClick={closeChatDetails}
           aria-label="Close chat details"
+          aria-controls="chat-details"
         >
           <XIcon />
         </Button>
@@ -173,6 +174,6 @@ export function ChatDetails() {
           </ConfirmationModalTrigger>
         )}
       </div>
-    </div>
+    </section>
   );
 }
