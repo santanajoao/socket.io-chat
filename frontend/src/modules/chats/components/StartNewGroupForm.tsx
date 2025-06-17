@@ -23,7 +23,7 @@ export function StartNewGroupForm({ onClose }: Props) {
   const form = useForm({
     resolver: zodResolver(newGroupChatSchema),
     defaultValues: {
-      name: "",
+      title: "",
     },
   });
 
@@ -51,7 +51,7 @@ export function StartNewGroupForm({ onClose }: Props) {
       <form className="flex flex-col gap-2" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
-          name="name"
+          name="title"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Group name</FormLabel>

@@ -13,7 +13,17 @@ import { backendChatApi } from "../apis/backend";
 const MESSAGE_PAGE_SIZE = 20;
 
 export function useChatMessagesState() {
-  const { selectedChatId, messagesAreLoading, selectedChat, setMessages, setChats, selectedChatMessages, openChatDetails, handleMessagesLoading, messages } = useChatContext();
+  const {
+    selectedChatId,
+    messagesAreLoading,
+    selectedChat,
+    setMessages,
+    setChats,
+    selectedChatMessages,
+    openChatDetails,
+    handleMessagesLoading,
+    messages,
+  } = useChatContext();
 
   const authContext = useAuthContext();
 

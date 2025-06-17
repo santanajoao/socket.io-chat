@@ -5,7 +5,7 @@ import { UserChat } from "@/modules/users/types/user-chats";
 export type CreateGroupChatFormFields = z.infer<typeof newGroupChatSchema>;
 
 export type CreateGroupChatApiBody = {
-  name: string;
+  title: string;
 }
 
 export type CreateGroupChatApiResponse = UserChat;
