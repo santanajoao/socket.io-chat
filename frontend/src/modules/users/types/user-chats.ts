@@ -24,6 +24,7 @@ export type UserChat = {
     content: string;
     sentAt: string;
     user: MessageUser;
+    chatId: string;
     type: string;
   }
   users?: ChatUser[];
