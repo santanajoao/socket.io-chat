@@ -6,10 +6,13 @@ import {
   Post,
   Query,
   Request,
+  UsePipes,
 } from '@nestjs/common';
 import { InvitesService } from './invites.service';
 import { AuthenticatedExpressRequest } from 'src/auth/interfaces/jwt.interfaces';
 import { CreateGroupInviteBody } from './dto/create-group-invite';
+import { ValidationPipe } from 'src/shared/pipes/validation.pipe';
+import { CreateGroupInviteSchema } from './schemas/create-group-invite.schema';
 
 @Controller('invites')
 export class InvitesController {
@@ -33,6 +36,7 @@ export class InvitesController {
   }
 
   @Post('/group')
+  @UsePipes(new ValidationPipe(CreateGroupInviteSchema))
   async createGroupInvite(
     @Request() req: AuthenticatedExpressRequest,
     @Body() body: CreateGroupInviteBody,
