@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Request, Response } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  Response,
+  UsePipes,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dtos/register-dto';
 import { LoginDto } from './dtos/login-dto';
@@ -7,6 +15,9 @@ import { COOKIE_DEFAULT_CONFIG, JWT_COOKIE_KEY } from './constants/cookies';
 import { TOKEN_MAX_AGE_MS } from './constants/jwt';
 import { PublicRoute } from './decorators/public-route.decorator';
 import { AuthenticatedExpressRequest } from './interfaces/jwt.interfaces';
+import { ValidationPipe } from 'src/shared/pipes/validation.pipe';
+import { RegisterSchema } from './schemas/register.schema';
+import { LoginSchema } from './schemas/login.schema';
 
 @Controller('auth')
 export class AuthController {
@@ -14,6 +25,7 @@ export class AuthController {
 
   @PublicRoute()
   @Post('register')
+  @UsePipes(new ValidationPipe(RegisterSchema))
   async register(@Body() body: RegisterDto) {
     const result = await this.authService.register(body);
 
@@ -24,6 +36,7 @@ export class AuthController {
 
   @PublicRoute()
   @Post('login')
+  @UsePipes(new ValidationPipe(LoginSchema))
   async login(
     @Body() body: LoginDto,
     @Response({ passthrough: true }) res: ExpressResponse,
