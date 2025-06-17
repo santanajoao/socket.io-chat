@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   Request,
+  UsePipes,
 } from '@nestjs/common';
 import { MessagesService } from 'src/messages/messages.service';
 import { CreateDirectChatBody } from './dtos/create-chat';
@@ -16,6 +17,12 @@ import { ChatsService } from './chats.service';
 import { AuthenticatedExpressRequest } from 'src/auth/interfaces/jwt.interfaces';
 import { CreateGroupChatBody } from './dtos/create-group-chat';
 import { UpdateChatGroupBody } from './dtos/update-chat';
+import { ValidationPipe } from 'src/shared/pipes/validation.pipe';
+import { CreateDirectChatSchema } from './schemas/create-direct-chat.schema';
+import { CreateGroupChatSchema } from './schemas/create-group-chat.schema';
+import { GrandAdminRightsBody } from './dtos/grand-admin-rights';
+import { GrantAdminRightsSchema } from './schemas/grant-admin-rights.schema';
+import { UpdateChatGroupSchema } from './schemas/update-chat-group.schema';
 
 @Controller('chats')
 export class ChatsController {
@@ -42,6 +49,7 @@ export class ChatsController {
   }
 
   @Post('direct')
+  @UsePipes(new ValidationPipe(CreateDirectChatSchema))
   async createDirectChat(
     @Body() body: CreateDirectChatBody,
     @Request() req: AuthenticatedExpressRequest,
@@ -57,6 +65,7 @@ export class ChatsController {
   }
 
   @Post('group')
+  @UsePipes(new ValidationPipe(CreateGroupChatSchema))
   async createGroupChat(
     @Request() req: AuthenticatedExpressRequest,
     @Body() body: CreateGroupChatBody,
@@ -91,10 +100,11 @@ export class ChatsController {
   }
 
   @Patch(':chatId/users/:userId/admin')
+  @UsePipes(new ValidationPipe(GrantAdminRightsSchema))
   async grantAdminRights(
     @Param('chatId') chatId: string,
     @Param('userId') userId: string,
-    @Body() body: { isAdmin: boolean },
+    @Body() body: GrandAdminRightsBody,
     @Request() req: AuthenticatedExpressRequest,
   ) {
     const result = await this.chatService.updateAdminRights({
@@ -142,6 +152,7 @@ export class ChatsController {
   }
 
   @Patch(':chatId/group')
+  @UsePipes(new ValidationPipe(UpdateChatGroupSchema))
   async updateGroupChat(
     @Request() req: AuthenticatedExpressRequest,
     @Param('chatId') chatId: string,

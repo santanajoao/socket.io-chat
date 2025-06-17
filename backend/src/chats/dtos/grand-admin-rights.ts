@@ -10,3 +10,7 @@ export class OnAdminRightUpdateBody {
   userId: string;
   isAdmin: boolean;
 }
+
+export class GrandAdminRightsBody {
+  isAdmin: boolean;
+}

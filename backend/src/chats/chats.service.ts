@@ -180,7 +180,7 @@ export class ChatsService {
         });
 
         const groupChat = await this.groupChatRepository.createGroupChat({
-          title: params.name,
+          title: params.title,
           chatId: chat.id,
           createdByUserId: params.userId,
           groupType: GROUP_TYPE.PRIVATE,

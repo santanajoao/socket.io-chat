@@ -5,6 +5,8 @@ import { SocketIoJwtAdapter } from './auth/adapters/socket.io-jwt.adapter';
 import { HttpGlobalExceptionFilter } from './shared/exception-filters/global';
 import { FRONTEND_CORS } from './shared/config/cors';
 
+// TODO: add zod validation pipe for all routes
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
