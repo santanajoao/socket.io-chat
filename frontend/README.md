@@ -54,7 +54,7 @@ This project is the frontend part of a fullstack application. To ensure all feat
      ```
 
 4. Configure the environment file:
-   - Rename the `.env.example` file to `.env`.
+   - Rename the `.env.example` file to `.env` or create a `.env` and copy the env examples.
    - The example values provided in the file are enough to run the project.
 
 5. Start the development server:

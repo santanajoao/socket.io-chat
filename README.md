@@ -61,12 +61,13 @@ This project uses Docker for a streamlined setup process. Follow the steps below
    ```
 
 3. **Configure the environment file**:
-   - Rename the `.env.example` file to `.env`.
-   - Update the environment variables as needed (e.g., database URL, ports).
+   - Rename the `.env.example` files to `.env` or create a .env and copy the env examples.
+   - The example values provided in the file are enough to run the project.
+   - The env files are located in: `socket.io-chat/.env.example`, `socket.io-chat/frontend/.env.example`, `socket.io-chat/backend/.env.example`
 
 4. **Start the application using Docker Compose**:
    ```bash
-   docker-compose up --build
+   docker-compose up -d
    ```
 
 5. **Access the application**:

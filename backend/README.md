@@ -52,8 +52,8 @@ This project is the backend part of a fullstack application. To ensure all featu
      ```
 
 4. Configure the environment file:
-   - Rename the `.env.example` file to `.env`.
-   - Update the environment variables as needed, such as the database URL.
+   - Rename the `.env.example` file to `.env` or create a `.env` and copy the env examples.
+   - The example values provided in the file are enough to run the project.
 
 5. Run database migrations:
    ```bash
