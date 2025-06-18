@@ -36,11 +36,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   async function fetchUser() {
     return handleLoading(async () => {
       const response = await backendAuthApi.getUser();
-      if (response.error) {
-        return router.push(ROUTES.SIGNIN);
+      if (!response.error) {
+        setUser(response.data);
+        return;
       }
 
-      setUser(response.data);
+      if (response.error.status === 401) {
+        await logout();
+      }
+
+      router.push(ROUTES.SIGNIN);
     })
   }
 
