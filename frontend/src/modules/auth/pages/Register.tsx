@@ -41,10 +41,9 @@ export function RegisterPage() {
     if (response.error) {
       setApiError(response.error);
       setIsLoading(false);
-      return;
+    } else {
+      router.push('/login');
     }
-
-    router.push('/login');
   }
 
   return (
