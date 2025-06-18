@@ -36,7 +36,7 @@ This project is the frontend part of a fullstack application. To ensure all feat
 
 2. Navigate to the frontend directory:
    ```bash
-   cd socket-io-chat/frontend
+   cd socket.io-chat/frontend
    ```
 
 3. Install dependencies using your preferred package manager:
