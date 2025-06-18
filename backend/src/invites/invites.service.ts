@@ -1,8 +1,8 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InvitePrismaRepository } from './repositories/invite-prisma.repository';
 import {
@@ -73,7 +73,7 @@ export class InvitesService {
     }
 
     if (invite.receiverUserId !== data.userId) {
-      throw new UnauthorizedException('You cannot respond to this invite');
+      throw new ForbiddenException('You cannot respond to this invite');
     }
 
     if (invite.acceptedAt) {
@@ -178,11 +178,11 @@ export class InvitesService {
     );
 
     if (!senderChatUser) {
-      throw new UnauthorizedException('You are not in this chat');
+      throw new ForbiddenException('You are not in this chat');
     }
 
     if (!senderChatUser.isAdmin) {
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         'You are not authorized to invite users to this chat',
       );
     }

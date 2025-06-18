@@ -1,8 +1,8 @@
 import {
   BadRequestException,
   Injectable,
-  UnauthorizedException,
   UnprocessableEntityException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ChatPrismaRepository } from './repositories/chat-prisma.repository';
 import {
@@ -238,7 +238,7 @@ export class ChatsService {
     );
 
     if (!chatUser) {
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         'You are not authorized to join this chat',
       );
     }
@@ -289,11 +289,11 @@ export class ChatsService {
     );
 
     if (!senderChatUser) {
-      throw new UnauthorizedException('You are not in this chat');
+      throw new ForbiddenException('You are not in this chat');
     }
 
     if (!senderChatUser.isAdmin) {
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         'You are not authorized to remove users from this chat',
       );
     }
@@ -355,7 +355,7 @@ export class ChatsService {
       chatId,
     );
     if (!chatUser) {
-      throw new UnauthorizedException('You are not in this chat');
+      throw new ForbiddenException('You are not in this chat');
     }
 
     const { _count, ...details } = chatDetails;
@@ -377,11 +377,11 @@ export class ChatsService {
     );
 
     if (!senderChatUser) {
-      throw new UnauthorizedException('You are not in this chat');
+      throw new ForbiddenException('You are not in this chat');
     }
 
     if (!senderChatUser.isAdmin) {
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         'You are not authorized to make admin actions in this chat',
       );
     }
@@ -429,11 +429,11 @@ export class ChatsService {
     );
 
     if (!chatUser) {
-      throw new UnauthorizedException('You are not in this chat');
+      throw new ForbiddenException('You are not in this chat');
     }
 
     if (!chatUser.isAdmin) {
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         'You are not authorized to update this chat',
       );
     }
@@ -472,7 +472,7 @@ export class ChatsService {
     );
 
     if (!chatUser) {
-      throw new UnauthorizedException('You are not in this chat');
+      throw new ForbiddenException('You are not in this chat');
     }
 
     const groupChat = await this.groupChatRepository.getByChatId(chatId);
