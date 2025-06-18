@@ -1,4 +1,4 @@
-import { BadRequestException, PipeTransform } from '@nestjs/common';
+import { BadRequestException, PipeTransform, ArgumentMetadata } from '@nestjs/common';
 
 export type SchemaInvalidResponse = {
   valid: false;
@@ -21,7 +21,9 @@ export class ValidationPipe<T extends Schema<unknown>>
 {
   constructor(private readonly schema: T) {}
 
-  transform(value: unknown) {
+  transform(value: unknown, metadata: ArgumentMetadata) {
+    if (metadata.type !== 'body') return value;
+
     const response = this.schema.parse(value);
 
     if (response.valid) {
