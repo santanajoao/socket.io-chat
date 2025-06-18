@@ -28,7 +28,11 @@ RUN adduser --system --uid 1001 nestjs
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nestjs:nodejs /app/generated ./generated
+COPY --from=builder --chown=nestjs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=nestjs:nodejs /app/prisma ./prisma
+
+RUN corepack enable pnpm
 
 USER nestjs
 
-CMD ["node", "dist/main.js"]
+CMD ["pnpm", "run", "start:prod"]
