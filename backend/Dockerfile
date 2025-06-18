@@ -1,19 +1,34 @@
-FROM node:20.19-slim
+FROM node:20-alpine AS base
 
-WORKDIR /home/node/app
+FROM base AS deps
+WORKDIR /app
 
-RUN apt-get update && apt-get install -y openssl
+COPY package.json pnpm-lock.yaml* ./
 
-RUN npm i -g pnpm
+RUN corepack enable pnpm
+RUN pnpm i --frozen-lockfile
 
-COPY package.json pnpm-lock.yaml ./
-
-RUN pnpm install
-
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+RUN corepack enable pnpm
 RUN pnpm prisma generate
+RUN pnpm run build
 
-USER node
+FROM base AS runner
+WORKDIR /app
 
-ENTRYPOINT [ "pnpm", "run", "start:dev" ]
+ENV NODE_ENV=production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nestjs
+
+COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/generated ./generated
+
+USER nestjs
+
+CMD ["node", "dist/main.js"]

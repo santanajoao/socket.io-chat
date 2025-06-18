@@ -2,9 +2,14 @@ services:
   backend:
     build:
       context: ./backend
-    image: chat-backend:prod
+      dockerfile: ./Dockerfile.dev
+    image: chat-backend:dev
     ports:
       - ${API_PORT}:${API_PORT}
+    volumes:
+      - ./backend:/home/node/app
+      - /home/node/app/node_modules
+      - /home/node/app/generated
     env_file:
       - ./backend/.env
     restart: unless-stopped
@@ -16,9 +21,12 @@ services:
   frontend:
     build:
       context: ./frontend
-    image: chat-frontend:prod
+      dockerfile: ./Dockerfile.dev
+    image: chat-frontend:dev
     ports:
       - 3000:3000
+    volumes:
+      - ./frontend:/home/node/app
     restart: unless-stopped
     depends_on:
       - backend

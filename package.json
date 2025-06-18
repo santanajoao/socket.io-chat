@@ -1,0 +1,11 @@
+{
+  "name": "socket-io-chat-and-kanban",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "docker compose -f compose.dev.yaml up -d"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
