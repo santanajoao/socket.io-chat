@@ -1,10 +1,10 @@
 'use client';
 
-import { Button } from "@/modules/shared/components/ui/button";
+import { Button, buttonVariants } from "@/modules/shared/components/ui/button";
 import { cn } from "@/modules/shared/lib/utils";
 import { DateFormatter } from "@/modules/shared/utils/formatters/dates";
 import { useChatListStates } from "../states/useChatListStates";
-import { BellIcon, CirclePlusIcon } from "lucide-react";
+import { BellIcon, CirclePlusIcon, MessageCircleXIcon, MessageSquareOffIcon } from "lucide-react";
 import { StartNewChatModal } from "./StartNewChatModal";
 import { InvitesPopover } from "./InvitesPopover";
 import { ChatHeaderContainer } from "./ChatHeaderContainer";
@@ -74,41 +74,49 @@ export function ChatList() {
             ))}
           </div>
         ) : (
-          <ul className="flex-1 flex flex-col gap-[inherit]">
-            {chats.map((chat) => (
-              <li key={chat.id}>
-                <Button
-                  variant="outline"
-                  className={cn("w-full h-auto text-left", { "bg-accent": chat.id === selectedChatId })}
-                  onClick={() => selectChat(chat.id)}
-                  aria-label={`Open chat ${ChatFormatter.formatChatName(chat, loggedUser)}`}
-                >
-                  <ChatProfileBadge variant="outline">
-                    {ChatFormatter.formatChatInitial(chat, loggedUser)}
-                  </ChatProfileBadge>
-                  <span className="flex flex-col flex-1 overflow-hidden">
-                    <span>{ChatFormatter.formatChatName(chat, loggedUser)}</span>
-                    {chat.lastMessage && (
-                      <span className="text-sm line-clamp-1 flex-1">
-                        {(chat.type === CHAT_TYPE.GROUP && chat.lastMessage.type === MESSAGE_TYPE.DEFAULT) && (
-                          <span className="font-medium">{chat.lastMessage.user.username}: </span>
-                        )}
-                        {MessageFormatter.formatMessageContent(chat.lastMessage)}
-                      </span>
-                    )}
-                  </span>
-                  <span className="flex flex-col items-end text-sm gap-1">
-                    {chat.lastMessage && (
-                      <span>{formatLastMessageSendAt(chat.lastMessage.sentAt)}</span>
-                    )}
-                    <CountBadge>
-                      {chat.unreadMessagesCount}
-                    </CountBadge>
-                  </span>
-                </Button>
-              </li>
-            ))}
-          </ul>
+          chats.length ? (
+            <ul className="flex-1 flex flex-col gap-[inherit]">
+              {chats.map((chat) => (
+                <li key={chat.id}>
+                  <Button
+                    variant="outline"
+                    className={cn("w-full h-auto text-left", { "bg-accent": chat.id === selectedChatId })}
+                    onClick={() => selectChat(chat.id)}
+                    aria-label={`Open chat ${ChatFormatter.formatChatName(chat, loggedUser)}`}
+                  >
+                    <ChatProfileBadge variant="outline">
+                      {ChatFormatter.formatChatInitial(chat, loggedUser)}
+                    </ChatProfileBadge>
+                    <span className="flex flex-col flex-1 overflow-hidden">
+                      <span>{ChatFormatter.formatChatName(chat, loggedUser)}</span>
+                      {chat.lastMessage && (
+                        <span className="text-sm line-clamp-1 flex-1">
+                          {(chat.type === CHAT_TYPE.GROUP && chat.lastMessage.type === MESSAGE_TYPE.DEFAULT) && (
+                            <span className="font-medium">{chat.lastMessage.user.username}: </span>
+                          )}
+                          {MessageFormatter.formatMessageContent(chat.lastMessage)}
+                        </span>
+                      )}
+                    </span>
+                    <span className="flex flex-col items-end text-sm gap-1">
+                      {chat.lastMessage && (
+                        <span>{formatLastMessageSendAt(chat.lastMessage.sentAt)}</span>
+                      )}
+                      <CountBadge>
+                        {chat.unreadMessagesCount}
+                      </CountBadge>
+                    </span>
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="flex flex-col rounded-md border p-4 gap-2 items-center">
+              <MessageSquareOffIcon />
+
+              <span className="font-medium text-sm">You have no chats yet</span>
+            </div>
+          )
         )}
       </div>
     </section>
