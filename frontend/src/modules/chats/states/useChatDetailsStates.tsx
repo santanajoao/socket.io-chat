@@ -6,7 +6,7 @@ import { GROUP_TYPE } from "../constants/groupTypes";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { CHAT_TYPE } from "../constants/chatTypes";
 import { useCallback, useEffect, useState } from "react";
-import { backendChatApi } from "../apis/backend";
+import { useBackendChatApi } from "../apis/backend";
 import { OnAdminRightUpdateBody } from "../types/updateAdminRights";
 import { chatSocket } from "../socket/connection";
 import { CHAT_EVENTS } from "../constants/socketEvents";
@@ -30,6 +30,8 @@ export function useChatDetailsStates() {
 
   const isPrivateGroup = selectedChat?.type === CHAT_TYPE.GROUP && selectedChat.group?.groupType === GROUP_TYPE.PRIVATE;
   const [chatDetailsLoading, handleLoading] = useLoading(isPrivateGroup);
+
+  const backendChatApi = useBackendChatApi();
 
   const fetchChatDetails = useCallback(() => {
     return handleLoading(async () => {

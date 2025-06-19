@@ -8,7 +8,7 @@ import { ApiErrorResponse } from "@/modules/shared/types/backend";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useChatContext } from "../contexts/ChatContext";
-import { backendChatApi } from "../apis/backend";
+import { useBackendChatApi } from "../apis/backend";
 import { Loader2Icon } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { newGroupChatSchema } from "../schemas/newGroupChatSchema";
@@ -31,6 +31,8 @@ export function StartNewGroupForm({ onClose }: Props) {
 
   const [isLoading, handleLoading] = useLoading();
   const [error, setError] = useState<ApiErrorResponse | null>(null);
+
+  const backendChatApi = useBackendChatApi();
 
   function onSubmit(data: CreateGroupChatFormFields) {
     return handleLoading(async () => {

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { newDirectChatSchema } from "../schemas/newDirectChatSchema";
 import { InviteToDirectChatFormFields } from "../types/startNewDirectChat";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
-import { backendChatApi } from "../apis/backend";
+import { useBackendChatApi } from "../apis/backend";
 import { useChatContext } from "../contexts/ChatContext";
 import { Loader2Icon } from "lucide-react";
 import { useState } from "react";
@@ -28,6 +28,8 @@ export function StartNewDirectChatForm({ onClose }: Props) {
 
   const [isLoading, handleLoading] = useLoading();
   const [error, setError] = useState<ApiErrorResponse | null>(null);
+
+  const backendChatApi = useBackendChatApi();
 
   function onSubmit(data: InviteToDirectChatFormFields) {
     return handleLoading(async () => {

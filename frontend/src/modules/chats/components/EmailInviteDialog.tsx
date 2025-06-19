@@ -10,7 +10,7 @@ import { ComponentProps, useState } from "react";
 import { ApiErrorResponse } from "@/modules/shared/types/backend";
 import { inviteToGroupChatSchema } from "../schemas/inviteToGroupChatSchema";
 import { InviteToGroupChatFormFields } from "../types/inviteToGroupChat";
-import { backendInviteApi } from "@/modules/invites/apis/backend";
+import { useBackendInviteApi } from "@/modules/invites/apis/backend";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/modules/shared/components/ui/dialog";
 
 type Props = ComponentProps<typeof DialogTrigger>;
@@ -28,6 +28,8 @@ export function EmailInviteDialog({ children, className, ...props }: Props) {
   const [isLoading, handleLoading] = useLoading();
   const [error, setError] = useState<ApiErrorResponse | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+
+  const backendInviteApi = useBackendInviteApi();
 
   function onSubmit(data: InviteToGroupChatFormFields) {
     return handleLoading(async () => {

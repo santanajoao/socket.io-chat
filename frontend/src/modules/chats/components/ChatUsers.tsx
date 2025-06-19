@@ -4,7 +4,7 @@ import { Input } from "@/modules/shared/components/ui/input";
 import { PlusIcon, SearchIcon, XIcon } from "lucide-react";
 import { EmailInviteDialog } from "./EmailInviteDialog";
 import { useCallback, useEffect, useState } from "react";
-import { backendChatApi } from "../apis/backend";
+import { useBackendChatApi } from "../apis/backend";
 import { useChatContext } from "../contexts/ChatContext";
 import { ChatUserItem } from "./ChatUserItem";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
@@ -19,6 +19,8 @@ export function ChatUsers() {
   const { selectedChatId, selectedChatDetails, selectedChatUsers, setSelectedChatUsers } = useChatContext();
 
   const [chatUsersAreLoading, handleChatUsersLoading] = useLoading();
+
+  const backendChatApi = useBackendChatApi();
 
   const hasManyUsers = selectedChatDetails?.usersCount && selectedChatDetails.usersCount > USERS_PAGE_SIZE;
 

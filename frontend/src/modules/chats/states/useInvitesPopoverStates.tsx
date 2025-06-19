@@ -1,7 +1,7 @@
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
 import { useChatContext } from "../contexts/ChatContext";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
-import { backendInviteApi } from "@/modules/invites/apis/backend";
+import { useBackendInviteApi } from "@/modules/invites/apis/backend";
 import { OnInviteResponseBody } from "@/modules/invites/types/respond-invite";
 import { UserInvite } from "@/modules/invites/types/user-invites";
 import { chatSocket } from "../socket/connection";
@@ -18,6 +18,8 @@ export function useInvitesPopoverStates() {
   const [inviteResponseIsLoading, setInviteResponseIsLoading] = useState<boolean>(false);
 
   const [nextInvitesCursor, setNextInvitesCursor] = useState<string | undefined>(undefined);
+
+  const backendInviteApi = useBackendInviteApi();
 
   async function fetchInvites() {
     return handleInviteListIsLoading(async () => {

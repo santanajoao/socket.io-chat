@@ -8,7 +8,7 @@ import { useAuthContext } from "@/modules/auth/contexts/authContext";
 import debounce from "lodash.debounce";
 import { BackendChatSocketEvents } from "../socket/events";
 import { CHAT_EVENTS } from "../constants/socketEvents";
-import { backendChatApi } from "../apis/backend";
+import { useBackendChatApi } from "../apis/backend";
 
 const MESSAGE_PAGE_SIZE = 20;
 
@@ -34,6 +34,8 @@ export function useChatMessagesState() {
 
   const lastMessageRef = useRef<ChatMessage | null>(null);
   const messageListRef = useRef<HTMLDivElement>(null);
+
+  const backendChatApi = useBackendChatApi();
 
   function handleSendMessage() {
     if (!selectedChatId) return;

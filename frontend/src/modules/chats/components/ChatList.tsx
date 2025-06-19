@@ -1,10 +1,10 @@
 'use client';
 
-import { Button, buttonVariants } from "@/modules/shared/components/ui/button";
+import { Button } from "@/modules/shared/components/ui/button";
 import { cn } from "@/modules/shared/lib/utils";
 import { DateFormatter } from "@/modules/shared/utils/formatters/dates";
 import { useChatListStates } from "../states/useChatListStates";
-import { BellIcon, CirclePlusIcon, MessageCircleXIcon, MessageSquareOffIcon } from "lucide-react";
+import { BellIcon, CirclePlusIcon, MessageSquareOffIcon } from "lucide-react";
 import { StartNewChatModal } from "./StartNewChatModal";
 import { InvitesPopover } from "./InvitesPopover";
 import { ChatHeaderContainer } from "./ChatHeaderContainer";

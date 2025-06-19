@@ -3,15 +3,14 @@
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import { LoginFields, LoggedUser } from "../types/login";
-import { backendAuthApi } from "../api/backend";
+import { useBackendAuthApi } from "../api/backend";
 import { ROUTES } from "@/modules/shared/constants/routes";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 type ContextValues = {
   user: LoggedUser | null;
   isLoading: boolean;
-  login: typeof backendAuthApi.login;
+  login: ReturnType<typeof useBackendAuthApi>["login"];
   logout: () => Promise<void>;
 };
 
@@ -23,6 +22,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<LoggedUser | null>(null);
   const [isLoading, handleLoading] = useLoading(true);
   const router = useRouter();
+
+  const backendAuthApi = useBackendAuthApi();
 
   async function login(data: LoginFields) {
     const response = await backendAuthApi.login(data);
@@ -41,19 +42,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
 
-      if (response.error.status === 401) {
-        await logout();
-      }
+      // if (response.error.status === 401) {
+      //   await logout();
+      // }
 
-      router.push(ROUTES.SIGNIN);
+      // router.push(ROUTES.SIGNIN);
     })
   }
 
   async function logout() {
     const response = await backendAuthApi.logout();
-    if (response.error) {
-      toast.error('Error logging out', { richColors: true });
-    } else {
+    if (!response.error) {
       router.push(ROUTES.SIGNIN);
     }
   }

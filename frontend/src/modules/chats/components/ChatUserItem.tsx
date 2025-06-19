@@ -5,7 +5,7 @@ import { Button } from "@/modules/shared/components/ui/button";
 import { ShieldBanIcon, ShieldCheckIcon, UserRoundXIcon } from "lucide-react";
 import { useChatContext } from "../contexts/ChatContext";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
-import { backendChatApi } from "../apis/backend";
+import { useBackendChatApi } from "../apis/backend";
 import { toast } from "sonner";
 import { ConfirmationModalTrigger } from "./ConfirmationModalTrigger";
 
@@ -17,6 +17,7 @@ export function ChatUserItem({ chatUser }: Props) {
   const { user: loggedUser } = useAuthContext();
   const { selectedChatDetails, setSelectedChatUsers, selectedChatId } = useChatContext();
   const [actionIsLoading, handleActionLoading] = useLoading();
+  const backendChatApi = useBackendChatApi();
 
   function canDoDangerActionsToUser(user: ChatUser) {
     const isLoggedUser = user.id === loggedUser?.id;

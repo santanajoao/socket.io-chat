@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect } from "react";
 import { chatSocket } from "../socket/connection";
-import { backendUserApi } from "@/modules/users/apis/backend";
+import { useBackendUserApi } from "@/modules/users/apis/backend";
 import { useLoading } from "@/modules/shared/hooks/useLoading";
 import { useChatContext } from "../contexts/ChatContext";
 import { useAuthContext } from "@/modules/auth/contexts/authContext";
@@ -28,6 +28,8 @@ export function useChatListStates() {
   const authContext = useAuthContext();
 
   const [chatsAreLoading, handleChatLoading] = useLoading();
+
+  const backendUserApi = useBackendUserApi();
 
   async function markChatMessagesAsRead(chatId: string) {
     setChats((prev) => {

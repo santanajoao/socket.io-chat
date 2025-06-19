@@ -15,7 +15,7 @@ import { registerSchema } from "../schemas/registerSchema";
 import { RegisterFields } from "../types/register";
 import { PageContainer } from "@/modules/shared/components/containers/PageContainer";
 import { ROUTES } from "@/modules/shared/constants/routes";
-import { backendAuthApi } from "../api/backend";
+import { useBackendAuthApi } from "../api/backend";
 
 export function RegisterPage() {
   const form = useForm<RegisterFields>({
@@ -32,6 +32,8 @@ export function RegisterPage() {
 
   const [apiError, setApiError] = useState<ApiErrorResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const backendAuthApi = useBackendAuthApi();
 
   async function onSubmit(data: RegisterFields) {
     setIsLoading(true);
