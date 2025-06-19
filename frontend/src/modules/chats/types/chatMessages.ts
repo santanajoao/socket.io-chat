@@ -6,7 +6,7 @@ export type ChatMessage = {
   user: {
     id: string;
     username: string;
-  },
+  } | null,
   type: string;
 }
 

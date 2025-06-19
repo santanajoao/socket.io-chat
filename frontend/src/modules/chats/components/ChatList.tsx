@@ -92,7 +92,7 @@ export function ChatList() {
                       {chat.lastMessage && (
                         <span className="text-sm line-clamp-1 flex-1">
                           {(chat.type === CHAT_TYPE.GROUP && chat.lastMessage.type === MESSAGE_TYPE.DEFAULT) && (
-                            <span className="font-medium">{chat.lastMessage.user.username}: </span>
+                            <span className="font-medium">{chat.lastMessage.user!.username}: </span>
                           )}
                           {MessageFormatter.formatMessageContent(chat.lastMessage)}
                         </span>

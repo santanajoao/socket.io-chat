@@ -116,7 +116,7 @@ export function useChatMessagesState() {
 
   const handleMessageReadOnReceive = useCallback(async (message: ChatMessage) => {
     const chatIsOpen = message.chatId === selectedChatId;
-    const messageIsNotMine = message.user.id !== authContext.user?.id;
+    const messageIsNotMine = message.user?.id !== authContext.user?.id;
     const shouldMarkAsRead = chatIsOpen && messageIsNotMine;
     if (shouldMarkAsRead) {
       BackendChatSocketEvents.markChatMessageAsRead(message.chatId);
@@ -156,7 +156,7 @@ export function useChatMessagesState() {
 
   useEffect(() => {
     const lastMessage = selectedChatMessages.at(-1);
-    const lastMessageIsFromLoggedUser = lastMessage?.user.id === authContext.user?.id;
+    const lastMessageIsFromLoggedUser = lastMessage?.user?.id === authContext.user?.id;
 
     const isFirstMessagePage = selectedChatMessages.length <= MESSAGE_PAGE_SIZE;
 

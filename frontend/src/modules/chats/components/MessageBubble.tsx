@@ -13,10 +13,10 @@ export function MessageBubble({ message }: Props) {
   const { user: loggedUser } = useAuthContext();
 
   function renderMessageUsername(message: ChatMessage) {
-    return loggedUser?.id === message.user.id ? 'You' : message.user.username;
+    return loggedUser?.id === message.user?.id ? 'You' : message.user?.username;
   }
 
-  const isFromLoggedUser = loggedUser?.id === message.user.id;
+  const isFromLoggedUser = loggedUser?.id === message.user?.id;
   const isUserMessage = message.type === MESSAGE_TYPE.DEFAULT;
 
   return (

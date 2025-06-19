@@ -23,7 +23,7 @@ export type UserChat = {
     id: string;
     content: string;
     sentAt: string;
-    user: MessageUser;
+    user: MessageUser | null;
     chatId: string;
     type: string;
   }
