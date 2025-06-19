@@ -23,5 +23,5 @@ export class ChatMessage {
   id: string;
   content: string | null;
   sentAt: Date;
-  user: MessageUser;
+  user: MessageUser | null;
 }

@@ -88,6 +88,7 @@ enum MessageType {
   CHAT_JOIN
   CHAT_LEAVE
   USER_REMOVED
+  GLOBAL_GROUP
 }
 
 model Message {
@@ -95,11 +96,11 @@ model Message {
   content String?
   type MessageType @default(DEFAULT)
   chatId String @map("chat_id")
-  userId String @map("user_id")
+  userId String? @map("user_id")
   sentAt DateTime @default(now()) @map("sent_at")
 
   chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   messageReads MessageRead[]
 
   @@map("messages")

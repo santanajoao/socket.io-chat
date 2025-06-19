@@ -30,7 +30,7 @@ export class ChatData {
     id: string;
     content: string | null;
     sentAt: Date;
-    user: MessageUser;
+    user: MessageUser | null;
     type: MessageType;
   }[];
   _count: {
@@ -44,7 +44,7 @@ export class FormattedChatData {
     id: string;
     content: string | null;
     sentAt: Date;
-    user: MessageUser;
+    user: MessageUser | null;
     type: MessageType;
   } | null;
   users?: MessageUser[];

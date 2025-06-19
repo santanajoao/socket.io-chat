@@ -4,6 +4,7 @@ export const MESSAGE_TYPE = {
   CHAT_JOIN: 'CHAT_JOIN',
   CHAT_LEAVE: 'CHAT_LEAVE',
   USER_REMOVED: 'USER_REMOVED',
+  GLOBAL_GROUP: 'GLOBAL_GROUP',
 } as const;
 
 export type MessageTypeModel = (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE];
