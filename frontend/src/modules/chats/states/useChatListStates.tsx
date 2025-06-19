@@ -12,8 +12,6 @@ import { CHAT_EVENTS } from "../constants/socketEvents";
 import { OnChatUserRemoveBody } from "../types/removeUserFromChat";
 import { OnChatGroupUpdate } from "../types/updateChatGroup";
 
-// ao token vencer e receber erro unauthorized em qualquer request redirecionar para login
-// a cada nova mensagem reordenar o chat
 export function useChatListStates() {
   const {
     selectedChatId,

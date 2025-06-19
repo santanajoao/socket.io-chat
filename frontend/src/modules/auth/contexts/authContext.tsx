@@ -41,12 +41,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(response.data);
         return;
       }
-
-      // if (response.error.status === 401) {
-      //   await logout();
-      // }
-
-      // router.push(ROUTES.SIGNIN);
     })
   }
 
